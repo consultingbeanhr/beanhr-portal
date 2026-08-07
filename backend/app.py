@@ -63,6 +63,22 @@ def create_app():
     def index():
         return send_from_directory(os.path.join(frontend_dir, 'pages'), 'login.html')
 
+    @app.route('/assets/<path:filename>')
+    def serve_assets(filename):
+        return send_from_directory(os.path.join(frontend_dir, 'assets'), filename)
+
+    @app.route('/css/<path:filename>')
+    def serve_css(filename):
+        return send_from_directory(os.path.join(frontend_dir, 'css'), filename)
+
+    @app.route('/js/<path:filename>')
+    def serve_js(filename):
+        return send_from_directory(os.path.join(frontend_dir, 'js'), filename)
+
+    @app.route('/pages/<path:filename>')
+    def serve_pages(filename):
+        return send_from_directory(os.path.join(frontend_dir, 'pages'), filename)
+
     @app.route('/frontend/<path:filename>')
     def serve_frontend(filename):
         return send_from_directory(frontend_dir, filename)
