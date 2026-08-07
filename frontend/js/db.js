@@ -16,6 +16,16 @@ const API_BASE = (window.location.hostname === 'localhost' || window.location.ho
     ? 'http://127.0.0.1:5000'
     : window.location.origin;
 
+// Automatically convert all relative .html navigation links to clean URLs on DOM load
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('a[href$=".html"]').forEach(a => {
+        const href = a.getAttribute('href');
+        if (href && href.endsWith('.html') && !href.startsWith('http') && !href.startsWith('//')) {
+            a.setAttribute('href', href.slice(0, -5));
+        }
+    });
+});
+
 window.showDocumentPreview = function(url, name) {
     if (url && url.startsWith('mock://')) {
         url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
