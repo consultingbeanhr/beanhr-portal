@@ -57,6 +57,17 @@ def create_app():
     app.register_blueprint(pdf_bp)
     app.register_blueprint(payroll_bp, url_prefix='/api/payroll')
 
+    # ── Serve Frontend Static Files ──────────────────────────────────
+    frontend_dir = os.path.join(ROOT_DIR, 'frontend')
+
+    @app.route('/')
+    def index():
+        return send_from_directory(os.path.join(frontend_dir, 'pages'), 'login.html')
+
+    @app.route('/frontend/<path:filename>')
+    def serve_frontend(filename):
+        return send_from_directory(frontend_dir, filename)
+
     # ── Global error handlers ────────────────────────────────────────
     @app.errorhandler(404)
     def not_found(e):
