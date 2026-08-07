@@ -1,7 +1,7 @@
 import os
 import firebase_admin
 from firebase_admin import credentials
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -9,19 +9,18 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 load_dotenv(os.path.join(ROOT_DIR, '.env'))
 
 if not firebase_admin._apps:
-    cred_path = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+    cred_val = os.environ.get('FIREBASE_SERVICE_ACCOUNT_KEY') or os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
     
-    if cred_path and cred_path.strip().startswith('{'):
-        # Handled as raw JSON string (common in Railway/Heroku)
+    if cred_val and cred_val.strip().startswith('{'):
         import json
         try:
-            cred_dict = json.loads(cred_path)
+            cred_dict = json.loads(cred_val)
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred, {'storageBucket': 'beanhr-portal.firebasestorage.app'})
         except Exception as e:
-            print(f"[Error] Failed to parse GOOGLE_APPLICATION_CREDENTIALS as JSON: {e}")
-    elif cred_path and os.path.exists(cred_path):
-        cred = credentials.Certificate(cred_path)
+            print(f"[Error] Failed to parse Firebase credentials JSON string: {e}")
+    elif cred_val and os.path.exists(cred_val):
+        cred = credentials.Certificate(cred_val)
         firebase_admin.initialize_app(cred, {'storageBucket': 'beanhr-portal.firebasestorage.app'})
     else:
         # Fallback to local file
@@ -30,7 +29,7 @@ if not firebase_admin._apps:
             cred = credentials.Certificate(local_path)
             firebase_admin.initialize_app(cred, {'storageBucket': 'beanhr-portal.firebasestorage.app'})
         else:
-            print(f"[Warning] Firebase credentials not found at {cred_path} or {local_path}. Relying on Default Application Credentials.")
+            print(f"[Warning] Firebase credentials not found. Relying on Default Application Credentials.")
             firebase_admin.initialize_app(options={'storageBucket': 'beanhr-portal.firebasestorage.app'})
 
 
