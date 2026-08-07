@@ -1,0 +1,511 @@
+        // MOCK: return manager's own profile
+        return {
+            employeeId:          'MGR001',
+            accountId:           'mock-uid-mgr-001',
+            employeeCode:        'BHR-2024-MGR-001',
+            fullName:            'Rajesh Kumar',
+            email:               'manager@bean.hr',
+            phone:               '+91 98765 43211',
+            designation:         'Senior Manager',
+            department:          'Operations',
+            companyTag:          'BeanTech',
+            managerId:           null,  // Managers have no manager above them
+            managerName:         null,
+            employmentStatus:    'active',
+            joiningDate:         '2022-08-15',
+            profilePhotoUrl:     null,
+            extractedResumeTags: ['Leadership', 'Team Management', 'Operations'],
+            address:             null,
+            emergencyContact:    null,
+        };
+        // ── Firestore stub ──────────────────────────────────────
+        // const uid      = firebase.auth().currentUser.uid;
+        // const accSnap  = await firebase.firestore().collection('accounts').doc(uid).get();
+        // const empId    = accSnap.data().employeeId;
+        // const empSnap  = await firebase.firestore().collection('employees').doc(empId).get();
+        // return { employeeId: empSnap.id, ...empSnap.data() };
+    }
+
+    // ── getManagerDashboard ─────────────────────────────────────
+    async function getManagerDashboard() {
+        // MOCK: return manager's dashboard stats (empty for demo)
+        return {
+            teamSize:           0,  // Simulating no team members yet
+            pendingApprovals:   0,  // Leave, resignation, document approvals
+            onLeaveToday:       0,  // Team members on leave
+            recentActivityCount: 0
+        };
+        // When Firebase connected, these queries:
+        // teamSize = employees where managerId === currentManager.employeeId
+        // pendingApprovals = (leaveRequests + resignationRequests + documents) where status === 'manager_pending'
+        // onLeaveToday = leaveRequests where startDate <= today AND endDate >= today
+    }
+
+    // ── getManagerLeaveBalance ──────────────────────────────────
+    async function getManagerLeaveBalance() {
+        // MOCK: return manager's leave balances
+        return {
+            sick:   { total: 4, used: 0, remaining: 4 },
+            casual: { total: 4, used: 0, remaining: 4 },
+            paid:   { total: 4, used: 0, remaining: 4 }
+        };
+        // ── Firestore stub ──────────────────────────────────────
+        // const uid     = firebase.auth().currentUser.uid;
+        // const accSnap = await firebase.firestore().collection('accounts').doc(uid).get();
+        // const empId   = accSnap.data().employeeId;
+        // const snap    = await firebase.firestore().collection('leaveBalances').doc(empId).get();
+        // return snap.data();
+    }
+
+    // ── getManagerLastSalary ────────────────────────────────────
+    async function getManagerLastSalary() {
+        // MOCK: return manager's last salary
+        return {
+            payrollId:     'PAY-2026-03-MGR-001',
+            month:         '2026-03',
+            baseSalary:    80000,
+            bonus:         5000,
+            deductions:    0,
+            netSalary:     85000,
+            paymentStatus: 'paid',
+            paymentId:     'pay_mock_mgr_001',
+        };
+        // ── Firestore stub ──────────────────────────────────────
+        // const uid     = firebase.auth().currentUser.uid;
+        // const accSnap = await firebase.firestore().collection('accounts').doc(uid).get();
+        // const empId   = accSnap.data().employeeId;
+        // const snap    = await firebase.firestore().collection('payrollRecords')
+        //   .where('employeeId',    '==', empId)
+        //   .where('paymentStatus', '==', 'paid')
+        //   .orderBy('month', 'desc')
+        //   .limit(1)
+        //   .get();
+        // return snap.empty ? null : { payrollId: snap.docs[0].id, ...snap.docs[0].data() };
+    }
+
+    // ── getManagerPayslips ───────────────────────────────────────
+    async function getManagerPayslips() {
+        return [
+            { payslipId: 'MPS-2026-03', payrollId: 'PAY-2026-03-MGR-001', month: '2026-03', baseSalary: 80000, bonus: 5000,  deductions: 0,    netSalary: 85000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2026-02', payrollId: 'PAY-2026-02-MGR-001', month: '2026-02', baseSalary: 80000, bonus: 0,     deductions: 0,    netSalary: 80000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2026-01', payrollId: 'PAY-2026-01-MGR-001', month: '2026-01', baseSalary: 80000, bonus: 12000, deductions: 0,    netSalary: 92000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-12', payrollId: 'PAY-2025-12-MGR-001', month: '2025-12', baseSalary: 75000, bonus: 8000,  deductions: 0,    netSalary: 83000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-11', payrollId: 'PAY-2025-11-MGR-001', month: '2025-11', baseSalary: 75000, bonus: 0,     deductions: 0,    netSalary: 75000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-10', payrollId: 'PAY-2025-10-MGR-001', month: '2025-10', baseSalary: 75000, bonus: 0,     deductions: 0,    netSalary: 75000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-09', payrollId: 'PAY-2025-09-MGR-001', month: '2025-09', baseSalary: 75000, bonus: 5000,  deductions: 0,    netSalary: 80000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-08', payrollId: 'PAY-2025-08-MGR-001', month: '2025-08', baseSalary: 75000, bonus: 0,     deductions: 0,    netSalary: 75000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-07', payrollId: 'PAY-2025-07-MGR-001', month: '2025-07', baseSalary: 70000, bonus: 6000,  deductions: 0,    netSalary: 76000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-06', payrollId: 'PAY-2025-06-MGR-001', month: '2025-06', baseSalary: 70000, bonus: 0,     deductions: 0,    netSalary: 70000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-05', payrollId: 'PAY-2025-05-MGR-001', month: '2025-05', baseSalary: 70000, bonus: 0,     deductions: 0,    netSalary: 70000, paymentStatus: 'paid' },
+            { payslipId: 'MPS-2025-04', payrollId: 'PAY-2025-04-MGR-001', month: '2025-04', baseSalary: 70000, bonus: 10000, deductions: 0,    netSalary: 80000, paymentStatus: 'paid' },
+        ];
+        // ── Firestore stub ──────────────────────────────────────
+        // const uid     = firebase.auth().currentUser.uid;
+        // const accSnap = await firebase.firestore().collection('accounts').doc(uid).get();
+        // const empId   = accSnap.data().employeeId;
+        // const snap    = await firebase.firestore().collection('payslips')
+        //   .where('employeeId', '==', empId)
+        //   .orderBy('month', 'desc')
+        //   .get();
+        // return snap.docs.map(d => ({ payslipId: d.id, ...d.data() }));
+    }
+
+    // ── requestManagerSalaryAdvance ──────────────────────────────
+    async function requestManagerSalaryAdvance(data) {
+        await new Promise(r => setTimeout(r, 1000));
+        return {
+            requestId:     'MADV' + Date.now(),
+            amount:        data.amount,
+            reason:        data.reason,
+            status:        'pending',
+            adminDecision: { adminId: null, decision: null, comment: null, decidedAt: null },
+            createdAt:     new Date().toISOString(),
+        };
+        // ── Firestore stub ──────────────────────────────────────
+        // const uid     = firebase.auth().currentUser.uid;
+        // const accSnap = await firebase.firestore().collection('accounts').doc(uid).get();
+        // const ref     = firebase.firestore().collection('salaryAdvanceRequests').doc();
+        // await ref.set({ employeeId: accSnap.data().employeeId, amount: data.amount, reason: data.reason || null,
+        //   status: 'pending', adminDecision: { adminId: null, decision: null, comment: null, decidedAt: null },
+        //   createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        // return { requestId: ref.id };
+    }
+
+    // ── getManagerAdvanceHistory ─────────────────────────────────
+    async function getManagerAdvanceHistory() {
+        return [
+            {
+                requestId:     'MADV001',
+                amount:        20000,
+                reason:        'Home renovation advance',
+                status:        'approved',
+                adminDecision: { adminId: 'admin_001', decision: 'approved', comment: null, decidedAt: '2026-02-10T11:00:00Z' },
+                createdAt:     '2026-02-07T09:00:00Z',
+            },
+            {
+                requestId:     'MADV002',
+                amount:        15000,
+                reason:        'Medical expenses',
+                status:        'rejected',
+                adminDecision: { adminId: 'admin_001', decision: 'rejected', comment: 'Advance limit reached this quarter.', decidedAt: '2026-03-20T14:00:00Z' },
+                createdAt:     '2026-03-18T10:30:00Z',
+            },
+            {
+                requestId:     'MADV003',
+                amount:        10000,
+                reason:        'Travel expenses',
+                status:        'pending',
+                adminDecision: { adminId: null, decision: null, comment: null, decidedAt: null },
+                createdAt:     '2026-04-15T08:00:00Z',
+            },
+        ];
+        // ── Firestore stub ──────────────────────────────────────
+        // const uid     = firebase.auth().currentUser.uid;
+        // const accSnap = await firebase.firestore().collection('accounts').doc(uid).get();
+        // const snap    = await firebase.firestore().collection('salaryAdvanceRequests')
+        //   .where('employeeId', '==', accSnap.data().employeeId)
+        //   .orderBy('createdAt', 'desc').get();
+        // return snap.docs.map(d => ({ requestId: d.id, ...d.data() }));
+    }
+
+    // ── getRecentTeamActivity ───────────────────────────────────
+    async function getRecentTeamActivity() {
+        // MOCK: empty for demo, so empty state shows
+        return [];
+        // When connected to Firebase, return recent team actions:
+        // [
+        //   { id: 'act1', action: 'Approved leave', employee: 'John Doe', timestamp: new Date(), avatar: 'J' },
+        //   { id: 'act2', action: 'Reviewed document', employee: 'Sarah', timestamp: new Date(), avatar: 'S' }
+        // ]
+    }
+
+    // ── getManagerNotifications ─────────────────────────────────
+    async function getManagerNotifications() {
+        // MOCK: empty for demo
+        return [];
+        // When connected to Firebase, return notifications for manager:
+        // [
+        //   { id: 'n1', title: 'Leave Request', message: 'John requested leave', read: false, timestamp: new Date() },
+        //   { id: 'n2', title: 'Document Uploaded', message: 'Sarah uploaded resume', read: true, timestamp: new Date() }
+        // ]
+    }
+
+    // ── getManagerTeam ───────────────────────────────────────────
+    // employmentStatus: 'active' | 'on_notice' | 'resigned'
+    // todayAttendance:  'present' | 'late' | 'absent' | null
+    //   null when employee is on approved leave, serving notice, or resigned
+    // onLeaveToday: true when there is an admin/manager-approved leave covering today
+    // lateLoginCount: running monthly counter — resets on 1st of each month AND after every
+    //   4th late (penalty day). Every 4th late = half salary for that day.
+    // noticePeriodEndDate: last working day (only when employmentStatus === 'on_notice')
+    async function getManagerTeam() {
+        // MOCK: returns direct reports for the logged-in manager
+        return [
+            {
+                id: 'emp001',
+                employeeCode: 'BHR-101',
+                fullName: 'Arjun Mehta',
+                designation: 'Software Engineer',
+                department: 'Engineering',
+                companyTag: 'BeanTech',
+                baseSalary:          62000,
+                employmentStatus:    'active',
+                todayAttendance:     'present',
+                onLeaveToday:        false,
+                lateLoginCount:      1,
+                noticePeriodEndDate: null,
+                email: 'arjun.mehta@bean.hr',
+                phone: '+91 98765 43210',
+                joiningDate: '2024-03-15',
+                profilePhotoUrl: null
+            },
+            {
+                id: 'emp002',
+                employeeCode: 'BHR-102',
+                fullName: 'Priya Sharma',
+                designation: 'UI/UX Designer',
+                department: 'Design',
+                companyTag: 'BeanTech',
+                baseSalary:          52000,
+                employmentStatus:    'active',
+                todayAttendance:     null,     // on approved leave — attendance not required
+                onLeaveToday:        true,
+                lateLoginCount:      0,
+                noticePeriodEndDate: null,
+                email: 'priya.sharma@bean.hr',
+                phone: '+91 87654 32109',
+                joiningDate: '2024-06-01',
+                profilePhotoUrl: null
+            },
+            {
+                id: 'emp003',
+                employeeCode: 'BHR-103',
+                fullName: 'Rahul Verma',
+                designation: 'Backend Developer',
+                department: 'Engineering',
+                companyTag: 'ProjectX',
+                baseSalary:          58000,
+                employmentStatus:    'active',
+                todayAttendance:     'late',
+                onLeaveToday:        false,
+                lateLoginCount:      2,        // 2 lates this month — next late triggers half-salary day
+                noticePeriodEndDate: null,
+                email: 'rahul.verma@bean.hr',
+                phone: '+91 76543 21098',
+                joiningDate: '2023-11-20',
+                profilePhotoUrl: null
+            },
+            {
+                id: 'emp004',
+                employeeCode: 'BHR-104',
+                fullName: 'Sneha Patel',
+                designation: 'QA Engineer',
+                department: 'Engineering',
+                companyTag: 'BeanTech',
+                baseSalary:          48000,
+                employmentStatus:    'on_notice',  // resignation accepted, serving notice period
+                todayAttendance:     null,
+                onLeaveToday:        false,
+                lateLoginCount:      0,
+                noticePeriodEndDate: '2026-05-20',
+                email: 'sneha.patel@bean.hr',
+                phone: '+91 65432 10987',
+                joiningDate: '2025-01-10',
+                profilePhotoUrl: null
+            },
+            {
+                id: 'emp005',
+                employeeCode: 'BHR-105',
+                fullName: 'Karan Joshi',
+                designation: 'Sales Executive',
+                department: 'Sales',
+                companyTag: 'ProjectX',
+                baseSalary:          38000,
+                employmentStatus:    'resigned',
+                todayAttendance:     null,
+                onLeaveToday:        false,
+                lateLoginCount:      0,
+                noticePeriodEndDate: null,
+                email: 'karan.joshi@bean.hr',
+                phone: '+91 54321 09876',
+                joiningDate: '2023-08-05',
+                profilePhotoUrl: null
+            }
+        ];
+        // When connected to Firebase:
+        // const managerId = db._currentManagerId();
+        // const snap = await firebase.firestore()
+        //   .collection('employees')
+        //   .where('managerId', '==', managerId)
+        //   .get();
+        // return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // NOTE: todayAttendance + onLeaveToday come from joining employees with
+        //   attendanceRecords/{employeeId}_YYYY-MM-DD  and  leaveRequests collections.
+    }
+
+    // ── getTeamLeaveRequests ─────────────────────────────────────
+    // Returns leave requests submitted by the logged-in manager's direct reports.
+    // filter: 'all' | 'pending' | 'decided'  (default 'all')
+    async function getTeamLeaveRequests(filter = 'all') {
+        const requests = [
+            {
+                id: 'LR001',
+                employeeId:        'emp001',
+                employeeName:      'Arjun Mehta',
+                employeeCode:      'BHR-101',
+                leaveType:         'sick',
+                startDate:         '2026-04-22',
+                endDate:           '2026-04-23',
+                days:              2,
+                backdated:         false,
+                supportingDocUrl:  null,
+                supportingDocName: null,
+                reason:            'Fever and cold — doctor advised rest for 2 days.',
+                status:            'pending',
+                submittedAt:       '2026-04-20T09:30:00Z',
+                managerDecision:   null,
+            },
+            {
+                id: 'LR002',
+                employeeId:        'emp003',
+                employeeName:      'Rahul Verma',
+                employeeCode:      'BHR-103',
+                leaveType:         'casual',
+                startDate:         '2026-04-25',
+                endDate:           '2026-04-25',
+                days:              1,
+                backdated:         false,
+                supportingDocUrl:  null,
+                supportingDocName: null,
+                reason:            'Personal work',
+                status:            'pending',
+                submittedAt:       '2026-04-20T11:45:00Z',
+                managerDecision:   null,
+            },
+            {
+                id: 'LR004',
+                employeeId:        'emp005',
+                employeeName:      'Kiran Nair',
+                employeeCode:      'BHR-105',
+                leaveType:         'sick',
+                startDate:         '2026-04-29',
+                endDate:           '2026-05-01',
+                days:              3,
+                backdated:         true,
+                supportingDocUrl:  null,
+                supportingDocName: null,
+                reason:            'Had a sudden medical emergency — back now and applying for the days missed.',
+                status:            'pending',
+                submittedAt:       new Date(Date.now() - 1 * 86400000).toISOString(),
+                managerDecision:   null,
+            },
+            {
+                id: 'LR003',
+                employeeId:        'emp004',
+                employeeName:      'Sneha Patel',
+                employeeCode:      'BHR-104',
+                leaveType:         'paid',
+                startDate:         '2026-04-10',
+                endDate:           '2026-04-11',
+                days:              2,
+                backdated:         false,
+                supportingDocUrl:  null,
+                supportingDocName: null,
+                reason:            'Family function',
+                status:            'manager_approved',
+                submittedAt:       '2026-04-08T08:00:00Z',
+                managerDecision: {
+                    decision:  'approved',
+                    comment:   'Approved. Enjoy!',
+                    decidedAt: '2026-04-08T10:00:00Z',
+                },
+            },
+        ];
+        if (filter === 'pending')  return requests.filter(r => r.status === 'pending');
+        if (filter === 'decided')  return requests.filter(r => r.status !== 'pending');
+        return requests;
+        // ── Firestore stub ──────────────────────────────────────────
+        // const managerId = db._currentManagerId();
+        // // Get all direct report IDs first
+        // const empSnap = await firebase.firestore().collection('employees')
+        //   .where('managerId', '==', managerId).get();
+        // const empIds = empSnap.docs.map(d => d.id);
+        // // Firestore 'in' supports max 30 values; chunk if needed
+        // const snap = await firebase.firestore().collection('leaveRequests')
+        //   .where('employeeId', 'in', empIds)
+        //   .orderBy('createdAt', 'desc').get();
+        // return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+
+    // ── approveLeaveRequest ──────────────────────────────────────
+    async function approveLeaveRequest(requestId, comment = '') {
+        // MOCK: returns updated request object
+        console.log(`[MOCK] Approved leave request ${requestId} with comment: "${comment}"`);
+        return { success: true };
+        // ── Firestore stub ──────────────────────────────────────────
+        // const managerId = db._currentManagerId();
+        // await firebase.firestore().collection('leaveRequests').doc(requestId).update({
+        //   status: 'manager_approved',
+        //   managerDecision: {
+        //     managerId,
+        //     decision: 'approved',
+        //     comment,
+        //     decidedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        //   }
+        // });
+        // return { success: true };
+    }
+
+    // ── rejectLeaveRequest ───────────────────────────────────────
+    async function rejectLeaveRequest(requestId, comment = '') {
+        // MOCK: returns result
+        console.log(`[MOCK] Rejected leave request ${requestId} with comment: "${comment}"`);
+        return { success: true };
+        // ── Firestore stub ──────────────────────────────────────────
+        // const managerId = db._currentManagerId();
+        // await firebase.firestore().collection('leaveRequests').doc(requestId).update({
+        //   status: 'rejected',
+        //   managerDecision: {
+        //     managerId,
+        //     decision: 'rejected',
+        //     comment,
+        //     decidedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        //   }
+        // });
+        // return { success: true };
+    }
+
+    // ── getTeamResignationRequests ───────────────────────────────
+    async function getTeamResignationRequests(filter = 'all') {
+        const requests = [
+            {
+                id: 'RR001',
+                employeeId:             'emp004',
+                employeeName:           'Sneha Patel',
+                employeeCode:           'BHR-104',
+                reason:                 'Got a better opportunity abroad. It was great working here.',
+                noticePeriodDays:       30,
+                resignationDate:        '2026-04-21',
+                expectedRelievingDate:  '2026-05-21',
+                status:                 'pending',
+                submittedAt:            '2026-04-19T15:00:00Z',
+                managerDecision:        null,
+                supportingDocUrl:       null,
+                supportingDocName:      null,
+                docRequestedBy:         null,
+                docRequestMessage:      null,
+            },
+        ];
+        if (filter === 'pending') return requests.filter(r => r.status === 'pending');
+        if (filter === 'decided') return requests.filter(r => r.status !== 'pending');
+        return requests;
+        // ── Firestore stub ──────────────────────────────────────────
+        // const managerId = db._currentManagerId();
+        // const empSnap = await firebase.firestore().collection('employees')
+        //   .where('managerId', '==', managerId).get();
+        // const empIds = empSnap.docs.map(d => d.id);
+        // const snap = await firebase.firestore().collection('resignationRequests')
+        //   .where('employeeId', 'in', empIds)
+        //   .orderBy('createdAt', 'desc').get();
+        // return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+
+    // ── approveResignationRequest ────────────────────────────────
+    async function approveResignationRequest(requestId, comment = '') {
+        console.log(`[MOCK] Approved resignation ${requestId} with comment: "${comment}"`);
+        return { success: true };
+        // ── Firestore stub ──────────────────────────────────────────
+        // const managerId = db._currentManagerId();
+        // await firebase.firestore().collection('resignationRequests').doc(requestId).update({
+        //   status: 'manager_approved',
+        //   managerDecision: {
+        //     managerId,
+        //     decision: 'approved',
+        //     comment,
+        //     decidedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        //   }
+        // });
+        // // Also update employee's employmentStatus to 'on_notice' + set noticePeriodEndDate
+        // // This can be done via a Cloud Function trigger on resignationRequests update.
+        // return { success: true };
+    }
+
+    // ── rejectResignationRequest ─────────────────────────────────
+    async function rejectResignationRequest(requestId, comment = '') {
+        console.log(`[MOCK] Rejected resignation ${requestId} with comment: "${comment}"`);
+        return { success: true };
+        // ── Firestore stub ──────────────────────────────────────────
+        // const managerId = db._currentManagerId();
+        // await firebase.firestore().collection('resignationRequests').doc(requestId).update({
+        //   status: 'rejected',
+        //   managerDecision: {
+        //     managerId,
+        //     decision: 'rejected',
+        //     comment,
+        //     decidedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        //   }
+        // });
+        // return { success: true };
+    }
+
+    // ── managerRequestResignationDoc ─────────────────────────────

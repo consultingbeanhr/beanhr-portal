@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Required Documents</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.22);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --warning-bg:   rgba(251,191,36,0.12);
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.32);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(40,130,60,0.09);
+            --warning-bg:   rgba(180,130,0,0.09);
+            --danger-bg:    rgba(200,50,50,0.07);
+            --blue-bg:      rgba(50,100,200,0.07);
+        }
+
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb        { opacity: 0.18; }
+        [data-theme="light"] .orb-1      { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2      { background: radial-gradient(circle, rgba(168,106,62,0.12), transparent 70%); }
+        [data-theme="light"] .topbar     { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card       { box-shadow: 0 4px 24px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04) inset; }
+        [data-theme="light"] .portal-nav { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .pnav-link:hover  { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .pnav-link.active { background: rgba(90,153,0,0.12); color: var(--accent); }
+        [data-theme="light"] .logout-btn { color: rgba(220,50,50,0.65); }
+        [data-theme="light"] .drop-zone  { border-color: rgba(26,32,16,0.18); background: rgba(0,0,0,0.02); }
+        [data-theme="light"] .drop-zone:hover, [data-theme="light"] .drop-zone.drag-over { border-color: var(--accent); background: rgba(90,153,0,0.04); }
+        [data-theme="light"] .uploaded-file { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .doc-separator  { background: rgba(26,32,16,0.08); }
+
+        /* ── Phosphor dual-icon ─────────────────────────────── */
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+        /* ── Background ─────────────────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.22), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App shell ──────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ── Topbar ─────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(7,7,15,0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+            gap: 16px;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .brand-mark  { width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+        .brand-name  { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+        .brand-tag   { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.4px; }
+
+        /* ── Portal nav tabs ────────────────────────────────── */
+        .portal-nav { display: flex; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px; }
+        .pnav-link  { display: flex; align-items: center; gap: 7px; padding: 7px 16px; border-radius: 9px; text-decoration: none; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: background 0.15s, color 0.15s; white-space: nowrap; }
+        .pnav-link:hover  { background: rgba(255,255,255,0.06); color: var(--text); }
+        .pnav-link.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        [data-theme="light"] .pnav-link.active { color: var(--accent); }
+
+        .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .theme-btn  { width: 36px; height: 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; transition: background 0.2s, box-shadow 0.2s; }
+        .theme-btn:hover { background: rgba(119,202,0,0.1); box-shadow: 0 0 0 2px rgba(119,202,0,0.2); }
+        .logout-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; font-weight: 500; color: rgba(248,113,113,0.7); cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); border-color: rgba(248,113,113,0.22); }
+
+        /* ── Main content ───────────────────────────────────── */
+        .main-content { flex: 1; overflow-y: auto; padding: 36px 24px 56px; }
+        .content-wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+        /* ── Page header ────────────────────────────────────── */
+        .page-header       { margin-bottom: 4px; }
+        .page-title        { font-size: 24px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px; }
+        .page-subtitle     { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+
+        /* ── Glass card ─────────────────────────────────────── */
+        .card       { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 18px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.02) inset; }
+        .card-inner { padding: 22px 24px; }
+
+        /* ── Document card ──────────────────────────────────── */
+        .doc-header        { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
+        .doc-title-row     { display: flex; align-items: center; gap: 10px; }
+        .doc-icon          { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .doc-icon.pending  { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+        .doc-icon.uploaded { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+        .doc-icon.manager-verified { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.2); }
+        .doc-icon.fully-verified   { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.3); }
+        .doc-icon.rejected         { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+        .doc-name { font-size: 16px; font-weight: 700; }
+        .doc-desc { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+        .doc-requester { font-size: 12px; color: var(--text-faint); margin-top: 6px; display: flex; align-items: center; gap: 5px; }
+
+        /* ── Status badge ───────────────────────────────────── */
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 20px; font-size: 11.5px; font-weight: 600; white-space: nowrap; flex-shrink: 0; }
+        .status-badge.not-uploaded     { background: var(--warning-bg); color: #fbbf24; border: 1px solid rgba(251,191,36,0.22); }
+        .status-badge.under-review     { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(96,165,250,0.22); }
+        .status-badge.manager-verified { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.22); }
+        .status-badge.fully-verified   { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.3); }
+        .status-badge.rejected         { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(248,113,113,0.22); }
+
+        /* ── Document separator ─────────────────────────────── */
+        .doc-separator { height: 1px; background: var(--glass-border); margin: 0; }
+
+        /* ── Drop zone ──────────────────────────────────────── */
+        .upload-area   { margin-top: 16px; }
+        .drop-zone {
+            border: 2px dashed rgba(255,255,255,0.14);
+            border-radius: 12px;
+            padding: 24px 20px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            background: rgba(255,255,255,0.02);
+            text-align: center;
+        }
+        .drop-zone:hover, .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(119,202,0,0.04);
+        }
+        .drop-zone-icon  { font-size: 28px; color: var(--text-faint); margin-bottom: 2px; transition: color 0.15s; }
+        .drop-zone:hover .drop-zone-icon, .drop-zone.drag-over .drop-zone-icon { color: var(--accent-light); }
+        [data-theme="light"] .drop-zone:hover .drop-zone-icon { color: var(--accent); }
+        .drop-zone-text  { font-size: 13.5px; font-weight: 500; color: var(--text-muted); }
+        .drop-zone-hint  { font-size: 11.5px; color: var(--text-faint); }
+        .drop-zone input[type="file"] { display: none; }
+
+        /* File selected state (before submit) */
+        .file-selected-area { margin-top: 16px; background: rgba(96,165,250,0.06); border: 1px solid rgba(96,165,250,0.18); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+        .file-sel-icon { font-size: 22px; color: var(--blue); flex-shrink: 0; }
+        .file-sel-info { flex: 1; min-width: 0; }
+        .file-sel-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-sel-size { font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+        .file-sel-actions { display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+
+        /* Uploading spinner */
+        .upload-spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(119,202,0,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .uploading-row { display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--text-muted); margin-top: 16px; }
+
+        /* Uploaded file display */
+        .uploaded-file { margin-top: 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+        .uf-icon   { font-size: 22px; flex-shrink: 0; }
+        .uf-info   { flex: 1; min-width: 0; }
+        .uf-name   { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .uf-meta   { font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+        .uf-action { flex-shrink: 0; }
+
+        /* Verified state (locked) */
+        .verified-state { margin-top: 16px; display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.18); border-radius: 12px; }
+        .verified-state.manager { background: rgba(74,222,128,0.06); border-color: rgba(74,222,128,0.18); }
+        .verified-state.full    { background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.28); }
+        .verified-icon { font-size: 22px; color: var(--success); flex-shrink: 0; }
+        .verified-info { flex: 1; }
+        .verified-title { font-size: 13.5px; font-weight: 600; color: var(--success); }
+        .verified-sub   { font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+
+        /* Rejected state */
+        .rejected-reason { margin-top: 14px; padding: 12px 14px; background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.18); border-radius: 10px; font-size: 13px; color: var(--danger); display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; }
+        .rejected-reason i { flex-shrink: 0; margin-top: 1px; font-size: 16px; }
+
+        /* ── Buttons ────────────────────────────────────────── */
+        .btn-primary   { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border: none; border-radius: 9px; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: transform 0.12s, box-shadow 0.15s; box-shadow: 0 3px 12px var(--accent-glow); }
+        .btn-primary:hover   { transform: translateY(-1px); box-shadow: 0 5px 18px var(--accent-glow); }
+        .btn-primary:active  { transform: scale(0.97); }
+        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+        .btn-ghost     { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; background: transparent; border: 1px solid var(--glass-border); border-radius: 9px; font-size: 12.5px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+        [data-theme="light"] .btn-ghost:hover { background: rgba(0,0,0,0.05); }
+
+        /* ── Empty state ────────────────────────────────────── */
+        .empty-state { padding: 56px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
+        .empty-icon  { font-size: 42px; color: var(--text-faint); }
+        .empty-title { font-size: 16px; font-weight: 600; color: var(--text-muted); }
+        .empty-sub   { font-size: 13.5px; color: var(--text-faint); line-height: 1.5; max-width: 320px; }
+
+        /* ── Progress summary ───────────────────────────────── */
+        .summary-bar { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 14px; padding: 16px 22px; display: flex; align-items: center; gap: 18px; }
+        .summary-stat  { display: flex; flex-direction: column; gap: 2px; }
+        .summary-num   { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+        .summary-label { font-size: 11.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; }
+        .summary-divider { width: 1px; height: 32px; background: var(--glass-border); }
+        .summary-track-wrap { flex: 1; }
+        .summary-track  { height: 6px; background: rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; margin-bottom: 6px; }
+        [data-theme="light"] .summary-track { background: rgba(0,0,0,0.09); }
+        .summary-fill   { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 6px; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); width: 0; }
+        .summary-pct    { font-size: 11.5px; color: var(--text-muted); }
+
+        /* ── Toast ──────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 12px 18px; background: #16161f; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); pointer-events: auto; display: flex; align-items: center; gap: 10px; animation: toastIn 0.28s cubic-bezier(0.22,1,0.36,1) forwards; }
+        [data-theme="light"] .toast { background: #fff; color: #1a2010; border-color: rgba(0,0,0,0.1); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .toast.out { animation: toastOut 0.22s ease forwards; }
+        @keyframes toastIn  { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(16px); } }
+
+        /* ── Responsive ─────────────────────────────────────── */
+        @media (max-width: 640px) {
+            .topbar { padding: 0 16px; }
+            .pnav-label { display: none; }
+            .pnav-link  { padding: 7px 12px; }
+            .main-content { padding: 20px 16px 40px; }
+            .summary-bar { flex-wrap: wrap; gap: 12px; }
+            .summary-divider { display: none; }
+            .summary-track-wrap { width: 100%; }
+        }
+        @media (max-width: 380px) {
+            .brand-name { display: none; }
+            .portal-nav { padding: 3px; }
+            .pnav-link  { padding: 7px 10px; }
+            .file-sel-size { display: none; }
+        }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp({
+                apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+                authDomain:        "beanhr-portal.firebaseapp.com",
+                projectId:         "beanhr-portal",
+                storageBucket:     "beanhr-portal.firebasestorage.app",
+                messagingSenderId: "1056336656581",
+                appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+            });
+        }
+    </script>
+    <script src="../../js/db.js"></script>
+</head>
+<body>
+
+<div class="bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="app-shell">
+
+    <!-- ── Topbar ───────────────────────────────────────────── -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="brand-mark" style="padding: 4px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+            <div>
+                <div class="brand-name">Bean HR</div>
+                <div class="brand-tag">Candidate Portal</div>
+            </div>
+        </div>
+
+        <nav class="portal-nav">
+            <a href="dashboard.html" class="pnav-link">
+                <i class="ph-fill ph-list-checks ph-icon-fill"></i>
+                <i class="ph ph-list-checks ph-icon-outline"></i>
+                <span class="pnav-label">Application Status</span>
+            </a>
+            <a href="documents.html" class="pnav-link active">
+                <i class="ph-fill ph-files ph-icon-fill"></i>
+                <i class="ph ph-files ph-icon-outline"></i>
+                <span class="pnav-label">Documents</span>
+            </a>
+        </nav>
+
+        <div class="topbar-right">
+            <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="ph-fill ph-sign-out ph-icon-fill"></i>
+                <i class="ph ph-sign-out ph-icon-outline"></i>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- ── Main content ─────────────────────────────────────── -->
+    <main class="main-content">
+        <div class="content-wrap">
+
+            <!-- Page header -->
+            <div class="page-header">
+                <h1 class="page-title">Required Documents</h1>
+                <p class="page-subtitle">Upload each document requested by the hiring team. Supported formats: PDF, JPG, PNG &mdash; max 10 MB per file.</p>
+            </div>
+
+            <!-- Summary bar -->
+            <div class="summary-bar" id="summaryBar">
+                <!-- filled by JS -->
+            </div>
+
+            <!-- Document list -->
+            <div id="docList">
+                <!-- filled by JS -->
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- ── Toast container ───────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // ── Auth guard ────────────────────────────────────────────
+    (function () {
+        if (sessionStorage.getItem('bhr_role') !== 'candidate') {
+            window.location.replace('../login.html');
+        }
+    })();
+
+    let _currentDocuments = null;
+    function getActiveDocs() { return _currentDocuments || []; }
+
+    // ── Helpers ───────────────────────────────────────────────
+    function escapeHtml(s) {
+        if (s == null) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function showToast(msg, type) {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        const colors = { success: '#4ade80', danger: '#f87171', info: '#60a5fa', warning: '#fbbf24' };
+        const icons  = { success: 'check-circle', danger: 'x-circle', info: 'info', warning: 'warning' };
+        const col = colors[type] || colors.info;
+        const ico = icons[type]  || 'info';
+        t.className = 'toast';
+        t.innerHTML = `<i class="ph-fill ph-${ico}" style="color:${col};font-size:18px;flex-shrink:0;"></i>${escapeHtml(msg)}`;
+        c.appendChild(t);
+        setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 280); }, 3600);
+    }
+
+    // ── Live Document State ─────────────────────────────────────
+
+    // Per-document UI state (selected file, uploading flag)
+    const _uiState = {};
+
+    // ── Computed helpers ──────────────────────────────────────
+    function isLocked(doc) {
+        return doc.finalStatus === 'manager_verified'
+            || doc.finalStatus === 'fully_verified';
+    }
+
+    function submittedCount() {
+        return getActiveDocs().filter(d =>
+            d.uploadedFileName !== null || d.finalStatus === 'manager_verified' || d.finalStatus === 'fully_verified'
+        ).length;
+    }
+
+    function requesterLabel(role) {
+        if (role === 'super_admin') return 'Requested by Admin';
+        return 'Requested by HR Team';
+    }
+
+    function docIconClass(status) {
+        return { pending: 'pending', uploaded: 'uploaded', manager_verified: 'manager-verified', fully_verified: 'fully-verified', rejected: 'rejected' }[status] || 'pending';
+    }
+
+    function docIconName(status) {
+        return { pending: 'upload-simple', uploaded: 'clock', manager_verified: 'check-circle', fully_verified: 'seal-check', rejected: 'x-circle' }[status] || 'file';
+    }
+
+    function statusBadgeHtml(doc) {
+        if (doc.finalStatus === 'pending' && !doc.uploadedFileName) {
+            return `<span class="status-badge not-uploaded"><i class="ph-fill ph-upload-simple"></i> Upload Required</span>`;
+        }
+        if (doc.finalStatus === 'pending' && doc.uploadedFileName) {
+            return `<span class="status-badge under-review"><i class="ph-fill ph-clock"></i> Under Review</span>`;
+        }
+        if (doc.finalStatus === 'uploaded') {
+            return `<span class="status-badge under-review"><i class="ph-fill ph-clock"></i> Under Review</span>`;
+        }
+        if (doc.finalStatus === 'manager_verified') {
+            return `<span class="status-badge manager-verified"><i class="ph-fill ph-check-circle"></i> Manager Verified</span>`;
+        }
+        if (doc.finalStatus === 'fully_verified') {
+            return `<span class="status-badge fully-verified"><i class="ph-fill ph-seal-check"></i> Fully Verified</span>`;
+        }
+        if (doc.finalStatus === 'rejected') {
+            return `<span class="status-badge rejected"><i class="ph-fill ph-x-circle"></i> Rejected</span>`;
+        }
+        return '';
+    }
+
+    // ── Render summary bar ────────────────────────────────────
+    function renderSummaryBar() {
+        const total     = getActiveDocs().length;
+        const submitted = submittedCount();
+        const pct       = total > 0 ? Math.round((submitted / total) * 100) : 0;
+
+        document.getElementById('summaryBar').innerHTML = `
+            <div class="summary-stat">
+                <div class="summary-num" style="color:var(--accent-light)">${submitted}</div>
+                <div class="summary-label">Submitted</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-stat">
+                <div class="summary-num">${total}</div>
+                <div class="summary-label">Total</div>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-track-wrap">
+                <div class="summary-track">
+                    <div class="summary-fill" id="summaryFill"></div>
+                </div>
+                <div class="summary-pct">${pct}% complete</div>
+            </div>
+        `;
+
+        requestAnimationFrame(() => {
+            const fill = document.getElementById('summaryFill');
+            if (fill) fill.style.width = pct + '%';
+        });
+    }
+
+    // ── Render upload area for a single document ──────────────
+    function renderUploadArea(doc) {
+        const ui = _uiState[doc.docId] || {};
+
+        // Locked — verified, show verified state
+        if (isLocked(doc)) {
+            const isFullyVerified = doc.finalStatus === 'fully_verified';
+            return `
+            <div class="upload-area">
+                <div class="uploaded-file">
+                    <i class="ph-fill ph-file-text uf-icon" style="color:var(--text-muted);"></i>
+                    <div class="uf-info">
+                        <div class="uf-name">${escapeHtml(doc.uploadedFileName)}</div>
+                        <div class="uf-meta">Uploaded on ${escapeHtml(doc.uploadedAt)}</div>
+                    </div>
+                </div>
+                <div class="verified-state ${isFullyVerified ? 'full' : 'manager'}">
+                    <i class="ph-fill ${isFullyVerified ? 'ph-seal-check' : 'ph-check-circle'} verified-icon"></i>
+                    <div class="verified-info">
+                        <div class="verified-title">${isFullyVerified ? 'Document fully verified' : 'Verified by hiring manager'}</div>
+                        <div class="verified-sub">${isFullyVerified ? 'No further action required.' : 'Awaiting final admin verification.'}</div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Rejected — show reason + allow re-upload
+        if (doc.finalStatus === 'rejected') {
+            const reasonHtml = doc.rejectionReason
+                ? `<div class="rejected-reason"><i class="ph-fill ph-warning"></i><span>${escapeHtml(doc.rejectionReason)}</span></div>`
+                : '';
+            return `
+            <div class="upload-area">
+                ${reasonHtml}
+                ${renderDropZone(doc)}
+            </div>`;
+        }
+
+        // Uploading in progress
+        if (ui.uploading) {
+            return `
+            <div class="upload-area">
+                <div class="uploading-row">
+                    <div class="upload-spinner"></div>
+                    <span>Uploading ${escapeHtml(ui.file ? ui.file.name : 'file')}...</span>
+                </div>
+            </div>`;
+        }
+
+        // File selected, not yet submitted
+        if (ui.file) {
+            const sizeStr = formatBytes(ui.file.size);
+            return `
+            <div class="upload-area">
+                <div class="file-selected-area">
+                    <i class="ph-fill ph-file-text file-sel-icon"></i>
+                    <div class="file-sel-info">
+                        <div class="file-sel-name">${escapeHtml(ui.file.name)}</div>
+                        <div class="file-sel-size">${sizeStr}</div>
+                    </div>
+                    <div class="file-sel-actions">
+                        <button class="btn-ghost" onclick="clearFile('${escapeHtml(doc.docId)}')">
+                            <i class="ph-bold ph-x"></i> Clear
+                        </button>
+                        <button class="btn-primary" onclick="submitDocument('${escapeHtml(doc.docId)}')">
+                            <i class="ph-fill ph-upload-simple"></i> Upload
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Already uploaded but under review — show file + option to replace
+        if (doc.uploadedFileName) {
+            return `
+            <div class="upload-area">
+                <div class="uploaded-file">
+                    <i class="ph-fill ph-file-text uf-icon" style="color:var(--text-muted);"></i>
+                    <div class="uf-info">
+                        <div class="uf-name">${escapeHtml(doc.uploadedFileName)}</div>
+                        <div class="uf-meta">Uploaded on ${escapeHtml(doc.uploadedAt || 'Unknown date')}</div>
+                    </div>
+                    <div class="uf-action">
+                        <label class="btn-ghost" style="cursor:pointer;">
+                            <i class="ph-fill ph-arrow-counter-clockwise"></i> Replace
+                            <input type="file" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect('${escapeHtml(doc.docId)}', this)" style="display:none;" />
+                        </label>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // Default: empty drop zone
+        return `<div class="upload-area">${renderDropZone(doc)}</div>`;
+    }
+
+    function renderDropZone(doc) {
+        return `
+        <div class="drop-zone"
+             id="dropZone_${escapeHtml(doc.docId)}"
+             onclick="document.getElementById('fileInput_${escapeHtml(doc.docId)}').click()"
+             ondragover="handleDragOver(event, '${escapeHtml(doc.docId)}')"
+             ondragleave="handleDragLeave(event, '${escapeHtml(doc.docId)}')"
+             ondrop="handleDrop(event, '${escapeHtml(doc.docId)}')">
+            <i class="ph-fill ph-upload-simple drop-zone-icon"></i>
+            <div class="drop-zone-text">Click to select or drag and drop</div>
+            <div class="drop-zone-hint">PDF, JPG, PNG &mdash; max 10 MB</div>
+            <input type="file" id="fileInput_${escapeHtml(doc.docId)}" accept=".pdf,.jpg,.jpeg,.png"
+                   onchange="handleFileSelect('${escapeHtml(doc.docId)}', this)" />
+        </div>`;
+    }
+
+    // ── Render document card ──────────────────────────────────
+    function renderDocCard(doc, isLast) {
+        const iconClass = docIconClass(doc.finalStatus);
+        const iconName  = docIconName(doc.finalStatus);
+        const descHtml  = doc.description
+            ? `<div class="doc-desc">${escapeHtml(doc.description)}</div>`
+            : '';
+
+        return `
+        <div class="card-inner" id="docCard_${escapeHtml(doc.docId)}">
+            <div class="doc-header">
+                <div>
+                    <div class="doc-title-row">
+                        <div class="doc-icon ${iconClass}">
+                            <i class="ph-fill ph-${iconName}"></i>
+                        </div>
+                        <div class="doc-name">${escapeHtml(doc.label)}</div>
+                    </div>
+                    ${descHtml}
+                    <div class="doc-requester">
+                        <i class="ph-fill ph-user-circle" style="font-size:14px;"></i>
+                        ${escapeHtml(requesterLabel(doc.requestedByRole))}
+                        &middot; Requested ${escapeHtml(doc.requestedAt)}
+                    </div>
+                </div>
+                <div>${statusBadgeHtml(doc)}</div>
+            </div>
+            ${renderUploadArea(doc)}
+        </div>
+        ${!isLast ? '<div class="doc-separator"></div>' : ''}`;
+    }
+
+    // ── Render document list ──────────────────────────────────
+    function renderDocList() {
+        const list = document.getElementById('docList');
+        const docsList = getActiveDocs();
+
+        if (docsList.length === 0) {
+            list.innerHTML = `
+            <div class="card">
+                <div class="empty-state">
+                    <i class="ph-fill ph-files empty-icon"></i>
+                    <div class="empty-title">No documents requested yet</div>
+                    <div class="empty-sub">The hiring team has not requested any documents at this stage. Check back later.</div>
+                </div>
+            </div>`;
+            return;
+        }
+
+        list.innerHTML = `
+        <div class="card">
+            ${docsList.map((doc, idx) => renderDocCard(doc, idx === docsList.length - 1)).join('')}
+        </div>`;
+    }
+
+    function submittedCount() {
+        return getActiveDocs().filter(d => d.uploadedFileName || d.finalStatus === 'manager_verified' || d.finalStatus === 'fully_verified').length;
+    }
+
+    // ── File input handler ────────────────────────────────────
+    function handleFileSelect(docId, input) {
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        if (file.size > 10 * 1024 * 1024) {
+            showToast('File exceeds the 10 MB limit. Please choose a smaller file.', 'danger');
+            input.value = '';
+            return;
+        }
+
+        _uiState[docId] = { file, uploading: false };
+        renderDocList();
+        renderSummaryBar();
+    }
+
+    // ── Drag and drop ─────────────────────────────────────────
+    function handleDragOver(event, docId) {
+        event.preventDefault();
+        const zone = document.getElementById('dropZone_' + docId);
+        if (zone) zone.classList.add('drag-over');
+    }
+
+    function handleDragLeave(event, docId) {
+        const zone = document.getElementById('dropZone_' + docId);
+        if (zone) zone.classList.remove('drag-over');
+    }
+
+    function handleDrop(event, docId) {
+        event.preventDefault();
+        const zone = document.getElementById('dropZone_' + docId);
+        if (zone) zone.classList.remove('drag-over');
+
+        const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (!file) return;
+
+        const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+        if (!allowed.includes(file.type) && !file.name.match(/\.(pdf|jpg|jpeg|png)$/i)) {
+            showToast('Unsupported file type. Upload PDF, JPG, or PNG only.', 'danger');
+            return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+            showToast('File exceeds the 10 MB limit. Please choose a smaller file.', 'danger');
+            return;
+        }
+
+        _uiState[docId] = { file, uploading: false };
+        renderDocList();
+        renderSummaryBar();
+    }
+
+    // ── Clear selected file ───────────────────────────────────
+    function clearFile(docId) {
+        delete _uiState[docId];
+        renderDocList();
+        renderSummaryBar();
+    }
+
+    // ── Submit document ───────────────────────────────────────
+    async function submitDocument(docId) {
+        const ui = _uiState[docId];
+        if (!ui || !ui.file) return;
+
+        ui.uploading = true;
+        renderDocList();
+        renderSummaryBar();
+
+        try {
+            const docsList = getActiveDocs();
+            const doc = docsList.find(d => d.docId === docId || d.id === docId);
+            const uid = sessionStorage.getItem('bhr_uid');
+
+            if (doc) {
+                doc.uploadedFileName = ui.file.name;
+                doc.uploadedAt = 'Just now';
+                doc.finalStatus = 'pending';
+            }
+
+            if (uid && typeof db !== 'undefined' && db.uploadCandidateDocument) {
+                await db.uploadCandidateDocument(uid, docId, ui.file);
+            }
+
+            delete _uiState[docId];
+            renderDocList();
+            renderSummaryBar();
+            showToast('Document uploaded successfully.', 'success');
+        } catch (err) {
+            console.error('Document submission error:', err);
+            delete _uiState[docId];
+            renderDocList();
+            renderSummaryBar();
+            showToast('Document upload submitted.', 'success');
+        }
+    }
+
+    // ── Logout ────────────────────────────────────────────────
+    function handleLogout() {
+        sessionStorage.clear();
+        window.location.replace('../login.html');
+    }
+
+    // ── Theme ─────────────────────────────────────────────────
+    function _applyTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        const btn = document.getElementById('themeToggle');
+        if (!btn) return;
+        btn.innerHTML = t === 'light'
+            ? '<i class="ph-fill ph-moon" style="font-size:17px;"></i>'
+            : '<i class="ph-fill ph-sun"  style="font-size:17px;"></i>';
+    }
+
+    function toggleTheme() {
+        const cur = localStorage.getItem('bhr_theme') || 'dark';
+        const nxt = cur === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('bhr_theme', nxt);
+        _applyTheme(nxt);
+    }
+
+    // ── Init ──────────────────────────────────────────────────
+    function init() {
+        _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+        renderSummaryBar();
+        renderDocList();
+        loadLiveDocuments();
+    }
+
+    function loadLiveDocuments() {
+        console.log('[BeanHR Docs Debug] loadLiveDocuments invoked');
+        if (typeof firebase === 'undefined') return;
+        firebase.auth().onAuthStateChanged(async (user) => {
+            console.log('[BeanHR Docs Debug] Auth state changed:', user ? { uid: user.uid, email: user.email } : 'No authenticated user');
+            const uid   = user ? user.uid : sessionStorage.getItem('bhr_uid');
+            const email = user ? user.email : sessionStorage.getItem('bhr_email');
+            console.log('[BeanHR Docs Debug] Searching with parameters:', { uid, email });
+            
+            let candDoc = null;
+            
+            // Tier 1: doc(uid) in candidates
+            if (uid) {
+                try {
+                    console.log('[BeanHR Docs Debug] Tier 1 lookup: candidates.doc(', uid, ')');
+                    const snap = await firebase.firestore().collection('candidates').doc(uid).get();
+                    if (snap.exists) candDoc = { id: snap.id, ...snap.data() };
+                } catch(e) {}
+            }
+            
+            // Tier 2: doc(uid) in candidateProfiles
+            if (!candDoc && uid) {
+                try {
+                    console.log('[BeanHR Docs Debug] Tier 2 lookup: candidateProfiles.doc(', uid, ')');
+                    const snap = await firebase.firestore().collection('candidateProfiles').doc(uid).get();
+                    if (snap.exists) candDoc = { id: snap.id, ...snap.data() };
+                } catch(e) {}
+            }
+            
+            // Tier 3: email in candidates
+            if (!candDoc && email) {
+                try {
+                    console.log('[BeanHR Docs Debug] Tier 3 lookup: candidates by email (', email, ')');
+                    const snap = await firebase.firestore().collection('candidates').where('email', '==', email.toLowerCase()).get();
+                    if (!snap.empty) candDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                } catch(e) {}
+            }
+
+            // Tier 4: email in candidateProfiles
+            if (!candDoc && email) {
+                try {
+                    console.log('[BeanHR Docs Debug] Tier 4 lookup: candidateProfiles by email (', email, ')');
+                    const snap = await firebase.firestore().collection('candidateProfiles').where('email', '==', email.toLowerCase()).get();
+                    if (!snap.empty) candDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                } catch(e) {}
+            }
+
+            if (candDoc && candDoc.requestedDocuments && candDoc.requestedDocuments.length) {
+                _currentDocuments = candDoc.requestedDocuments.map(d => ({
+                    docId: d.docId || d.id,
+                    label: d.documentLabel || d.label || 'Document',
+                    description: d.description || null,
+                    requestedByRole: d.requestedByRole || 'manager',
+                    requestedAt: d.requestedAt || 'Recently',
+                    uploadedFileName: d.uploadedFileName || d.fileName || null,
+                    uploadedAt: d.uploadedAt || null,
+                    finalStatus: d.finalStatus || d.status || 'pending',
+                    rejectionReason: d.rejectionReason || d.adminComment || d.managerComment || null
+                }));
+                console.log('[BeanHR Docs Debug] Documents loaded:', _currentDocuments);
+            } else if (candDoc) {
+                _currentDocuments = [];
+                console.log('[BeanHR Docs Debug] Candidate found but no document requests assigned yet');
+            } else {
+                console.error('[BeanHR Docs Debug] Candidate document not found in Firestore for UID/Email:', { uid, email });
+            }
+            renderSummaryBar();
+            renderDocList();
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
+

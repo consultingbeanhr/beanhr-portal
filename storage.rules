@@ -1,0 +1,102 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+  
+    // ==========================================
+    // REUSABLE FUNCTIONS
+    // ==========================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getRole() {
+      // NOTE: Custom claims (like request.auth.token.role) must be set by the backend
+      // auth.set_custom_user_claims(). If they aren't, this will fail.
+      return request.auth.token.role;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && getRole() == 'admin';
+    }
+    
+    function isFinance() {
+      return isAuthenticated() && getRole() == 'finance';
+    }
+    
+    function isManager() {
+      return isAuthenticated() && getRole() == 'manager';
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ==========================================
+    // FOLDER RULES
+    // ==========================================
+
+    // 1. PROFILE PHOTOS
+    match /profilePhotos/{userId}/{fileName} {
+      // Anyone logged in can view profile photos
+      allow read: if isAuthenticated();
+      // Only the user themselves (or Admin) can upload their photo
+      allow write: if isAdmin() || isOwner(userId);
+    }
+
+    // 2. CANDIDATE DOCUMENTS (Resumes, IDs, etc.)
+    match /candidateDocuments/{candidateId}/{fileName} {
+      // Admin and Managers can read
+      // Candidate can read their own
+      allow read: if isAdmin() || isManager() || isOwner(candidateId);
+      
+      // Candidate can upload, Admin/Manager can upload on their behalf
+      allow write: if isAdmin() || isManager() || isOwner(candidateId);
+    }
+
+    // 3. EMPLOYEE DOCUMENTS (Contracts, Compliance, Notice letters)
+    match /employeeDocuments/{employeeId}/{fileName} {
+      allow read: if isAdmin() || isOwner(employeeId);
+      allow write: if isAdmin() || isOwner(employeeId);
+    }
+
+    match /employeeVault/{employeeId}/{fileName} {
+      allow read: if isAdmin() || isOwner(employeeId);
+      allow write: if isAdmin() || isOwner(employeeId);
+    }
+
+    match /leaveDocuments/{employeeId}/{fileName} {
+      allow read: if isAdmin() || isOwner(employeeId) || isManager();
+      allow write: if isAdmin() || isOwner(employeeId);
+    }
+
+    match /resignationDocuments/{employeeId}/{fileName} {
+      allow read: if isAdmin() || isOwner(employeeId) || isManager();
+      allow write: if isAdmin() || isOwner(employeeId);
+    }
+
+    // 4. PAYSLIPS (Generated PDFs)
+    match /payslips/{employeeId}/{fileName} {
+      allow read: if isAdmin() || isFinance() || isOwner(employeeId);
+      allow write: if isAdmin() || isFinance();
+    }
+
+    // 5. OFFER LETTERS (Generated PDFs)
+    match /offerLetters/{candidateId}/{fileName} {
+      allow read: if isAdmin() || isFinance() || isManager() || isOwner(candidateId);
+      allow write: if isAdmin() || isFinance() || isManager();
+    }
+
+    // 6. TEMP/SYSTEM FILES (e.g., logo uploads for settings)
+    match /system/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // DEFAULT DENY
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

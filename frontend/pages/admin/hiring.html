@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeanHR — Hiring</title>
+<script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+/* ── Variables ─────────────────────────────────────────────────── */
+:root {
+    --accent: #77ca00; --accent-light: #a0e040; --accent-glow: rgba(119,202,0,0.35);
+    --brown: #a86a3e; --brown-light: #c8854a; --brown-glow: rgba(168,106,62,0.25);
+    --bg: #07070f; --text: #f1f1f5;
+    --text-muted: rgba(241,241,245,0.55); --text-faint: rgba(241,241,245,0.2);
+    --icon-faint: rgba(241,241,245,0.3); --icon-muted: rgba(241,241,245,0.65);
+    --glass-bg: rgba(255,255,255,0.04); --glass-border: rgba(255,255,255,0.08);
+    --sidebar-w: 240px; --topbar-h: 64px;
+    --success: #4ade80; --success-bg: rgba(74,222,128,0.12);
+    --warning: #fbbf24; --warning-bg: rgba(251,191,36,0.12);
+    --danger: #f87171; --danger-bg: rgba(248,113,113,0.12);
+    --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.12);
+    --purple: #c084fc; --purple-bg: rgba(192,132,252,0.12);
+}
+[data-theme="light"] {
+    --bg: #f0f6e8; --text: #1a2010;
+    --text-muted: rgba(26,32,16,0.55); --text-faint: rgba(26,32,16,0.2);
+    --icon-faint: rgba(26,32,16,0.25); --icon-muted: rgba(26,32,16,0.6);
+    --glass-bg: rgba(255,255,255,0.82); --glass-border: rgba(0,0,0,0.07);
+    --accent: #5a9900; --accent-light: #6eb800; --accent-glow: rgba(90,153,0,0.2);
+    --brown: #8a5530; --brown-light: #a36840;
+    --success-bg: rgba(74,222,128,0.15); --warning-bg: rgba(251,191,36,0.15);
+    --danger-bg: rgba(248,113,113,0.15); --blue-bg: rgba(96,165,250,0.15);
+    --purple-bg: rgba(192,132,252,0.15);
+}
+[data-theme="light"] .bg {
+    background:
+        radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+        #f0f6e8;
+}
+[data-theme="light"] .orb     { opacity: 0.18; }
+[data-theme="light"] .orb-1   { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+[data-theme="light"] .orb-2   { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+[data-theme="light"] .sidebar { background: rgba(255,255,255,0.88); }
+[data-theme="light"] .topbar  { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .notif-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+[data-theme="light"] .nav-item:hover { background: rgba(0,0,0,0.04); }
+[data-theme="light"] .notif-btn,
+[data-theme="light"] .theme-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .mark-read-link { color: #4a7000; }
+[data-theme="light"] .notif-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .nav-item.active { color: var(--accent); }
+[data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+[data-theme="light"] .modal-box { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+[data-theme="light"] .modal-header { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .modal-body { scrollbar-color: rgba(0,0,0,0.2) transparent; }
+[data-theme="light"] .modal-footer { border-top-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .modal-close { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .form-input,
+[data-theme="light"] .form-select { background-color: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+[data-theme="light"] .form-input::placeholder { color: rgba(26,32,16,0.35); }
+[data-theme="light"] .form-input:focus,
+[data-theme="light"] .form-select:focus { border-color: rgba(90,153,0,0.5); background-color: #fff; }
+[data-theme="light"] .form-select option { background-color: #fff; color: var(--text); }
+[data-theme="light"] .offer-section-divider { border-top-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .btn-gen { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text-muted); }
+[data-theme="light"] .cand-detail-panel { background: #ffffff; border-left-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .cdp-header { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .cdp-tabs { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .cdp-tab { color: var(--text-muted); border-bottom-color: transparent; }
+[data-theme="light"] .cdp-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+[data-theme="light"] .filter-select { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+[data-theme="light"] .filter-select option { background: #fff; color: var(--text); }
+[data-theme="light"] .rfi input,
+[data-theme="light"] .rfi select { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+[data-theme="light"] .round-form-notes { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+[data-theme="light"] .rfi select option,
+[data-theme="light"] .round-form-notes::placeholder { background: #fff; color: var(--text); }
+
+/* ── Reset / Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); overflow: hidden; }
+
+/* ── Animated BG ─────────────────────────────────────────────── */
+.bg { position: fixed; inset: 0; z-index: 0;
+    background:
+        radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+        radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+        var(--bg);
+}
+.orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+.orb-1 { width: 550px; height: 550px; background: radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top: -180px; left: -120px; animation-duration: 22s; }
+.orb-2 { width: 420px; height: 420px; background: radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom: -110px; right: -90px; animation-duration: 28s; animation-direction: reverse; }
+.orb-3 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top: 38%; right: 18%; animation-duration: 34s; }
+@keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+/* ── App shell ───────────────────────────────────────────────── */
+.app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.sidebar {
+    width: var(--sidebar-w);
+    height: 100vh;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255,255,255,0.025);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--glass-border);
+    padding: 24px 14px;
+    overflow: hidden;
+    overflow-y: auto;
+    transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+.sidebar.collapsed { width: 64px; }
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+.brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+.brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+.brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+.brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+.brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+.sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+.sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+.sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+.sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+.sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+.sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+.sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+.sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+.nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+.nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+.nav-item.active .nav-icon { color: var(--accent-light); }
+.nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+.nav-item:hover .nav-icon { color: var(--icon-muted); }
+.ph-icon-fill { display: block; }
+.ph-icon-outline { display: none; }
+[data-theme="light"] .ph-icon-fill    { display: none; }
+[data-theme="light"] .ph-icon-outline { display: block; }
+.nav-label { font-size: 13.5px; font-weight: 500; overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+.sidebar.collapsed .nav-label { opacity: 0; max-width: 0; }
+.sidebar.collapsed .nav-item  { justify-content: center; padding: 10px 0; gap: 0; }
+.sidebar.collapsed .logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
+.sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+.sidebar.collapsed .nav-item[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border); border-radius: 8px; padding: 5px 10px; font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; pointer-events: none; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+/* Nav badge */
+.nav-badge { min-width: 18px; height: 18px; background: var(--warning); border-radius: 9px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 5px; margin-left: auto; flex-shrink: 0; }
+.sidebar.collapsed .nav-badge { position: absolute; top: 4px; right: 4px; min-width: 14px; height: 14px; font-size: 9px; padding: 0 3px; margin-left: 0; border: 1.5px solid var(--bg); }
+
+.sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+.logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+.logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+.logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+.sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+/* ── Main area ───────────────────────────────────────────────── */
+.main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; scrollbar-width: none; -ms-overflow-style: none; }
+.main-area::-webkit-scrollbar { display: none; }
+
+/* ── Topbar ──────────────────────────────────────────────────── */
+.topbar {
+    height: var(--topbar-h);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(7,7,15,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky; top: 0; z-index: 10;
+}
+.topbar-left  { display: flex; align-items: center; gap: 14px; }
+.topbar-greeting { font-size: 16px; font-weight: 600; line-height: 1.3; }
+.topbar-sub      { font-size: 12px; color: var(--text-muted); }
+.topbar-right    { display: flex; align-items: center; gap: 12px; }
+.theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+.theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+.avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+
+/* Notification dropdown */
+.notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset; z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+.notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+.notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+.notif-dropdown-title { font-size: 14px; font-weight: 600; }
+.mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+.mark-read-link:hover { color: var(--accent-light); }
+.notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
+.notif-dropdown-body::-webkit-scrollbar { display: none; }
+.notif-empty { text-align: center; padding: 28px; font-size: 13px; color: var(--text-faint); }
+.notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+.notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+.notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+.notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; }
+.notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+
+/* ── Page content ────────────────────────────────────────────── */
+.page-content { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+/* ── Page header ─────────────────────────────────────────────── */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.page-header-left .ph-title { font-size: 22px; font-weight: 700; color: var(--text); }
+.page-header-left .ph-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+.add-cand-btn { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 10px; background: var(--accent); border: none; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+.add-cand-btn:hover { opacity: .88; }
+
+/* ── Mini stats ──────────────────────────────────────────────── */
+.mini-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.stat-card {
+    background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px;
+    padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+}
+.stat-icon-wrap { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.stat-icon-wrap.blue { background: var(--blue-bg); color: var(--blue); }
+.stat-icon-wrap.warning { background: var(--warning-bg); color: var(--warning); }
+.stat-icon-wrap.success { background: var(--success-bg); color: var(--success); }
+.stat-icon-wrap.danger { background: var(--danger-bg); color: var(--danger); }
+.stat-val { font-size: 24px; font-weight: 700; color: var(--text); line-height: 1; }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── Stage tabs ──────────────────────────────────────────────── */
+.stage-tabs { display: flex; gap: 4px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px; width: fit-content; }
+.stage-tab { padding: 7px 16px; border-radius: 9px; background: none; border: none; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.stage-tab.active { background: var(--accent); color: #fff; }
+.stage-tab .tab-count { font-size: 11px; font-weight: 700; background: rgba(255,255,255,.2); border-radius: 20px; padding: 1px 7px; }
+.stage-tab:not(.active) .tab-count { background: var(--glass-border); color: var(--text-muted); }
+
+/* ── Toolbar (search + filter) ────────────────────────────────── */
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+.search-wrap i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; pointer-events: none; }
+.search-input { width: 100%; padding: 8px 12px 8px 36px; border-radius: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text); font-size: 13px; outline: none; transition: border-color .2s; }
+.search-input::placeholder { color: var(--text-muted); }
+.search-input:focus { border-color: var(--accent); }
+.filter-select { padding: 8px 12px; border-radius: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text); font-size: 13px; outline: none; cursor: pointer; }
+.filter-select option { background: #1a1a2e; color: var(--text); }
+
+/* ── Candidate list ──────────────────────────────────────────── */
+.cand-list { display: flex; flex-direction: column; gap: 12px; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-state i { font-size: 40px; display: block; margin-bottom: 12px; opacity: .4; }
+.empty-state p { font-size: 14px; }
+
+/* ── Candidate card ──────────────────────────────────────────── */
+.candidate-card {
+    background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 14px;
+    padding: 16px 20px; display: flex; flex-direction: column; gap: 12px;
+    transition: border-color .15s;
+}
+.candidate-card:hover { border-color: rgba(119,202,0,.25); }
+.cand-top { display: flex; align-items: flex-start; gap: 14px; }
+.cand-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.cand-main { flex: 1; min-width: 0; }
+.cand-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.cand-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.cand-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.cand-pill { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.cand-pill.entity { background: var(--purple-bg); color: var(--purple); }
+.cand-pill.source { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); }
+.cand-pill.stage-docs { background: var(--blue-bg); color: var(--blue); }
+.cand-pill.stage-offer { background: var(--warning-bg); color: var(--warning); }
+.cand-pill.stage-draft { background: var(--purple-bg); color: var(--purple); }
+.cand-pill.stage-accepted { background: var(--success-bg); color: var(--success); }
+.cand-pill.stage-joined { background: var(--success-bg); color: var(--success); }
+.cand-pill.stage-rejected { background: var(--danger-bg); color: var(--danger); }
+.cand-pill.stage-hold { background: rgba(251,191,36,0.15); color: var(--warning); }
+.cand-pill.offer-pending { background: var(--warning-bg); color: var(--warning); }
+.cand-pill.offer-sent { background: var(--blue-bg); color: var(--blue); }
+.cand-meta-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--text-muted); }
+.cand-meta-row span { display: flex; align-items: center; gap: 5px; }
+.cand-meta-row i { font-size: 14px; }
+.cand-days-badge { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 20px; padding: 3px 10px; font-size: 11px; color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+.cand-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; border-top: 1px solid var(--glass-border); }
+.cand-action-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 9px; font-size: 12px; font-weight: 500; border: none; cursor: pointer; transition: opacity .15s; }
+.cand-action-btn:hover { opacity: .82; }
+.cand-action-btn.view-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); }
+.cand-action-btn.offer-btn { background: var(--warning-bg); border: 1px solid rgba(251,191,36,.25); color: var(--warning); }
+.cand-action-btn.approve-btn { background: var(--success-bg); border: 1px solid rgba(74,222,128,.25); color: var(--success); }
+.cand-action-btn.hire-btn { background: var(--success-bg); border: 1px solid rgba(74,222,128,.25); color: var(--success); }
+.cand-action-btn.reject-btn { background: var(--danger-bg); border: 1px solid rgba(248,113,113,.2); color: var(--danger); }
+.cand-action-btn.invite-btn { background: var(--blue-bg); border: 1px solid rgba(96,165,250,.25); color: var(--blue); }
+.cand-action-btn.awaiting-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-faint); cursor: default; }
+.cand-action-btn.awaiting-btn:hover { opacity: 1; }
+.cand-action-btn.hold-btn { background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.25); color: var(--warning); }
+.cand-action-btn.unhold-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); }
+
+/* ── Candidate Detail Panel ──────────────────────────────────── */
+.cand-detail-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 500;
+    display: flex; align-items: stretch; justify-content: flex-end;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+}
+.cand-detail-overlay.open { opacity: 1; pointer-events: all; }
+.cand-detail-panel {
+    width: 560px; max-width: 95vw; height: 100%; overflow-y: auto;
+    background: var(--bg); border-left: 1px solid var(--glass-border);
+    display: flex; flex-direction: column; transform: translateX(40px); transition: transform .25s;
+}
+.cand-detail-overlay.open .cand-detail-panel { transform: translateX(0); }
+.cdp-header { padding: 20px 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.cdp-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.cdp-info { flex: 1; min-width: 0; }
+.cdp-name { font-size: 17px; font-weight: 700; color: var(--text); }
+.cdp-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+.cdp-close { width: 34px; height: 34px; border-radius: 50%; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0; transition: background .15s; }
+.cdp-close:hover { background: var(--danger-bg); color: var(--danger); }
+.cdp-tabs { display: flex; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+.cdp-tab { flex: 1; padding: 12px 8px; background: none; border: none; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+.cdp-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.cdp-body { flex: 1; padding: 20px 24px; overflow-y: auto; }
+.cdp-tab-pane { display: none; }
+.cdp-tab-pane.active { display: block; }
+
+/* CDP Overview */
+.cdp-overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cdp-ov-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; padding: 12px 14px; }
+.cdp-ov-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.cdp-ov-val { font-size: 13px; font-weight: 600; color: var(--text); }
+
+/* Rounds tab */
+.modal-timeline { display: flex; flex-direction: column; gap: 0; }
+.mtl-item { display: flex; gap: 0; }
+.mtl-left { display: flex; flex-direction: column; align-items: center; width: 32px; flex-shrink: 0; }
+.mtl-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; border: 2px solid var(--glass-border); background: var(--glass-bg); flex-shrink: 0; }
+.mtl-dot.completed { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.mtl-dot.pending { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+.mtl-dot.rejected { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
+.mtl-connector { flex: 1; width: 2px; background: var(--glass-border); min-height: 16px; }
+.mtl-content { flex: 1; padding-bottom: 20px; padding-left: 12px; }
+.mtl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.mtl-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.mtl-badges { display: flex; align-items: center; gap: 6px; }
+.mtl-badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+.mtl-badge.completed { background: var(--success-bg); color: var(--success); }
+.mtl-badge.pending { background: var(--blue-bg); color: var(--blue); }
+.mtl-badge.rejected { background: var(--danger-bg); color: var(--danger); }
+.mtl-lock-badge { font-size: 11px; color: var(--text-faint); display: flex; align-items: center; gap: 3px; }
+.mtl-date { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.mtl-notes { font-size: 12px; color: var(--text-muted); margin-top: 6px; font-style: italic; }
+.mtl-edit-btn { background: none; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 4px; border-radius: 6px; transition: color .15s, background .15s; }
+.mtl-edit-btn:hover { background: var(--glass-bg); color: var(--accent); }
+
+/* Round form */
+.round-form { margin-top: 10px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 14px; }
+.round-form-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; }
+.round-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.rfi { display: flex; flex-direction: column; gap: 4px; }
+.rfi label { font-size: 11px; color: var(--text-muted); }
+.rfi input, .rfi select { padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.06); border: 1px solid var(--glass-border); color: var(--text); font-size: 12px; outline: none; width: 100%; }
+.rfi input:focus, .rfi select:focus { border-color: var(--accent); }
+.round-form-notes { width: 100%; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.06); border: 1px solid var(--glass-border); color: var(--text); font-size: 12px; outline: none; resize: vertical; min-height: 60px; }
+.round-form-notes:focus { border-color: var(--accent); }
+.round-form-actions { display: flex; gap: 8px; margin-top: 10px; }
+.rfa-save { padding: 7px 16px; border-radius: 8px; background: var(--accent); border: none; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; }
+.rfa-save:hover { opacity: .88; }
+.rfa-cancel { padding: 7px 16px; border-radius: 8px; background: none; border: 1px solid var(--glass-border); color: var(--text-muted); font-size: 12px; cursor: pointer; }
+.add-round-btn { display: flex; align-items: center; gap: 6px; margin-top: 14px; padding: 8px 14px; border-radius: 9px; background: none; border: 1px dashed var(--glass-border); color: var(--text-muted); font-size: 12px; cursor: pointer; width: 100%; justify-content: center; transition: border-color .15s, color .15s; }
+.add-round-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Docs tab */
+.modal-doc-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 11px; padding: 12px 14px; margin-bottom: 10px; }
+.mdi-top { display: flex; align-items: flex-start; gap: 10px; }
+.mdi-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--blue-bg); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.mdi-info { flex: 1; min-width: 0; }
+.mdi-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.mdi-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.mdi-file { font-size: 11px; color: var(--blue); margin-top: 3px; display: flex; align-items: center; gap: 4px; }
+.mdi-status-row { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; flex-wrap: wrap; gap: 6px; }
+.mdi-status-badge { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+.mdi-status-badge.pending { background: var(--blue-bg); color: var(--blue); }
+.mdi-status-badge.not_uploaded { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); }
+.mdi-status-badge.manager_verified { background: var(--warning-bg); color: var(--warning); }
+.mdi-status-badge.fully_verified { background: var(--success-bg); color: var(--success); }
+.mdi-status-badge.rejected { background: var(--danger-bg); color: var(--danger); }
+.mdi-actions { display: flex; gap: 6px; align-items: center; }
+.mdi-verify-btn { padding: 5px 12px; border-radius: 7px; background: var(--success-bg); border: 1px solid rgba(74,222,128,.25); color: var(--success); font-size: 11px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+.mdi-verify-btn:hover { opacity: .82; }
+.mdi-reject-btn { padding: 5px 12px; border-radius: 7px; background: var(--danger-bg); border: 1px solid rgba(248,113,113,.2); color: var(--danger); font-size: 11px; font-weight: 600; cursor: pointer; transition: opacity .15s; }
+.mdi-reject-btn:hover { opacity: .82; }
+.mdi-reject-form { margin-top: 8px; }
+.mdi-reject-input { width: 100%; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.06); border: 1px solid var(--glass-border); color: var(--text); font-size: 12px; outline: none; resize: none; }
+.mdi-reject-input:focus { border-color: var(--danger); }
+.mdi-reject-actions { display: flex; gap: 6px; margin-top: 6px; }
+.mdi-reject-confirm-btn { padding: 5px 12px; border-radius: 7px; background: var(--danger); border: none; color: #fff; font-size: 11px; font-weight: 600; cursor: pointer; }
+.req-doc-form { margin-top: 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 11px; padding: 12px 14px; }
+.req-doc-form h4 { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.rdf-input { width: 100%; padding: 7px 10px; border-radius: 8px; background: rgba(255,255,255,.06); border: 1px solid var(--glass-border); color: var(--text); font-size: 12px; outline: none; margin-bottom: 6px; }
+.rdf-input:focus { border-color: var(--accent); }
+.req-doc-form-actions { display: flex; gap: 6px; margin-top: 6px; }
+.add-doc-req-btn { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding: 7px 14px; border-radius: 9px; background: none; border: 1px dashed var(--glass-border); color: var(--text-muted); font-size: 12px; cursor: pointer; transition: border-color .15s, color .15s; }
+.add-doc-req-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Modals ──────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 600;
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal-box {
+    background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px;
+    width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+    transform: scale(.96); transition: transform .2s cubic-bezier(0.22,1,0.36,1); display: flex; flex-direction: column;
+}
+.modal-overlay.open .modal-box { transform: scale(1); }
+.modal-box.wide { max-width: 600px; }
+.modal-header { padding: 20px 22px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+.modal-title  { font-size: 15px; font-weight: 700; }
+.modal-sub    { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+.modal-close  { width: 32px; height: 32px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-size: 16px; transition: background .15s, color .15s; padding: 0; }
+.modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+.modal-body   { padding: 20px 22px; overflow-y: auto; scrollbar-width: thin; flex: 1; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+.modal-btn { height: 36px; padding: 0 18px; border-radius: 9px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; font-family: 'Inter', sans-serif; border: 1px solid var(--glass-border); display: inline-flex; align-items: center; gap: 6px; }
+.modal-btn-secondary { background: transparent; color: var(--text-muted); }
+.modal-btn-secondary:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.modal-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-color: transparent; color: #07070f; font-weight: 600; box-shadow: 0 2px 10px var(--accent-glow); }
+.modal-btn-primary:hover { box-shadow: 0 4px 18px var(--accent-glow); }
+.modal-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.modal-btn-danger { background: var(--danger-bg); border-color: rgba(248,113,113,0.25); color: var(--danger); font-weight: 600; }
+.modal-btn-danger:hover { background: rgba(248,113,113,0.18); }
+.modal-btn-warning { background: var(--warning-bg); border-color: rgba(251,191,36,0.2); color: var(--warning); font-weight: 600; }
+.modal-btn-warning:hover { background: rgba(251,191,36,0.18); }
+
+/* Form fields inside modals */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 11.5px; font-weight: 500; color: var(--text-muted); }
+.form-label .req { color: var(--danger); margin-left: 2px; }
+.form-input, .form-select { height: 36px; padding: 0 12px; background-color: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s; width: 100%; }
+.form-input::placeholder { color: var(--text-faint); }
+.form-input:focus, .form-select:focus { border-color: rgba(119,202,0,0.4); background-color: rgba(255,255,255,0.07); }
+.form-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(241,241,245,0.4)' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer; }
+.form-select option { background: #16161f; color: var(--text); }
+textarea.form-input { height: auto; padding: 10px 12px; resize: vertical; min-height: 80px; }
+select.form-input { appearance: none; -webkit-appearance: none; background-color: #13131e; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 32px; }
+[data-theme="light"] select.form-input { background-color: rgba(0,0,0,0.04); }
+
+/* ── Manager Typeahead ──────────────────────────────────── */
+.ta-wrap { position: relative; }
+.ta-list { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 200; background: #16161f; border: 1px solid var(--glass-border); border-radius: 10px; max-height: 200px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+.ta-wrap.open .ta-list { display: block; }
+.ta-item { padding: 9px 14px; font-size: 13px; cursor: pointer; color: var(--text); transition: background 0.12s; }
+.ta-item:hover { background: rgba(119,202,0,0.1); color: var(--accent-light); }
+.ta-no-result { padding: 10px 14px; font-size: 12.5px; color: var(--text-faint); font-style: italic; }
+[data-theme="light"] .ta-list { background: #ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+[data-theme="light"] .ta-item:hover { background: rgba(90,153,0,0.08); color: var(--accent); }
+
+/* ── Offer Letter Document (Review Modal) ────────────────── */
+.offer-doc-wrapper { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 10px; overflow: hidden; }
+.offer-doc { background: #f7f7f2; color: #1c1c1c; padding: 40px 52px; font-family: Georgia, 'Times New Roman', serif; font-size: 13.5px; line-height: 1.9; }
+.offer-doc-letterhead { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 26px; padding-bottom: 14px; border-bottom: 2px solid #1c1c1c; }
+.offer-doc-company { font-size: 16px; font-weight: 700; font-family: 'Inter', sans-serif; color: #1c1c1c; letter-spacing: -0.3px; }
+.offer-doc-date { font-size: 12px; color: #555; font-family: 'Inter', sans-serif; }
+.offer-doc-heading { font-size: 15px; font-weight: 700; text-align: center; letter-spacing: 3px; margin-bottom: 22px; font-family: 'Inter', sans-serif; color: #1c1c1c; text-decoration: underline; text-underline-offset: 4px; }
+.offer-doc-body p { margin: 0 0 13px; }
+.offer-doc-terms { margin-top: 18px; padding-top: 14px; border-top: 1px solid #ccc; }
+.offer-doc-terms-title { font-size: 11px; font-weight: 700; font-family: 'Inter', sans-serif; letter-spacing: 0.6px; text-transform: uppercase; color: #666; margin-bottom: 8px; }
+.offer-doc-footer { margin-top: 22px; padding-top: 14px; border-top: 1px solid #ccc; }
+.offer-doc-footer p { margin: 0 0 5px; }
+/* Inline editable fields in document */
+.ol-editable { background: rgba(119,202,0,0.14); border-bottom: 1.5px dashed rgba(60,120,0,0.5); border-radius: 2px 2px 0 0; padding: 1px 5px; outline: none; min-width: 50px; display: inline-block; cursor: text; color: #174000; font-weight: 600; transition: background 0.15s, border-color 0.15s; }
+.ol-editable:focus { background: rgba(119,202,0,0.24); border-bottom-color: #336600; }
+.ol-editable.block-edit { display: block; width: 100%; min-height: 48px; white-space: pre-wrap; box-sizing: border-box; }
+.ol-editable:empty::before { content: attr(data-placeholder); color: rgba(0,0,0,0.3); font-style: italic; font-weight: 400; pointer-events: none; }
+.ol-select, .ol-date-input { background: rgba(119,202,0,0.14); border: none; border-bottom: 1.5px dashed rgba(60,120,0,0.5); border-radius: 2px 2px 0 0; padding: 1px 5px; font-family: Georgia, serif; font-size: 13.5px; color: #174000; font-weight: 600; outline: none; cursor: pointer; }
+.ol-select:focus, .ol-date-input:focus { background: rgba(119,202,0,0.24); }
+.offer-doc-edit-hint { font-size: 11px; color: var(--text-faint); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+/* Offer modal credentials */
+.offer-section-divider { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600; color:var(--accent); margin:6px 0 14px; padding-top:14px; border-top:1px solid var(--glass-border); }
+.offer-section-hint { font-size:11px; font-weight:400; color:var(--text-muted); margin-left:2px; }
+.input-gen-wrap { display:flex; gap:6px; align-items:center; }
+.input-gen-wrap .form-input { flex:1; min-width:0; }
+.btn-gen { flex-shrink:0; width:34px; height:34px; border-radius:9px; background:var(--glass-bg); border:1px solid var(--glass-border); color:var(--text-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; transition:background .15s,color .15s,border-color .15s; }
+.btn-gen:hover { background:var(--accent-glow); color:var(--accent); border-color:rgba(119,202,0,.4); }
+
+/* Confirm modal */
+.confirm-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px; }
+.confirm-icon.danger { background: var(--danger-bg); color: var(--danger); }
+.confirm-modal-text { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.6; }
+.confirm-modal-text strong { color: var(--text); }
+
+/* ── Toast ────────────────────────────────────────────────────── */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--glass-border); font-size: 13px; color: var(--text); min-width: 260px; max-width: 380px; pointer-events: all; animation: toast-in .25s ease; background: var(--bg); box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+.toast.success { border-color: rgba(74,222,128,.3); }
+.toast.error { border-color: rgba(248,113,113,.3); }
+.toast.info { border-color: rgba(96,165,250,.3); }
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast.success .toast-icon { color: var(--success); }
+.toast.error .toast-icon { color: var(--danger); }
+.toast.info .toast-icon { color: var(--blue); }
+.toast-msg { flex: 1; }
+.toast-action { background: none; border: none; color: var(--accent); font-size: 12px; font-weight: 600; cursor: pointer; padding: 2px 0; white-space: nowrap; }
+@keyframes toast-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .mini-stats { grid-template-columns: 1fr 1fr; }
+    .cand-detail-panel { width: 100vw; }
+}
+@media (max-width: 600px) {
+    .mini-stats { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .cdp-overview-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+<div class="bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+
+<div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <button class="brand-toggle" onclick="toggleSidebar()">
+                <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                <div class="brand-hamburger"><span></span><span></span><span></span></div>
+            </button>
+            <div class="sidebar-brand-text">
+                <div class="sidebar-brand-name">BeanHR</div>
+                <div class="sidebar-brand-tag">Super Admin</div>
+            </div>
+        </div>
+        <span class="sidebar-section-label">ADMIN</span>
+        <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+            <span class="nav-icon"><i class="ph-fill ph-house ph-icon-fill"></i><i class="ph ph-house ph-icon-outline"></i></span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="employees.html" class="nav-item" data-tip="Employees">
+            <span class="nav-icon"><i class="ph-fill ph-users ph-icon-fill"></i><i class="ph ph-users ph-icon-outline"></i></span>
+            <span class="nav-label">Employees</span>
+        </a>
+        <a href="approvals.html" class="nav-item" data-tip="Approvals">
+            <span class="nav-icon"><i class="ph-fill ph-check-circle ph-icon-fill"></i><i class="ph ph-check-circle ph-icon-outline"></i></span>
+            <span class="nav-label">Approvals</span>
+            <span class="nav-badge" id="sidebarApprovalBadge" style="display:none"></span>
+        </a>
+        <a href="leave-quotas.html" class="nav-item" data-tip="Leave Quotas">
+            <span class="nav-icon"><i class="ph-fill ph-calendar-blank ph-icon-fill"></i><i class="ph ph-calendar-blank ph-icon-outline"></i></span>
+            <span class="nav-label">Leave Quotas</span>
+        </a>
+        <a href="hiring.html" class="nav-item active" data-tip="Hiring">
+            <span class="nav-icon"><i class="ph-fill ph-user-plus ph-icon-fill"></i><i class="ph ph-user-plus ph-icon-outline"></i></span>
+            <span class="nav-label">Hiring</span>
+        </a>
+        <a href="payroll.html" class="nav-item" data-tip="Payroll">
+            <span class="nav-icon"><i class="ph-fill ph-money ph-icon-fill"></i><i class="ph ph-money ph-icon-outline"></i></span>
+            <span class="nav-label">Payroll</span>
+        </a>
+        <a href="attendance.html" class="nav-item" data-tip="Attendance">
+            <span class="nav-icon"><i class="ph-fill ph-calendar-check ph-icon-fill"></i><i class="ph ph-calendar-check ph-icon-outline"></i></span>
+            <span class="nav-label">Attendance</span>
+        </a>
+        <a href="audit-logs.html" class="nav-item" data-tip="Audit Logs">
+            <span class="nav-icon"><i class="ph-fill ph-scroll ph-icon-fill"></i><i class="ph ph-scroll ph-icon-outline"></i></span>
+            <span class="nav-label">Audit Logs</span>
+        </a>
+        <a href="ai-search.html" class="nav-item" data-tip="AI Search">
+            <span class="nav-icon"><i class="ph-fill ph-magnifying-glass ph-icon-fill"></i><i class="ph ph-magnifying-glass ph-icon-outline"></i></span>
+            <span class="nav-label">AI Search</span>
+        </a>
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <span class="nav-icon"><i class="ph-fill ph-sign-out ph-icon-fill"></i><i class="ph ph-sign-out ph-icon-outline"></i></span>
+                <span class="logout-label">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-area">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <div>
+                    <div class="topbar-greeting" id="topbarGreeting">Hiring Pipeline</div>
+                    <div class="topbar-sub" id="topbarDate"></div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">
+                    <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                    <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                </button>
+                <div style="position: relative;">
+                    <button class="notif-btn" id="notifBtn" onclick="toggleNotifDropdown(event)">
+                        <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                        <span class="notif-badge" id="notifBadge" style="display: none;"></span>
+                    </button>
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-dropdown-head">
+                            <div class="notif-dropdown-title">Notifications</div>
+                            <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                        </div>
+                        <div class="notif-dropdown-body" id="notifDropdownBody">
+                            <div class="notif-empty">No notifications</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="avatar" id="adminAvatar">A</div>
+                <script>
+                    (function(){
+                        const email = sessionStorage.getItem('bhr_email') || 'A';
+                        const av = document.getElementById('adminAvatar');
+                        if(av) av.textContent = email.charAt(0).toUpperCase();
+                    })();
+                </script>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="page-header-left">
+                    <div class="ph-title">Hiring Pipeline</div>
+                    <div class="ph-sub">Manage candidates across all hiring stages</div>
+                </div>
+                <button class="add-cand-btn" onclick="openAddCandModal()">
+                    <i class="ph ph-user-plus"></i> Add Candidate
+                </button>
+            </div>
+
+            <!-- Mini stats -->
+            <div class="mini-stats">
+                <div class="stat-card">
+                    <div class="stat-icon-wrap blue"><i class="ph-fill ph-users"></i></div>
+                    <div><div class="stat-val" id="statActiveCount">0</div><div class="stat-label">Active Candidates</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrap warning"><i class="ph-fill ph-envelope-open"></i></div>
+                    <div><div class="stat-val" id="statOfferPending">0</div><div class="stat-label">Offer Pending</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrap success"><i class="ph-fill ph-check-circle"></i></div>
+                    <div><div class="stat-val" id="statHiredCount">0</div><div class="stat-label">Hired</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon-wrap danger"><i class="ph-fill ph-x-circle"></i></div>
+                    <div><div class="stat-val" id="statRejectedCount">0</div><div class="stat-label">Rejected</div></div>
+                </div>
+            </div>
+
+            <!-- Stage tabs -->
+            <div class="stage-tabs" id="stageTabs">
+                <button class="stage-tab active" data-stage="active" onclick="switchTab('active')">
+                    Active <span class="tab-count" id="tcActive">0</span>
+                </button>
+                <button class="stage-tab" data-stage="accepted" onclick="switchTab('accepted')">
+                    Hired <span class="tab-count" id="tcHired">0</span>
+                </button>
+                <button class="stage-tab" data-stage="rejected" onclick="switchTab('rejected')">
+                    Rejected <span class="tab-count" id="tcRejected">0</span>
+                </button>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="search-wrap">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search by name, role, department..." oninput="applyFilters()">
+                </div>
+                <select class="filter-select" id="filterEntity" onchange="applyFilters()">
+                    <option value="">All Entities</option>
+                    <option value="BeanTech">BeanTech</option>
+                    <option value="BeanMedia">BeanMedia</option>
+                    <option value="BeanFinance">BeanFinance</option>
+                    <option value="BeanOps">BeanOps</option>
+                    <option value="BeanSales">BeanSales</option>
+                </select>
+                <select class="filter-select" id="filterDept" onchange="applyFilters()">
+                    <option value="">All Departments</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Design">Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Sales">Sales</option>
+                    <option value="HR">HR</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Product">Product</option>
+                </select>
+            </div>
+
+            <!-- Candidate list -->
+            <div class="cand-list" id="candList">
+                <div class="empty-state"><i class="ph ph-spinner"></i><p>Loading candidates...</p></div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- ── Candidate Detail Panel ──────────────────────────────────── -->
+<div class="cand-detail-overlay" id="cdpOverlay" onclick="closeCandDetail(event)">
+    <div class="cand-detail-panel" id="cdpPanel">
+        <div class="cdp-header">
+            <div class="cdp-avatar" id="cdpAvatar">?</div>
+            <div class="cdp-info">
+                <div class="cdp-name" id="cdpName">—</div>
+                <div class="cdp-meta" id="cdpMeta">—</div>
+            </div>
+            <button class="cdp-close" onclick="closeCandDetail()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="cdp-tabs">
+            <button class="cdp-tab active" data-tab="overview" onclick="switchCdpTab('overview')">Overview</button>
+            <button class="cdp-tab" data-tab="rounds" onclick="switchCdpTab('rounds')">Rounds</button>
+            <button class="cdp-tab" data-tab="docs" onclick="switchCdpTab('docs')">Documents</button>
+        </div>
+        <div class="cdp-body">
+            <div class="cdp-tab-pane active" id="cdpOverviewPane">
+                <div class="cdp-overview-grid" id="cdpOverviewGrid"></div>
+            </div>
+            <div class="cdp-tab-pane" id="cdpRoundsPane">
+                <div id="cdpRoundsContent"></div>
+            </div>
+            <div class="cdp-tab-pane" id="cdpDocsPane">
+                <div id="cdpDocsContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Add Candidate Modal ─────────────────────────────────────── -->
+<div class="modal-overlay" id="addCandModal">
+    <div class="modal-box wide">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title">Add New Candidate</div>
+                <div class="modal-sub">Manually add a candidate to the hiring pipeline.</div>
+            </div>
+            <button class="modal-close" onclick="closeAddCandModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Full Name <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="acFullName" placeholder="e.g. Ananya Mehta">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email <span class="req">*</span></label>
+                    <input type="email" class="form-input" id="acEmail" placeholder="ananya@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-input" id="acPhone" placeholder="+91 99999 00000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Designation <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="acDesignation" placeholder="e.g. Backend Engineer">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department <span class="req">*</span></label>
+                    <select class="form-select" id="acDept">
+                        <option value="">Select department</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Design">Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Sales">Sales</option>
+                        <option value="HR">HR</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Product">Product</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Entity <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="acEntity" placeholder="e.g. BeanTech">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Source</label>
+                    <select class="form-select" id="acSource">
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Naukri">Naukri</option>
+                        <option value="Indeed">Indeed</option>
+                        <option value="Referral">Referral</option>
+                        <option value="Internal Referral">Internal Referral</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assigned Manager <span class="req">*</span></label>
+                    <div class="ta-wrap" id="acManagerWrap">
+                <input class="form-input" type="text" id="acManagerInput" placeholder="Search manager…" autocomplete="off" />
+                        <input type="hidden" id="acMgrId" />
+                        <input type="hidden" id="acMgrName" />
+                        <div class="ta-list" id="acManagerList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeAddCandModal()">Cancel</button>
+            <button class="modal-btn modal-btn-primary" onclick="submitAddCandidate()"><i class="ph ph-user-plus"></i> Add Candidate</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Reject Candidate Modal ──────────────────────────────────── -->
+<div class="modal-overlay" id="rejectModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title">Reject Candidate</div>
+                <div class="modal-sub">This will move the candidate out of the active pipeline.</div>
+            </div>
+            <button class="modal-close" onclick="closeRejectModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="confirm-icon danger"><i class="ph-fill ph-x-circle"></i></div>
+            <p class="confirm-modal-text">You are about to reject <strong id="rejectCandName">this candidate</strong>. This action will move them out of the active pipeline.</p>
+            <div class="form-group">
+                <label class="form-label">Reason (optional)</label>
+                <textarea class="form-input" id="rejectReason" placeholder="Provide a reason for rejection..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeRejectModal()">Cancel</button>
+            <button class="modal-btn modal-btn-danger" onclick="submitRejection()">Confirm Rejection</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Prepare Offer Modal ─────────────────────────────────────── -->
+<!-- ── HOLD REMINDER POPUP ───────────────────────────────────── -->
+<div class="modal-overlay" id="holdReminderOverlay" style="align-items:flex-start;padding-top:80px;">
+    <div class="modal-box" style="max-width:500px;width:100%;">
+        <div class="modal-header" style="border-color:rgba(251,191,36,.2);">
+            <div>
+                <div class="modal-title" style="color:var(--warning);"><i class="ph-fill ph-bell-ringing" style="margin-right:6px;"></i>Hold Reminders Due</div>
+                <div class="modal-sub">These candidates have a hold reminder due today. Review and take action.</div>
+            </div>
+            <button class="modal-close" onclick="closeHoldReminderPopup()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div id="holdReminderList" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeHoldReminderPopup()">Dismiss All</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── ADMIN HOLD MODAL ───────────────────────────────────────── -->
+<div class="modal-overlay" id="adminHoldModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title">Put Candidate on Hold</div>
+                <div class="modal-sub">Candidate: <strong id="adminHoldCandName"></strong></div>
+            </div>
+            <button class="modal-close" onclick="closeAdminHoldModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Reason for Hold <span class="req">*</span></label>
+                <textarea class="form-input" id="adminHoldReason" rows="3" placeholder="e.g. Background verification pending, headcount approval needed…"></textarea>
+            </div>
+            <div class="form-group" style="margin-top:12px;">
+                <label class="form-label">Reminder Date &amp; Time <span style="color:var(--text-faint);font-weight:400;">(optional)</span></label>
+                <input type="datetime-local" class="form-input" id="adminHoldReminder">
+                <span style="font-size:11px;color:var(--text-faint);margin-top:4px;display:block;">You and the originating manager will both get a pop-up on this date.</span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeAdminHoldModal()">Cancel</button>
+            <button class="modal-btn modal-btn-warning" id="adminHoldSubmitBtn" onclick="submitAdminHold()"><i class="ph ph-pause-circle"></i> Confirm Hold</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── DRAFT REVIEW MODAL ─────────────────────────────────────── -->
+<div class="modal-overlay" id="draftReviewModal">
+    <div class="modal-box" style="max-width:780px;width:100%;max-height:92vh;">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title">Review Offer Letter</div>
+                <div class="modal-sub">By <strong id="drmManagerName"></strong> for <strong id="drmCandName"></strong> &middot; <span id="drmPreparedAt"></span> &middot; <span style="color:var(--accent);font-weight:500;">Click any highlighted field to edit</span></div>
+            </div>
+            <button class="modal-close" onclick="closeDraftReviewModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body" style="padding:16px 20px;">
+            <!-- Offer Letter Document -->
+            <div class="offer-doc-wrapper">
+                <div class="offer-doc">
+                    <div class="offer-doc-letterhead">
+                        <div class="offer-doc-company" id="olCompany">Bean Corp.</div>
+                        <div class="offer-doc-date" id="olDocDate">—</div>
+                    </div>
+                    <div class="offer-doc-heading">LETTER OF OFFER</div>
+                    <div class="offer-doc-body">
+                        <p>Dear <strong id="olCandNameInDoc">—</strong>,</p>
+                        <p>We are pleased to offer you the position of <span class="ol-editable" id="olDesignation" contenteditable="true" data-placeholder="Designation"></span> in the <span class="ol-editable" id="olDepartment" contenteditable="true" data-placeholder="Department"></span> department at <select class="ol-select" id="olEntity"><option value="BeanTech">BeanTech Pvt. Ltd.</option><option value="BeanSales">BeanSales Pvt. Ltd.</option><option value="BeanOps">BeanOps Pvt. Ltd.</option></select>.</p>
+                        <p>Your annual Cost to Company (CTC) will be <span class="ol-editable" id="olSalary" contenteditable="true" data-placeholder="₹0"></span>.</p>
+                        <p>Your expected date of joining is <input type="date" class="ol-date-input" id="olJoiningDate">.</p>
+                        <p>This offer is subject to satisfactory verification of all submitted documents and reference checks prior to your joining date. Kindly confirm your acceptance at the earliest.</p>
+                    </div>
+                    <div class="offer-doc-terms">
+                        <div class="offer-doc-terms-title">Additional Terms &amp; Conditions</div>
+                        <div class="ol-editable block-edit" id="olOtherTerms" contenteditable="true" data-placeholder="Enter probation period, review cycle, notice period, or any other applicable terms…"></div>
+                    </div>
+                    <div class="offer-doc-footer">
+                        <p>We look forward to welcoming you aboard.</p>
+                        <p>Warm regards,<br><strong>HR &amp; Talent Acquisition</strong><br><span id="olSigCompany">Bean Corp.</span></p>
+                    </div>
+                </div>
+            </div>
+            <!-- Return comment section -->
+            <div style="margin-top:16px;" id="drmReturnSection">
+                <div class="form-group" style="margin-bottom:12px">
+                    <label class="form-label" style="margin-bottom:4px;">Employment Type</label>
+                    <select class="form-input" id="olEmploymentType" style="max-width:280px">
+                        <option value="regular">Regular (permanent salaried)</option>
+                        <option value="contractual">Contractual</option>
+                    </select>
+                    <div style="font-size:11px;color:var(--text-faint);margin-top:3px">Regular = daily rate ÷ calendar days &nbsp;•&nbsp; Contractual = daily rate ÷ working days</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Comment for Manager <span style="color:var(--text-faint);font-weight:400;">(required only when returning the draft)</span></label>
+                    <textarea class="form-input" id="drmRejectComment" rows="2" placeholder="Explain what needs to be changed…"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeDraftReviewModal()">Cancel</button>
+            <button class="modal-btn modal-btn-danger" id="drmRejectBtn" onclick="submitDraftRejection()"><i class="ph ph-arrow-u-up-left"></i> Return to Manager</button>
+            <button class="modal-btn modal-btn-warning" id="drmApproveBtn" onclick="submitDraftApproval()"><i class="ph ph-check-circle"></i> Approve &amp; Distribute</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── EMPLOYEE CREDENTIALS MODAL ─────────────────────────────── -->
+<div class="modal-overlay" id="credentialsModal">
+    <div class="modal-box" style="max-width:480px;width:100%;">
+        <div class="modal-header">
+            <div>
+                <div class="modal-title">Create Employee Account</div>
+                <div class="modal-sub">Setting up portal access for <strong id="credCandName"></strong>. Credentials will be emailed automatically.</div>
+            </div>
+            <button class="modal-close" onclick="closeCredentialsModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid" style="margin-bottom:14px;">
+                <div class="form-group">
+                    <label class="form-label">Employee ID <span class="req">*</span></label>
+                    <input type="text" class="form-input" id="credEmpId" placeholder="e.g. EMP-0042">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Portal / Work Email <span class="req">*</span></label>
+                    <input type="email" class="form-input" id="credEmpEmail" placeholder="kavya.r@beantech.com">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <label class="form-label">Monthly Base Salary (Payroll) <span class="req">*</span></label>
+                <input type="number" class="form-input" id="credBaseSalary" placeholder="e.g. 85000">
+                <div style="font-size:11px;color:var(--text-muted);margin-top:5px;"><i class="ph ph-info" style="font-size:11px;"></i> Enter the monthly gross amount after offline deductions (PF, etc.). This value is used by the Payroll Engine.</div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+                <label class="form-label">Send Credentials To (Personal Email) <span class="req">*</span></label>
+                <input type="email" class="form-input" id="credDeliveryEmail" placeholder="Candidate's personal email address">
+                <div style="font-size:11px;color:var(--text-muted);margin-top:5px;"><i class="ph ph-info" style="font-size:11px;"></i> Welcome email with login details will be sent here. Employee uses the portal email above to log in to BeanHR.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Temporary Password <span style="color:var(--text-faint);font-weight:400;">(system-generated)</span></label>
+                <div class="input-gen-wrap">
+                    <input type="text" class="form-input" id="credPassword" readonly placeholder="Click ↻ to generate">
+                    <button class="btn-gen" onclick="generateCredPassword()" title="Regenerate password"><i class="ph ph-arrows-clockwise" style="font-size:15px;"></i></button>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:5px;"><i class="ph ph-lock" style="font-size:11px;"></i> Employee will be forced to reset this password on first login.</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeCredentialsModal()">Cancel</button>
+            <button class="modal-btn modal-btn-primary" id="credSubmitBtn" onclick="submitCredentials()"><i class="ph ph-paper-plane-tilt"></i> Send Credentials</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- ── Negotiation Modal ────────────────────────────────────────── -->
+                <div class="modal-overlay" id="negotiationOverlay" onclick="if(event.target===this) closeNegoModal()">
+        <div class="modal-box" style="max-width: 600px; text-align:left;">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Offer Negotiations</div>
+                    <div class="modal-sub">Candidate: <strong id="negoCandName"></strong></div>
+                </div>
+                <button class="modal-close" onclick="closeNegoModal()"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="negoThreadContent" style="display:flex; flex-direction:column; gap:12px; max-height:350px; overflow-y:auto; padding-right:8px; margin-bottom:16px;">
+                    <!-- thread here -->
+                </div>
+                
+                <div id="negoReplyArea" style="display:flex; gap:10px;">
+                    <textarea id="mgrNegoInput" class="form-input" placeholder="Type a reply to the candidate..." style="flex:1; resize:none; min-height:42px;"></textarea>
+                    <button class="modal-btn modal-btn-primary" onclick="mgrSendNego()" style="padding:0 20px;"><i class="ph ph-paper-plane-right" style="margin-right:6px;"></i> Reply</button>
+                </div>
+            </div>
+            
+            <div class="modal-footer" style="justify-content:space-between;">
+                <button class="modal-btn modal-btn-secondary" onclick="closeNegoModal()">Close</button>
+                <div id="negoReviseArea">
+                    <!-- Revise button inserted here dynamically depending on manager vs admin -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- ── Toast container ────────────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../../js/db.js"></script>
+<script src="../../js/notifications.js"></script>
+<script>
+(function() {
+    // ── Auth guard ─────────────────────────────────────────────────
+    const _role = sessionStorage.getItem('bhr_role');
+    if (_role !== 'super_admin') {
+        window.location.replace('../login.html');
+        return;
+    }
+
+    // ── State ──────────────────────────────────────────────────────
+    let _candidates     = [];  // all candidates (including decided)
+    let _managers       = [];  // active managers (for dropdowns)
+    let _hiringMgrData  = [];  // typeahead data { id, name }
+    let _filtered       = [];  // current tab's filtered list
+    let _activeTab      = 'active';
+    let _detailCandidate = null;
+    let _detailData      = null; // full detail object
+    let _rejectCandId    = null;
+    let _draftReviewId   = null;
+    let _editingRoundId  = null; // null = add new, else = edit
+    let _showAddRoundForm = false;
+    let _showAddDocForm   = false;
+
+    // ── Theme ──────────────────────────────────────────────────────
+    window.toggleTheme = function() {
+        const cur = document.documentElement.getAttribute('data-theme');
+        const next = cur === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('bhr_theme', next);
+    };
+
+    // ── Sidebar ────────────────────────────────────────────────────
+    window.toggleSidebar = function() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    };
+
+    // ── Logout ─────────────────────────────────────────────────────
+    window.logout = function() {
+        sessionStorage.removeItem('bhr_role');
+        sessionStorage.removeItem('bhr_email');
+        window.location.replace('../login.html');
+    };
+
+    // ── Topbar date ────────────────────────────────────────────────
+    function updateTopbarDate() {
+        const now = new Date();
+        const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        document.getElementById('topbarDate').textContent =
+            `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+    updateTopbarDate();
+
+    // ── Notifications ──────────────────────────────────────────────
+
+    async function loadNotifications() {
+        await renderAdminNotifications();
+    }
+
+    // ── Load All Candidates ─────────────────────────────────────────
+    async function loadAll() {
+        try {
+            console.log('[Admin Hiring Debug] loadAll invoked');
+            const [candidates, employees] = await Promise.all([
+                db.getAllCandidates(true),
+                db.getAllEmployees(),
+            ]);
+            console.log('[Admin Hiring Debug] candidates fetched:', candidates);
+            console.log('[Admin Hiring Debug] employees fetched:', employees);
+            _candidates = candidates;
+            _managers   = employees.filter(e => e.role === 'manager');
+            // Build typeahead data for Add Candidate manager search
+            _hiringMgrData = _managers.map(m => ({ id: m.employeeId, name: m.fullName }));
+            updateStats();
+            updateTabCounts();
+            renderCurrentTab();
+        } catch(e) {
+            console.error('loadAll failed', e);
+            showToast('Failed to load candidates.', 'error');
+        }
+    }
+
+    // ── Stats ──────────────────────────────────────────────────────
+    function updateStats() {
+        const activeStages = ['document_collection','offer_draft','offer_stage'];
+        const active   = _candidates.filter(c => activeStages.includes(c.currentStage)).length;
+        const offer    = _candidates.filter(c => c.currentStage === 'offer_draft' || c.currentStage === 'offer_stage').length;
+        const hired    = _candidates.filter(c => c.currentStage === 'post_acceptance' || c.currentStage === 'joined').length;
+        const rejected = _candidates.filter(c => c.currentStage === 'rejected').length;
+        document.getElementById('statActiveCount').textContent   = active;
+        document.getElementById('statOfferPending').textContent  = offer;
+        document.getElementById('statHiredCount').textContent    = hired;
+        document.getElementById('statRejectedCount').textContent = rejected;
+    }
+
+    // ── Tab counts ────────────────────────────────────────────────
+    function updateTabCounts() {
+        const activeStages = ['document_collection','offer_draft','offer_stage'];
+        document.getElementById('tcActive').textContent   = _candidates.filter(c => activeStages.includes(c.currentStage)).length;
+        document.getElementById('tcHired').textContent    = _candidates.filter(c => c.currentStage === 'post_acceptance' || c.currentStage === 'joined').length;
+        document.getElementById('tcRejected').textContent = _candidates.filter(c => c.currentStage === 'rejected').length;
+    }
+
+    // ── Tab switching ──────────────────────────────────────────────
+    window.switchTab = function(stage) {
+        _activeTab = stage;
+        document.querySelectorAll('.stage-tab').forEach(t => t.classList.toggle('active', t.dataset.stage === stage));
+        applyFilters();
+    };
+
+    // ── Filters ────────────────────────────────────────────────────
+    window.applyFilters = function() {
+        const q      = document.getElementById('searchInput').value.trim().toLowerCase();
+        const entity = document.getElementById('filterEntity').value;
+        const dept   = document.getElementById('filterDept').value;
+        const activeStages = ['document_collection','offer_draft','offer_stage'];
+        const hiredStages  = ['post_acceptance','joined'];
+        _filtered = _candidates.filter(c => {
+            const stage = c.currentStage || 'document_collection';
+            if (_activeTab === 'active') {
+                if (!activeStages.includes(stage)) return false;
+            } else if (_activeTab === 'accepted') {
+                if (!hiredStages.includes(stage)) return false;
+            } else if (stage !== _activeTab) return false;
+            if (entity && c.companyTag && c.companyTag !== entity) return false;
+            if (dept   && c.department && c.department !== dept)   return false;
+            if (q) {
+                const haystack = ((c.fullName || '') + ' ' + (c.designation || '') + ' ' + (c.department || '')).toLowerCase();
+                if (!haystack.includes(q)) return false;
+            }
+            return true;
+        });
+        renderCandList();
+    };
+
+    // ── Render candidate list ──────────────────────────────────────
+    function renderCurrentTab() { applyFilters(); }
+
+    function renderCandList() {
+        const list = document.getElementById('candList');
+        if (_filtered.length === 0) {
+            list.innerHTML = `<div class="empty-state"><i class="ph ph-users"></i><p>No candidates in this stage.</p></div>`;
+            return;
+        }
+        list.innerHTML = _filtered.map(c => renderCandCard(c)).join('');
+    }
+
+    function renderCandCard(c) {
+        const initials = getInitials(c.fullName);
+        const daysAgo  = formatDaysAgo(c.submittedAt);
+        const actions  = buildCardActions(c);
+
+        let metaHtml = `
+            <span><i class="ph ph-building-office"></i>${escapeHtml(c.companyTag)}</span>
+            <span><i class="ph ph-user-circle"></i>Manager: ${escapeHtml(c.originatingManagerName)}</span>`;
+
+        if (c.currentStage === 'document_collection') {
+            metaHtml += `
+            <span><i class="ph ph-target"></i>Rounds: ${c.roundsCount} — Latest: ${escapeHtml(c.latestRoundName)} <span style="color:${roundStatusColor(c.latestRoundStatus)}">(${capitalise(c.latestRoundStatus)})</span></span>
+            <span><i class="ph ph-files"></i>Docs: ${c.docsVerified}/${c.docsRequested} verified</span>`;
+        } else if (c.currentStage === 'offer_draft') {
+            const olsLabel = offerStatusLabel(c.offerLetterStatus);
+            metaHtml += `<span><i class="ph ph-clipboard-text"></i>Draft: ${olsLabel}</span>`;
+        } else if (c.currentStage === 'offer_stage') {
+            const offerLabel = offerStatusLabel(c.offerLetterStatus);
+            metaHtml += `<span><i class="ph ph-envelope"></i>Offer: ${offerLabel}</span>`;
+        } else if (c.currentStage === 'post_acceptance' || c.currentStage === 'joined') {
+            const credStatus = c.joiningConfirmed ? 'Credentials sent' : 'Credentials pending';
+            metaHtml += `<span style="color:var(--success)"><i class="ph-fill ph-check-circle"></i>Accepted — ${credStatus}</span>`;
+        } else if (c.currentStage === 'rejected') {
+            const rLabel = c.rejectionType === 'manager' ? 'Manager Declined' : c.rejectionType === 'candidate' ? 'Candidate Declined' : 'Rejected by Admin';
+            metaHtml += `<span style="color:var(--danger)"><i class="ph-fill ph-x-circle"></i>${rLabel}${c.rejectedAt ? ' — ' + formatDate(c.rejectedAt) : ''}</span>`;
+        }
+
+        const stagePill = stagePillHtml(c);
+
+        return `<div class="candidate-card">
+            <div class="cand-top">
+                <div class="cand-avatar" style="background:${avatarColor(c.fullName)}">${escapeHtml(initials)}</div>
+                <div class="cand-main">
+                    <div class="cand-name">${escapeHtml(c.fullName)}</div>
+                    <div class="cand-role">${escapeHtml(c.designation)} &middot; ${escapeHtml(c.department)}</div>
+                    <div class="cand-pills">
+                        <span class="cand-pill entity">${escapeHtml(c.companyTag)}</span>
+                        <span class="cand-pill source">${escapeHtml(c.source)}</span>
+                        ${stagePill}
+                    </div>
+                </div>
+                <span class="cand-days-badge">${daysAgo}</span>
+            </div>
+            <div class="cand-meta-row">${metaHtml}</div>
+            <div class="cand-actions">${actions}</div>
+        </div>`;
+    }
+
+    function stagePillHtml(c) {
+        const map = {
+            document_collection: ['stage-docs',     'Rounds & Docs'],
+            offer_draft:         ['stage-draft',     'Offer Draft'],
+            offer_stage:         ['stage-offer',     'Offer Stage'],
+            post_acceptance:     ['stage-accepted',  'Post Acceptance'],
+            joined:              ['stage-joined',     'Joined'],
+            rejected:            ['stage-rejected',   'Rejected'],
+        };
+        const [cls, label] = map[c.currentStage] || ['stage-docs', c.currentStage];
+        const holdBadge = c.holdDetails?.isOnHold ? `<span class="cand-pill stage-hold" style="margin-left:4px;"><i class="ph-fill ph-pause-circle" style="font-size:9px;"></i>Hold</span>` : '';
+        let extraPill = '';
+        if (c.offerLetterStatus === 'negotiating') extraPill = `<span class="cand-pill" style="margin-left:4px;background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.25);"><i class="ph-fill ph-chats" style="font-size:10px;margin-right:3px;"></i>Negotiating</span>`;
+        return `<span class="cand-pill ${cls}">${label}</span>${holdBadge}${extraPill}`;
+    }
+
+    function buildCardActions(c) {
+        const id = c.id;
+        const isOnHold = c.holdDetails?.isOnHold;
+        if (isOnHold) {
+            return `<button class="cand-action-btn view-btn" onclick="openCandDetail('${id}')"><i class="ph ph-eye"></i> View</button>
+                    <button class="cand-action-btn unhold-btn" onclick="adminRemoveHold('${id}')"><i class="ph ph-play-circle"></i> Remove Hold</button>
+                    <button class="cand-action-btn reject-btn" onclick="openRejectModal('${id}')"><i class="ph ph-x"></i> Reject</button>`;
+        }
+        let html = `<button class="cand-action-btn view-btn" onclick="openCandDetail('${id}')"><i class="ph ph-eye"></i> View</button>`;
+        const ols = c.offerLetterStatus;
+        if (c.currentStage === 'document_collection') {
+            html += `<button class="cand-action-btn hold-btn" onclick="openAdminHoldModal('${id}')"><i class="ph ph-pause-circle"></i> Hold</button>`;
+            html += `<button class="cand-action-btn reject-btn" onclick="openRejectModal('${id}')"><i class="ph ph-x"></i> Reject</button>`;
+        } else if (c.currentStage === 'offer_draft') {
+            if (ols === 'pending_admin_review' || ols === 'draft_by_manager') {
+                html += `<button class="cand-action-btn offer-btn" onclick="openDraftReviewModal('${id}')"><i class="ph ph-clipboard-text"></i> Review Draft</button>`;
+            }
+            html += `<button class="cand-action-btn hold-btn" onclick="openAdminHoldModal('${id}')"><i class="ph ph-pause-circle"></i> Hold</button>`;
+            html += `<button class="cand-action-btn reject-btn" onclick="openRejectModal('${id}')"><i class="ph ph-x"></i> Reject</button>`;
+        } else if (c.currentStage === 'offer_stage') {
+            if (ols === 'admin_approved') {
+                html += `<button class="cand-action-btn awaiting-btn"><i class="ph ph-hourglass"></i> Awaiting Finance</button>`;
+            } else if (ols === 'sent') {
+                html += `<button class="cand-action-btn awaiting-btn"><i class="ph ph-hourglass"></i> Awaiting Candidate</button>`;
+            } else if (ols === 'negotiating') {
+                html += `<button class="cand-action-btn view-btn" style="color:#fbbf24;border-color:rgba(251,191,36,0.3)" onclick="openNegoModal('${id}')"><i class="ph ph-chats"></i> Negotiations</button>`;
+            }
+            html += `<button class="cand-action-btn hold-btn" onclick="openAdminHoldModal('${id}')"><i class="ph ph-pause-circle"></i> Hold</button>`;
+            html += `<button class="cand-action-btn reject-btn" onclick="openRejectModal('${id}')"><i class="ph ph-x"></i> Reject</button>`;
+        } else if (c.currentStage === 'post_acceptance') {
+            if (!c.joiningConfirmed) {
+                html += `<button class="cand-action-btn offer-btn" onclick="triggerCredentials('${id}')"><i class="ph ph-key"></i> Trigger Credentials</button>`;
+            } else {
+                html += `<button class="cand-action-btn awaiting-btn" disabled><i class="ph ph-check-circle"></i> Credentials Sent</button>`;
+            }
+        }
+        return html;
+    }
+
+    // ── Reject modal ───────────────────────────────────────────────
+    window.openRejectModal = function(id) {
+        _rejectCandId = id;
+        const c = _candidates.find(c => c.id === id);
+        document.getElementById('rejectCandName').textContent = c ? c.fullName : 'this candidate';
+        document.getElementById('rejectReason').value = '';
+        document.getElementById('rejectModal').classList.add('open');
+    };
+    window.closeRejectModal = function() {
+        document.getElementById('rejectModal').classList.remove('open');
+        _rejectCandId = null;
+    };
+    window.submitRejection = async function() {
+        if (!_rejectCandId) return;
+        const reason = document.getElementById('rejectReason').value.trim();
+        try {
+            await db.adminRejectCandidate(_rejectCandId, reason);
+            const idx = _candidates.findIndex(c => c.id === _rejectCandId);
+            if (idx !== -1) {
+                _candidates[idx].currentStage   = 'rejected';
+                _candidates[idx].companyDecision = 'rejected';
+                _candidates[idx].rejectionReason = reason;
+                _candidates[idx].rejectedAt      = new Date().toISOString();
+            }
+            updateStats(); updateTabCounts(); renderCurrentTab();
+            closeRejectModal();
+            showToast('Candidate has been rejected.', 'success');
+        } catch(e) { showToast('Failed to reject candidate.', 'error'); }
+    };
+
+    // ── Trigger Employee Credentials ───────────────────────────────
+    window.triggerCredentials = function(id) { openCredentialsModal(id); };
+
+    let _credCandId = null;
+    window.openCredentialsModal = function(id) {
+        _credCandId = id;
+        const c = _candidates.find(x => x.id === id);
+        document.getElementById('credCandName').textContent = c ? c.fullName : 'this candidate';
+        document.getElementById('credEmpId').value = '';
+        document.getElementById('credEmpEmail').value = '';
+        document.getElementById('credDeliveryEmail').value = c ? (c.email || '') : '';
+        generateCredPassword();
+        document.getElementById('credentialsModal').classList.add('open');
+    };
+    window.closeCredentialsModal = function() {
+        document.getElementById('credentialsModal').classList.remove('open');
+        _credCandId = null;
+    };
+    window.generateCredPassword = function() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+        let pass = 'Bhr@';
+        for (let i = 0; i < 8; i++) pass += chars[Math.floor(Math.random() * chars.length)];
+        document.getElementById('credPassword').value = pass;
+    };
+    window.submitCredentials = async function() {
+        if (!_credCandId) return;
+        const empId      = document.getElementById('credEmpId').value.trim();
+        const empEmail   = document.getElementById('credEmpEmail').value.trim();
+        const delivEmail = document.getElementById('credDeliveryEmail').value.trim();
+        const password   = document.getElementById('credPassword').value.trim();
+        const baseSalary = parseFloat(document.getElementById('credBaseSalary').value.trim());
+
+        if (!empId || !empEmail || !delivEmail || !password || isNaN(baseSalary) || baseSalary <= 0) {
+            showToast('Please fill in all required fields (including a valid base salary).', 'error'); return;
+        }
+        if (!empEmail.includes('@') || !delivEmail.includes('@')) {
+            showToast('Please enter valid email addresses.', 'error'); return;
+        }
+        const btn = document.getElementById('credSubmitBtn');
+        btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner"></i> Sending...';
+        try {
+            await db.adminTriggerEmployeeCredentials(_credCandId, { empId, empEmail, delivEmail, password, baseSalary });
+            const idx = _candidates.findIndex(x => x.id === _credCandId);
+            if (idx !== -1) { _candidates[idx].joiningConfirmed = true; _candidates[idx].currentStage = 'joined'; }
+            updateStats(); updateTabCounts(); renderCurrentTab();
+            if (_detailCandidate === _credCandId && _detailData) { _detailData.joiningConfirmed = true; _detailData.currentStage = 'joined'; renderCdpOverview(); }
+            closeCredentialsModal();
+            showToast('Employee account created. Credentials sent to ' + delivEmail + '.', 'success');
+        } catch(e) { showToast('Failed to send credentials.', 'error'); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Send Credentials'; }
+    };
+
+    // ── Admin Hold ─────────────────────────────────────────────────
+    let _adminHoldId = null;
+    window.openAdminHoldModal = function(id) {
+        _adminHoldId = id;
+        const c = _candidates.find(x => x.id === id);
+        document.getElementById('adminHoldCandName').textContent = c ? c.fullName : '';
+        document.getElementById('adminHoldReason').value   = '';
+        document.getElementById('adminHoldReminder').value = '';
+        document.getElementById('adminHoldModal').classList.add('open');
+    };
+    window.closeAdminHoldModal = function() {
+        document.getElementById('adminHoldModal').classList.remove('open');
+        _adminHoldId = null;
+    };
+    window.submitAdminHold = async function() {
+        const reason   = document.getElementById('adminHoldReason').value.trim();
+        const reminder = document.getElementById('adminHoldReminder').value;
+        if (!reason) { document.getElementById('adminHoldReason').focus(); showToast('Please enter a reason.', 'error'); return; }
+        const btn = document.getElementById('adminHoldSubmitBtn');
+        btn.disabled = true;
+        try {
+            await db.putCandidateOnHold(_adminHoldId, reason, reminder || null);
+            const idx = _candidates.findIndex(x => x.id === _adminHoldId);
+            if (idx !== -1) {
+                _candidates[idx].holdDetails = { isOnHold: true, reason, holdSetAt: new Date().toISOString(), holdReminder: reminder || null, holdSetBy: 'admin' };
+            }
+            renderCurrentTab();
+            closeAdminHoldModal();
+            showToast('Candidate placed on hold.', 'success');
+        } catch(e) { showToast('Failed to put on hold.', 'error'); }
+        finally { btn.disabled = false; }
+    };
+    window.adminRemoveHold = async function(id) {
+        if (!confirm('Remove hold on this candidate?')) return;
+        try {
+            await db.removeCandidateHold(id);
+            const idx = _candidates.findIndex(x => x.id === id);
+            if (idx !== -1) _candidates[idx].holdDetails = { isOnHold: false };
+            renderCurrentTab();
+            showToast('Hold removed.', 'success');
+        } catch(e) { showToast('Failed to remove hold.', 'error'); }
+    };
+    window.openDraftReviewModal = function(id) {
+        _draftReviewId = id;
+        const c = _candidates.find(x => x.id === id);
+        if (!c) return;
+        document.getElementById('drmCandName').textContent = c.fullName;
+        document.getElementById('drmManagerName').textContent = c.originatingManagerName || '—';
+        document.getElementById('olCandNameInDoc').textContent = c.fullName;
+        document.getElementById('olDocDate').textContent = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+        document.getElementById('drmRejectComment').value = '';
+        db.getAdminCandidateDetail(id).then(detail => {
+            const d = detail.offerLetterDraftDetails || {};
+            const entity = d.entity || c.companyTag || 'BeanTech';
+            const entityLabel = entity === 'BeanSales' ? 'BeanSales Pvt. Ltd.' : entity === 'BeanOps' ? 'BeanOps Pvt. Ltd.' : 'BeanTech Pvt. Ltd.';
+            document.getElementById('olDesignation').textContent = d.designation || c.designation || '';
+            document.getElementById('olDepartment').textContent  = d.department  || c.department  || '';
+            document.getElementById('olEntity').value            = entity;
+            document.getElementById('olCompany').textContent     = entityLabel;
+            document.getElementById('olSigCompany').textContent  = entityLabel;
+            document.getElementById('olSalary').textContent      = d.salary ? '\u20B9' + Number(d.salary).toLocaleString('en-IN') : '';
+            document.getElementById('olJoiningDate').value       = d.joiningDate || '';
+            document.getElementById('olOtherTerms').textContent  = d.otherTerms  || '';
+            document.getElementById('olEmploymentType').value    = d.employmentType || 'regular';
+            document.getElementById('drmPreparedAt').textContent = d.preparedAt
+                ? 'Submitted ' + new Date(d.preparedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })
+                : 'Draft';
+        }).catch(() => {});
+        document.getElementById('draftReviewModal').classList.add('open');
+    };
+    window.closeDraftReviewModal = function() {
+        document.getElementById('draftReviewModal').classList.remove('open');
+        _draftReviewId = null;
+    };
+    window.submitDraftApproval = async function() {
+        if (!_draftReviewId) return;
+        const rawSalary   = document.getElementById('olSalary').textContent.replace(/[\u20B9,\s]/g, '');
+        const salary      = Number(rawSalary);
+        const designation = document.getElementById('olDesignation').textContent.trim();
+        const department  = document.getElementById('olDepartment').textContent.trim();
+        const entity      = document.getElementById('olEntity').value;
+        const joiningDate     = document.getElementById('olJoiningDate').value;
+        const otherTerms      = document.getElementById('olOtherTerms').innerText.trim();
+        const employmentType  = document.getElementById('olEmploymentType').value;
+        if (!salary || !designation || !department || !entity || !joiningDate) {
+            showToast('Please complete all highlighted fields before approving.', 'error'); return;
+        }
+        const btn = document.getElementById('drmApproveBtn');
+        btn.disabled = true; btn.innerHTML = '<i class="ph ph-spinner"></i> Approving\u2026';
+        try {
+            await db.adminApproveOfferDraft(_draftReviewId, { salary, designation, department, entity, joiningDate, otherTerms, employmentType });
+            const idx = _candidates.findIndex(x => x.id === _draftReviewId);
+            if (idx !== -1) { _candidates[idx].currentStage = 'offer_stage'; _candidates[idx].offerLetterStatus = 'admin_approved'; }
+            updateStats(); updateTabCounts(); renderCurrentTab();
+            closeDraftReviewModal();
+            showToast('Offer letter approved and distributed to Manager & Finance.', 'success');
+        } catch(e) { showToast('Failed to approve draft.', 'error'); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="ph ph-check-circle"></i> Approve &amp; Distribute'; }
+    };
+    window.submitDraftRejection = async function() {
+        if (!_draftReviewId) return;
+        const comment = document.getElementById('drmRejectComment').value.trim();
+        if (!comment) { document.getElementById('drmRejectComment').focus(); showToast('Please add a comment for the manager.', 'error'); return; }
+        const btn = document.getElementById('drmRejectBtn');
+        btn.disabled = true; btn.innerHTML = 'Sending\u2026';
+        try {
+            await db.adminRejectOfferDraft(_draftReviewId, comment);
+            const idx = _candidates.findIndex(x => x.id === _draftReviewId);
+            if (idx !== -1) { _candidates[idx].offerLetterStatus = 'draft_by_manager'; }
+            renderCurrentTab();
+            closeDraftReviewModal();
+            showToast('Draft returned to manager with your comments.', 'info');
+        } catch(e) { showToast('Failed to reject draft.', 'error'); }
+        finally { btn.disabled = false; btn.innerHTML = 'Return to Manager'; }
+    };
+
+    // ── Offer modal ────────────────────────────────────────────────
+    // ── Manager Typeahead (Add Candidate modal) ────────────────────
+    function _acMgrRender(matches) {
+        const list = document.getElementById('acManagerList');
+        list.innerHTML = matches.length
+            ? matches.map(m => `<div class="ta-item" data-id="${escapeHtml(m.id)}" data-name="${escapeHtml(m.name)}">${escapeHtml(m.name)}</div>`).join('')
+            : '<div class="ta-no-result">No managers found</div>';
+        list.querySelectorAll('.ta-item').forEach(item => {
+            item.addEventListener('mousedown', ev => {
+                ev.preventDefault();
+                document.getElementById('acManagerInput').value = item.dataset.name;
+                document.getElementById('acMgrId').value        = item.dataset.id;
+                document.getElementById('acMgrName').value      = item.dataset.name;
+                document.getElementById('acManagerWrap').classList.remove('open');
+            });
+        });
+        document.getElementById('acManagerWrap').classList.add('open');
+    }
+    function _acMgrInitListeners() {
+        const inp = document.getElementById('acManagerInput');
+        if (!inp || inp._taInit) return;
+        inp._taInit = true;
+        inp.addEventListener('input', function() {
+            document.getElementById('acMgrId').value   = '';
+            document.getElementById('acMgrName').value = '';
+            const q = this.value.toLowerCase();
+            const matches = q ? _hiringMgrData.filter(m => m.name.toLowerCase().includes(q)) : _hiringMgrData;
+            _acMgrRender(matches);
+        });
+        inp.addEventListener('focus', function() {
+            const q = this.value.toLowerCase();
+            const matches = q ? _hiringMgrData.filter(m => m.name.toLowerCase().includes(q)) : _hiringMgrData;
+            _acMgrRender(matches);
+        });
+        inp.addEventListener('blur', () => setTimeout(() => document.getElementById('acManagerWrap').classList.remove('open'), 150));
+        inp.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') document.getElementById('acManagerWrap').classList.remove('open');
+        });
+    }
+
+    // ── Add Candidate modal ────────────────────────────────────────
+    window.openAddCandModal = function() {
+        document.getElementById('acFullName').value   = '';
+        document.getElementById('acEmail').value      = '';
+        document.getElementById('acPhone').value      = '';
+        document.getElementById('acDesignation').value= '';
+        document.getElementById('acDept').value       = '';
+        document.getElementById('acEntity').value     = '';
+        document.getElementById('acSource').value     = 'LinkedIn';
+        document.getElementById('acManagerInput').value = '';
+        document.getElementById('acMgrId').value        = '';
+        document.getElementById('acMgrName').value      = '';
+        _acMgrInitListeners();
+        document.getElementById('addCandModal').classList.add('open');
+    };
+    window.closeAddCandModal = function() {
+        document.getElementById('addCandModal').classList.remove('open');
+    };
+    window.submitAddCandidate = async function() {
+        const fullName    = document.getElementById('acFullName').value.trim();
+        const email       = document.getElementById('acEmail').value.trim();
+        const designation = document.getElementById('acDesignation').value.trim();
+        const dept        = document.getElementById('acDept').value;
+        const entity      = document.getElementById('acEntity').value.trim();
+        const mgrId   = document.getElementById('acMgrId').value;
+        const mgrName = document.getElementById('acMgrName').value;
+        if (!fullName || !email || !designation || !dept || !entity || !mgrId) {
+            showToast('Please fill in all required fields.', 'error');
+            return;
+        }
+        try {
+            const newCand = await db.addCandidate({
+                fullName,
+                email,
+                phone: document.getElementById('acPhone').value.trim() || null,
+                designation,
+                department: dept,
+                companyTag: entity,
+                source: document.getElementById('acSource').value,
+                originatingManagerId: mgrId,
+                originatingManagerName: mgrName,
+            });
+            _candidates.unshift(newCand);
+            updateStats(); updateTabCounts();
+            if (_activeTab !== 'active') switchTab('active');
+            else applyFilters();
+            closeAddCandModal();
+            showToast('Candidate added. Send a portal invite to share login credentials.', 'success', 'Send Invite', () => sendInvite(newCand.id));
+        } catch(e) { showToast('Failed to add candidate.', 'error'); }
+    };
+
+    async function sendInvite(id) {
+        try {
+            await db.sendPortalInvite(id);
+            showToast('Portal invite sent to candidate.', 'success');
+        } catch(e) { showToast('Failed to send invite.', 'error'); }
+    }
+
+    // ── Candidate Detail Panel ──────────────────────────────────────
+    window.openCandDetail = async function(id) {
+        _detailCandidate = id;
+        _editingRoundId  = null;
+        _showAddRoundForm = false;
+        _showAddDocForm   = false;
+        const c = _candidates.find(c => c.id === id);
+        if (!c) return;
+        const cdpAv = document.getElementById('cdpAvatar');
+        cdpAv.textContent = getInitials(c.fullName);
+        cdpAv.style.background = avatarColor(c.fullName);
+        document.getElementById('cdpName').textContent   = c.fullName;
+        document.getElementById('cdpMeta').textContent   = c.designation + ' · ' + c.department + ' · ' + c.companyTag;
+        switchCdpTab('overview');
+        document.getElementById('cdpOverlay').classList.add('open');
+        // Render overview immediately from summary data
+        renderCdpOverview(c);
+        // Load full detail
+        try {
+            _detailData = await db.getAdminCandidateDetail(id);
+            renderCdpOverview(_detailData);
+            if (document.querySelector('.cdp-tab.active')?.dataset.tab === 'rounds') renderCdpRounds();
+            if (document.querySelector('.cdp-tab.active')?.dataset.tab === 'docs')   renderCdpDocs();
+        } catch(e) { console.warn('Detail load failed', e); }
+    };
+
+    window.closeCandDetail = function(e) {
+        if (e && e.target !== document.getElementById('cdpOverlay')) return;
+        document.getElementById('cdpOverlay').classList.remove('open');
+        _detailCandidate = null; _detailData = null;
+    };
+
+    window.switchCdpTab = function(tab) {
+        document.querySelectorAll('.cdp-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+        document.querySelectorAll('.cdp-tab-pane').forEach(p => p.classList.remove('active'));
+        const paneMap = { overview: 'cdpOverviewPane', rounds: 'cdpRoundsPane', docs: 'cdpDocsPane' };
+        document.getElementById(paneMap[tab]).classList.add('active');
+        if (tab === 'rounds' && _detailData) renderCdpRounds();
+        if (tab === 'docs'   && _detailData) renderCdpDocs();
+    };
+
+    function renderCdpOverview(c) {
+        const rows = [
+            { label: 'Applied On',        val: c.appliedOn || formatDate(c.submittedAt) || '—' },
+            { label: 'Source',             val: c.source || '—' },
+            { label: 'Manager',            val: (c.assignedManagerNames || []).join(', ') || c.originatingManagerName || '—' },
+            { label: 'Current Stage',      val: stageLabel(c.currentStage) },
+            { label: 'Offer Status',       val: offerStatusLabel(c.offerLetterStatus) },
+            { label: 'Decision',           val: capitalise(c.companyDecision || 'pending') },
+        ];
+        if (c.currentStage === 'rejected' && c.rejectionReason) {
+            rows.push({ label: 'Rejection Reason', val: c.rejectionReason });
+        }
+        document.getElementById('cdpOverviewGrid').innerHTML = rows.map(r =>
+            `<div class="cdp-ov-item"><div class="cdp-ov-label">${escapeHtml(r.label)}</div><div class="cdp-ov-val">${escapeHtml(r.val)}</div></div>`
+        ).join('');
+    }
+
+    // ── Rounds tab ─────────────────────────────────────────────────
+    function renderCdpRounds() {
+        if (!_detailData) return;
+        const rounds = _detailData.hiringRounds && _detailData.hiringRounds.length
+            ? _detailData.hiringRounds
+            : [{ roundId: 'r1', stageName: 'Job Application', status: 'completed', subtitle: 'Application submitted', order: 1, locked: true, date: 'Applied' }];
+        const canEdit = true;
+
+        let html = '<div class="modal-timeline">';
+        rounds.forEach((r, i) => {
+            const isLast = i === rounds.length - 1;
+            const dotCls = r.status === 'completed' ? 'completed' : r.status === 'rejected' ? 'rejected' : 'pending';
+            const isEditing = _editingRoundId === r.roundId;
+
+            html += `<div class="mtl-item">
+                <div class="mtl-left">
+                    <div class="mtl-dot ${dotCls}">${i + 1}</div>
+                    ${!isLast ? '<div class="mtl-connector"></div>' : ''}
+                </div>
+                <div class="mtl-content">
+                    <div class="mtl-row">
+                        <span class="mtl-name">${escapeHtml(r.stageName || r.name || 'Round')}</span>
+                        <div class="mtl-badges">
+                            <span class="mtl-badge ${dotCls}">${capitalise(r.status || 'pending')}</span>
+                            ${r.locked ? '<span class="mtl-lock-badge"><i class="ph ph-lock"></i> Locked</span>' : ''}
+                            ${canEdit && !r.locked ? `<button class="mtl-edit-btn" onclick="toggleEditRound('${r.roundId}')"><i class="ph ph-pencil-simple"></i></button>` : ''}
+                        </div>
+                    </div>
+                    ${r.date ? `<div class="mtl-date">${escapeHtml(r.date)}</div>` : ''}
+                    ${r.notes ? `<div class="mtl-notes">"${escapeHtml(r.notes)}"</div>` : ''}
+                    ${isEditing ? buildRoundForm(r) : ''}
+                </div>
+            </div>`;
+        });
+        html += '</div>';
+
+        if (canEdit) {
+            if (_showAddRoundForm) {
+                html += buildRoundForm(null);
+            } else {
+                html += `<button class="add-round-btn" style="margin-top:12px;" onclick="showAddRoundForm()"><i class="ph ph-plus-circle"></i> Add Round</button>`;
+            }
+        }
+        document.getElementById('cdpRoundsContent').innerHTML = html;
+    }
+
+    function buildRoundForm(r) {
+        const isEdit = !!r;
+        return `<div class="round-form" style="margin-top:10px;">
+            <div class="round-form-title">${isEdit ? 'Edit Round' : 'Add New Round'}</div>
+            <div class="round-form-row">
+                <div class="rfi">
+                    <label>Round Name</label>
+                    <input type="text" id="rfName" value="${isEdit ? escapeHtml(r.stageName || r.name || '') : ''}" placeholder="e.g. Technical Interview">
+                </div>
+                <div class="rfi">
+                    <label>Status</label>
+                    <select id="rfStatus">
+                        <option value="pending"   ${(!isEdit || r.status==='pending')   ? 'selected':''}>Pending</option>
+                        <option value="completed" ${(isEdit && r.status==='completed')  ? 'selected':''}>Completed</option>
+                        <option value="rejected"  ${(isEdit && r.status==='rejected')   ? 'selected':''}>Rejected</option>
+                    </select>
+                </div>
+            </div>
+            <div class="round-form-row">
+                <div class="rfi">
+                    <label>Date</label>
+                    <input type="text" id="rfDate" value="${isEdit ? escapeHtml(r.date || '') : ''}" placeholder="e.g. May 10, 2026">
+                </div>
+            </div>
+            <textarea class="round-form-notes" id="rfNotes" placeholder="Notes (optional)...">${isEdit ? escapeHtml(r.notes || '') : ''}</textarea>
+            <div class="round-form-actions">
+                <button class="rfa-save" onclick="${isEdit ? `saveEditRound('${r.roundId}')` : 'saveNewRound()'}">${isEdit ? 'Save Changes' : 'Add Round'}</button>
+                <button class="rfa-cancel" onclick="${isEdit ? 'cancelEditRound()' : 'cancelAddRound()'}">Cancel</button>
+            </div>
+        </div>`;
+    }
+
+    window.toggleEditRound = function(roundId) {
+        _editingRoundId  = _editingRoundId === roundId ? null : roundId;
+        _showAddRoundForm = false;
+        renderCdpRounds();
+    };
+    window.cancelEditRound = function() { _editingRoundId = null; renderCdpRounds(); };
+    window.showAddRoundForm = function() { _showAddRoundForm = true; _editingRoundId = null; renderCdpRounds(); };
+    window.cancelAddRound  = function() { _showAddRoundForm = false; renderCdpRounds(); };
+
+    window.showAddDocForm   = function() { _showAddDocForm = true; renderCdpDocs(); };
+    window.cancelAddDocForm = function() { _showAddDocForm = false; renderCdpDocs(); };
+    window.saveAdminDocRequest = async function() {
+        const label = document.getElementById('dfLabel').value.trim();
+        const desc  = document.getElementById('dfDesc').value.trim();
+        if (!label) { showToast('Document label is required.', 'error'); return; }
+        try {
+            await db.requestCandidateDocument(_detailCandidate, label, desc);
+            if (!_detailData.requestedDocuments) _detailData.requestedDocuments = [];
+            _detailData.requestedDocuments.push({
+                docId: 'CDOC' + Date.now(),
+                label: label,
+                documentLabel: label,
+                description: desc || null,
+                uploadedFileName: null,
+                uploadedFileUrl: null,
+                finalStatus: 'not_uploaded'
+            });
+            const sc = _candidates.find(c => c.id === _detailCandidate);
+            if (sc) sc.docsRequested = (sc.docsRequested || 0) + 1;
+            _showAddDocForm = false;
+            renderCdpDocs();
+            showToast('Document requested.', 'success');
+        } catch(e) { showToast('Failed to request document.', 'error'); }
+    };
+
+    window.saveEditRound = async function(roundId) {
+        const name   = document.getElementById('rfName').value.trim();
+        const status = document.getElementById('rfStatus').value;
+        const date   = document.getElementById('rfDate').value.trim();
+        const notes  = document.getElementById('rfNotes').value.trim();
+        if (!name) { showToast('Round name is required.', 'error'); return; }
+        try {
+            await db.updateHiringRound(_detailCandidate, roundId, { stageName: name, status, date: date || null, notes: notes || null });
+            const r = _detailData.hiringRounds.find(r => r.roundId === roundId || r.id === roundId);
+            if (r) { r.stageName = name; r.status = status; r.date = date || null; r.notes = notes || null; }
+            const sc = _candidates.find(c => c.id === _detailCandidate);
+            if (sc) { sc.latestRoundName = name; sc.latestRoundStatus = status; }
+            _editingRoundId = null;
+            renderCdpRounds();
+            showToast('Round updated.', 'success');
+        } catch(e) { showToast('Failed to update round.', 'error'); }
+    };
+
+    window.saveNewRound = async function() {
+        const name   = document.getElementById('rfName').value.trim();
+        const status = document.getElementById('rfStatus').value;
+        const date   = document.getElementById('rfDate').value.trim();
+        const notes  = document.getElementById('rfNotes').value.trim();
+        if (!name) { showToast('Round name is required.', 'error'); return; }
+        try {
+            const newRound = await db.addHiringRound(_detailCandidate, { stageName: name, status, date: date || null, notes: notes || null });
+            if (!_detailData.hiringRounds) _detailData.hiringRounds = [];
+            _detailData.hiringRounds.push(newRound);
+            const sc = _candidates.find(c => c.id === _detailCandidate);
+            if (sc) { sc.roundsCount = (sc.roundsCount || 0) + 1; sc.latestRoundName = name; sc.latestRoundStatus = status; }
+            _showAddRoundForm = false;
+            renderCdpRounds();
+            showToast('Round added.', 'success');
+        } catch(e) { showToast('Failed to add round.', 'error'); }
+    };
+
+    // ── Docs tab ───────────────────────────────────────────────────
+    function renderCdpDocs() {
+        if (!_detailData) return;
+        const docs  = _detailData.requestedDocuments || [];
+        const canAct = true;
+
+        let html = '';
+        if (docs.length === 0) {
+            html = '<div class="empty-state"><i class="ph ph-files"></i><p>No documents requested yet.</p></div>';
+        } else {
+            docs.forEach(d => {
+                const docName     = d.label || d.documentLabel || 'Document';
+                const hasFile     = !!(d.uploadedFileName || d.fileName || d.fileUrl);
+                const status      = hasFile ? (d.finalStatus || d.status) : 'not_uploaded';
+                const statusLabel = docStatusLabel(status);
+                const fileUrl     = d.uploadedFileUrl || d.fileUrl;
+                const fileName    = d.uploadedFileName || d.fileName;
+                const mockUrl     = fileUrl && !fileUrl.startsWith('mock://') ? fileUrl : 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+                const fileHtml    = hasFile ? `<button class="mdi-file" style="border:none;background:none;cursor:pointer;padding:0;font:inherit;text-align:left;color:var(--accent)" onclick="window.showDocumentPreview('${escapeHtml(mockUrl)}', '${escapeHtml(fileName)}')"><i class="ph ph-paperclip"></i>${escapeHtml(fileName)}</button>` : '';
+                const isRejectOpen = d._rejectFormOpen;
+
+                let actionsHtml = '';
+                if (canAct && hasFile) {
+                    if (status === 'pending' || status === 'manager_verified') {
+                        actionsHtml += `<button class="mdi-verify-btn" onclick="adminVerifyDoc('${d.docId || d.id}')"><i class="ph ph-check"></i> Admin Verify</button>`;
+                    }
+                    if (status !== 'fully_verified' && status !== 'rejected') {
+                        actionsHtml += `<button class="mdi-reject-btn" onclick="toggleDocRejectForm('${d.docId || d.id}')"><i class="ph ph-x"></i> Reject</button>`;
+                    }
+                }
+
+                html += `<div class="modal-doc-item" id="mdi-${d.docId || d.id}">
+                    <div class="mdi-top">
+                        <div class="mdi-icon"><i class="ph ph-file-text"></i></div>
+                        <div class="mdi-info">
+                            <div class="mdi-label">${escapeHtml(docName)}</div>
+                            ${d.description ? `<div class="mdi-desc">${escapeHtml(d.description)}</div>` : ''}
+                            ${fileHtml}
+                        </div>
+                    </div>
+                    <div class="mdi-status-row">
+                        <span class="mdi-status-badge ${status}">${statusLabel}</span>
+                        ${actionsHtml ? `<div class="mdi-actions">${actionsHtml}</div>` : ''}
+                    </div>
+                    ${d.rejectionReason || d.rejectReason ? `<div style="font-size:11px;color:var(--danger);margin-top:6px;"><i class="ph ph-warning"></i> ${escapeHtml(d.rejectionReason || d.rejectReason)}</div>` : ''}
+                    ${isRejectOpen ? `<div class="mdi-reject-form">
+                        <textarea class="mdi-reject-input" id="drf-${d.docId || d.id}" placeholder="Reason for rejection..."></textarea>
+                        <div class="mdi-reject-actions">
+                            <button class="mdi-reject-confirm-btn" onclick="submitDocReject('${d.docId || d.id}')">Confirm Reject</button>
+                            <button class="rfa-cancel" onclick="toggleDocRejectForm('${d.docId || d.id}')">Cancel</button>
+                        </div>
+                    </div>` : ''}
+                </div>`;
+            });
+        }
+
+        if (_showAddDocForm) {
+            html += `<div class="round-form" style="margin-top:12px;">
+                <div class="round-form-title">Request Document</div>
+                <div class="round-form-row">
+                    <div class="rfi" style="flex:1;">
+                        <label>Document Label</label>
+                        <input type="text" id="dfLabel" placeholder="e.g. Relieving Letter / Degree Certificate">
+                    </div>
+                </div>
+                <div class="round-form-row">
+                    <div class="rfi" style="flex:1;">
+                        <label>Description / Notes (optional)</label>
+                        <input type="text" id="dfDesc" placeholder="Instructions for candidate...">
+                    </div>
+                </div>
+                <div class="round-form-actions">
+                    <button class="rfa-save" onclick="saveAdminDocRequest()">Request</button>
+                    <button class="rfa-cancel" onclick="cancelAddDocForm()">Cancel</button>
+                </div>
+            </div>`;
+        } else {
+            html += `<button class="add-round-btn" style="margin-top:12px;" onclick="showAddDocForm()"><i class="ph ph-plus-circle"></i> Request Document</button>`;
+        }
+
+        document.getElementById('cdpDocsContent').innerHTML = html;
+    }
+
+    window.adminVerifyDoc = async function(docId) {
+        try {
+            await db.adminVerifyCandidateDocument(_detailCandidate, docId);
+            const d = _detailData.requestedDocuments.find(d => d.docId === docId);
+            if (d) d.finalStatus = 'fully_verified';
+            // Update summary count
+            const sc = _candidates.find(c => c.id === _detailCandidate);
+            if (sc) sc.docsVerified = (_detailData.requestedDocuments.filter(d => d.finalStatus === 'fully_verified')).length;
+            renderCdpDocs();
+            showToast('Document verified successfully.', 'success');
+        } catch(e) { showToast('Failed to verify document.', 'error'); }
+    };
+
+    window.toggleDocRejectForm = function(docId) {
+        const d = _detailData.requestedDocuments.find(d => d.docId === docId);
+        if (d) d._rejectFormOpen = !d._rejectFormOpen;
+        renderCdpDocs();
+    };
+
+    window.submitDocReject = async function(docId) {
+        const reason = document.getElementById('drf-' + docId)?.value.trim() || '';
+        try {
+            await db.adminRejectCandidateDocument(_detailCandidate, docId, reason);
+            const d = _detailData.requestedDocuments.find(d => d.docId === docId);
+            if (d) { d.finalStatus = 'rejected'; d.rejectionReason = reason; d._rejectFormOpen = false; }
+            renderCdpDocs();
+            showToast('Document rejected.', 'success');
+        } catch(e) { showToast('Failed to reject document.', 'error'); }
+    };
+
+    window.showReqDocForm = function() { _showAddDocForm = true; renderCdpDocs(); };
+    window.cancelReqDoc   = function() { _showAddDocForm = false; renderCdpDocs(); };
+
+    window.submitReqDoc = async function() {
+        const label = document.getElementById('rdfLabel').value.trim();
+        const desc  = document.getElementById('rdfDesc').value.trim();
+        if (!label) { showToast('Document label is required.', 'error'); return; }
+        try {
+            const newDoc = await db.adminRequestCandidateDocument(_detailCandidate, label, desc || null);
+            _detailData.requestedDocuments.push(newDoc);
+            const sc = _candidates.find(c => c.id === _detailCandidate);
+            if (sc) sc.docsRequested++;
+            _showAddDocForm = false;
+            renderCdpDocs();
+            showToast('Document requested.', 'success');
+        } catch(e) { showToast('Failed to request document.', 'error'); }
+    };
+
+    // ── Helpers ────────────────────────────────────────────────────
+    const _AV_PALETTE = ['#3b82f6','#77ca00','#c084fc','#fbbf24','#f87171','#c8854a','#2dd4bf','#a78bfa'];
+    function avatarColor(name) {
+        if (!name) return _AV_PALETTE[0];
+        let h = 0;
+        for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+        return _AV_PALETTE[Math.abs(h) % _AV_PALETTE.length];
+    }
+    function escapeHtml(str) {
+        if (str == null) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    function getInitials(name) {
+        if (!name) return '?';
+        const parts = name.trim().split(' ');
+        if (parts.length === 1) return parts[0][0].toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    }
+    function capitalise(s) { if (!s) return ''; return s.charAt(0).toUpperCase() + s.slice(1); }
+    function formatDate(iso) {
+        if (!iso) return '—';
+        try { return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+        catch(e) { return String(iso); }
+    }
+    function formatDaysAgo(iso) {
+        if (!iso) return '';
+        const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+        if (days === 0) return 'Today';
+        if (days === 1) return '1 day ago';
+        return days + ' days ago';
+    }
+    function stageLabel(s) {
+        return { document_collection: 'Rounds & Docs', offer_draft: 'Offer Draft', offer_stage: 'Offer Stage', post_acceptance: 'Post Acceptance', joined: 'Joined', accepted: 'Hired', rejected: 'Rejected' }[s] || capitalise(s || '');
+    }
+    function offerStatusLabel(s) {
+        return {
+            not_started:          'Not Started',
+            draft_by_manager:     'Draft Prepared',
+            pending_admin_review: 'Pending Admin Review',
+            admin_approved:       'Approved — With Finance',
+            sent:                 'Sent to Candidate',
+            accepted:             'Accepted',
+            rejected:             'Rejected',
+        }[s] || capitalise(s || '—');
+    }
+    function docStatusLabel(s) {
+        return {
+            pending:          'Uploaded — Pending Review',
+            not_uploaded:     'Not Uploaded',
+            manager_verified: 'Manager Verified',
+            fully_verified:   'Fully Verified',
+            rejected:         'Rejected',
+        }[s] || capitalise(s || '');
+    }
+    function roundStatusColor(s) {
+        return { completed: 'var(--success)', pending: 'var(--blue)', rejected: 'var(--danger)' }[s] || 'var(--text-muted)';
+    }
+
+    // ── Toast ──────────────────────────────────────────────────────
+    window.showToast = function(msg, type = 'info', actionLabel, actionFn) {
+        const iconMap = { success: 'ph-check-circle', error: 'ph-x-circle', info: 'ph-info' };
+        const ic = iconMap[type] || 'ph-info';
+        const id = 'toast-' + Date.now();
+        const actionHtml = actionLabel ? `<button class="toast-action" onclick="window._toastActions['${id}']()">${escapeHtml(actionLabel)}</button>` : '';
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        el.id = id;
+        el.innerHTML = `<i class="ph-fill ${ic} toast-icon"></i><span class="toast-msg">${escapeHtml(msg)}</span>${actionHtml}`;
+        if (actionFn) { window._toastActions = window._toastActions || {}; window._toastActions[id] = actionFn; }
+        document.getElementById('toastContainer').appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(8px)'; el.style.transition = 'opacity .3s, transform .3s'; setTimeout(() => el.remove(), 350); }, 4000);
+    };
+
+    // ── Hold Reminder Check ─────────────────────────────────────────
+    function checkHoldReminders() {
+        const now = new Date();
+        const due = _candidates.filter(c => {
+            if (!c.holdDetails?.isOnHold) return false;
+            if (localStorage.getItem('dismissed_hold_' + c.id) === 'true') return false;
+            const remStr = c.holdDetails.reminderAt || c.holdDetails.holdReminder;
+            if (!remStr) return false;
+            const remDate = new Date(remStr);
+            return remDate <= now;
+        });
+        if (due.length === 0) return;
+        const list = document.getElementById('holdReminderList');
+        list.innerHTML = due.map(c => {
+            const setByDisplay = c.holdDetails.setByText 
+                || (c.holdDetails.setByRole === 'super_admin' || c.holdDetails.setByRole === 'admin' ? 'Admin' : (c.holdDetails.setByName ? 'Manager \u2022 ' + c.holdDetails.setByName : 'Admin'));
+            return `
+            <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;">
+                <div style="font-weight:600;font-size:13px;color:var(--text);">${escapeHtml(c.fullName)}</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">${escapeHtml(c.designation)} &bull; ${escapeHtml(c.department)}</div>
+                <div style="font-size:11px;color:var(--warning);margin-top:5px;"><i class="ph ph-info"></i> ${escapeHtml(c.holdDetails.reason || 'No reason specified')}</div>
+                <div style="font-size:11px;color:var(--text-faint);margin-top:3px;">Set by: ${escapeHtml(setByDisplay)}</div>
+                <div style="display:flex;gap:8px;margin-top:10px;">
+                    <button class="cand-action-btn unhold-btn" style="font-size:11px;padding:5px 10px;" onclick="adminRemoveHold('${escapeHtml(c.id)}');dismissHoldReminder('${escapeHtml(c.id)}');">Remove Hold</button>
+                    <button class="cand-action-btn view-btn" style="font-size:11px;padding:5px 10px;" onclick="openCandDetail('${escapeHtml(c.id)}');dismissHoldReminder('${escapeHtml(c.id)}');">View Detail</button>
+                </div>
+            </div>`;
+        }).join('');
+        document.getElementById('holdReminderOverlay').classList.add('open');
+    }
+
+    window.dismissHoldReminder = function(candidateId) {
+        if (candidateId) localStorage.setItem('dismissed_hold_' + candidateId, 'true');
+        closeHoldReminderPopup();
+    };
+
+    window.closeHoldReminderPopup = function() {
+        const now = new Date();
+        _candidates.forEach(c => {
+            if (c.holdDetails?.isOnHold) {
+                const remStr = c.holdDetails.reminderAt || c.holdDetails.holdReminder;
+                if (remStr && new Date(remStr) <= now) {
+                    localStorage.setItem('dismissed_hold_' + c.id, 'true');
+                }
+            }
+        });
+        document.getElementById('holdReminderOverlay').classList.remove('open');
+    };
+
+    async function loadApprovalBadge() {
+        try {
+            const counts = await db.getPendingApprovalCounts();
+            const total  = Object.values(counts).reduce((a, b) => a + b, 0);
+            const badge  = document.getElementById('sidebarApprovalBadge');
+            if (badge) {
+                if (total > 0) {
+                    badge.textContent   = total > 99 ? '99+' : total;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        } catch (err) { /* silent */ }
+    }
+
+    // ── Init ───────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async function() {
+        loadApprovalBadge();
+        setInterval(checkHoldReminders, 10000);
+        if (typeof firebase !== 'undefined') {
+            firebase.auth().onAuthStateChanged(async (user) => {
+                await loadAll();
+                loadNotifications();
+                checkHoldReminders();
+                if (db && db.subscribeToNotifications) {
+                    db.subscribeToNotifications(() => {
+                        loadNotifications();
+                        checkHoldReminders();
+                    });
+                }
+            });
+        } else {
+            await loadAll();
+            loadNotifications();
+            checkHoldReminders();
+        }
+    });
+
+        // ── Negotiations Logic ───────────────────────────────────────
+        let _negoCandId = null;
+        window.openNegoModal = function(candidateId) {
+            _negoCandId = candidateId;
+            const pipeline = typeof _candidatePipeline !== 'undefined' ? _candidatePipeline : (typeof _candidates !== 'undefined' ? _candidates : []);
+            const c = pipeline.find(x => x.id === candidateId);
+            if (!c) return;
+            document.getElementById('negoCandName').textContent = c.fullName;
+            renderNegoThread(c);
+            
+            const isManager = window.location.pathname.includes('manager');
+            const reviseArea = document.getElementById('negoReviseArea');
+            if (isManager && c.offerLetterStatus === 'negotiating') {
+                reviseArea.innerHTML = `<button class="cand-primary-btn btn-amber" onclick="mgrReviseOffer()"><i class="ph-fill ph-pencil-simple" style="font-size:12px;margin-right:5px;"></i>Revise Offer Letter</button>`;
+            } else {
+                reviseArea.innerHTML = '';
+            }
+            
+            document.getElementById('negotiationOverlay').classList.add('open');
+        }
+        
+        window.closeNegoModal = function() {
+            document.getElementById('negotiationOverlay').classList.remove('open');
+            _negoCandId = null;
+        }
+        
+        function renderNegoThread(c) {
+            const wrap = document.getElementById('negoThreadContent');
+            const thread = c.offerNegotiations || [];
+            if (thread.length === 0) {
+                wrap.innerHTML = `<div style="font-size:13px; color:var(--text-faint); font-style:italic;">No negotiation messages yet.</div>`;
+                return;
+            }
+            
+            const isManager = window.location.pathname.includes('manager');
+            const myRole = isManager ? 'manager' : 'admin';
+            
+            wrap.innerHTML = thread.map(msg => {
+                const isCompany = msg.senderRole !== 'candidate';
+                const bg = isCompany ? 'rgba(96,165,250,0.1)' : 'rgba(119,202,0,0.1)';
+                const border = isCompany ? 'rgba(96,165,250,0.2)' : 'rgba(119,202,0,0.2)';
+                const align = isCompany ? 'flex-end' : 'flex-start';
+                return `
+                <div style="align-self:${align}; background:${bg}; border:1px solid ${border}; border-radius:12px; padding:10px 14px; max-width:85%;">
+                    <div style="font-size:11px; color:var(--text-faint); margin-bottom:4px; display:flex; justify-content:space-between; gap:12px;">
+                        <span>${escapeHtml(msg.senderName)} (${escapeHtml(msg.senderRole)})</span>
+                        <span>${escapeHtml(msg.timestamp || '')}</span>
+                    </div>
+                    <div style="font-size:13px; color:var(--text); white-space:pre-wrap;">${escapeHtml(msg.message)}</div>
+                </div>
+                `;
+            }).join('');
+            wrap.scrollTop = wrap.scrollHeight;
+        }
+        
+        window.mgrSendNego = async function() {
+            if (!_negoCandId) return;
+            const inp = document.getElementById('mgrNegoInput');
+            const msg = inp.value.trim();
+            if (!msg) return;
+            
+            const pipeline = typeof _candidatePipeline !== 'undefined' ? _candidatePipeline : (typeof _candidates !== 'undefined' ? _candidates : []);
+            const c = pipeline.find(x => x.id === _negoCandId);
+            if (!c.offerNegotiations) c.offerNegotiations = [];
+            
+            const isManager = window.location.pathname.includes('manager');
+            const role = isManager ? 'manager' : 'admin';
+            const name = role === 'manager' ? 'Hiring Manager' : 'HR Admin';
+            
+            c.offerNegotiations.push({
+                senderRole: role,
+                senderName: name,
+                message: msg,
+                timestamp: new Date().toLocaleDateString('en-IN', { hour: '2-digit', minute: '2-digit' })
+            });
+            
+            inp.value = '';
+            renderNegoThread(c);
+            
+            if (typeof db !== 'undefined' && db.submitNegotiationMessage) {
+                await db.submitNegotiationMessage(_negoCandId, role, name, msg);
+            }
+        }
+        
+        window.mgrReviseOffer = async function() {
+            if (!_negoCandId) return;
+            const pipeline = typeof _candidatePipeline !== 'undefined' ? _candidatePipeline : (typeof _candidates !== 'undefined' ? _candidates : []);
+            const c = pipeline.find(x => x.id === _negoCandId);
+            
+            c.offerLetterStatus = 'not_started';
+            c.currentStage = 'offer_draft';
+            
+            if (typeof db !== 'undefined' && db.setOfferStatusToDraft) {
+                await db.setOfferStatusToDraft(_negoCandId);
+            }
+            
+            closeNegoModal();
+            renderCandidatePipeline();
+            if (typeof openPrepareOfferModal !== 'undefined') openPrepareOfferModal(_negoCandId);
+            showToast('Offer status reset to Draft. You can now revise the details.', 'info');
+        }
+
+})();
+</script>
+</body>
+</html>
+

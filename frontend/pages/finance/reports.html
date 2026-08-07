@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Finance Reports</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --accent:#77ca00; --accent-light:#a0e040; --accent-glow:rgba(119,202,0,0.35);
+            --brown:#a86a3e; --brown-light:#c8854a; --brown-glow:rgba(168,106,62,0.25);
+            --bg:#07070f; --text:#f1f1f5; --text-muted:rgba(241,241,245,0.55);
+            --text-faint:rgba(241,241,245,0.2); --icon-faint:rgba(241,241,245,0.3);
+            --icon-muted:rgba(241,241,245,0.65); --glass-bg:rgba(255,255,255,0.04);
+            --glass-border:rgba(255,255,255,0.08); --sidebar-w:240px; --topbar-h:64px;
+            --success:#4ade80; --success-bg:rgba(74,222,128,0.12);
+            --warning:#fbbf24; --warning-bg:rgba(251,191,36,0.12);
+            --danger:#f87171;  --danger-bg:rgba(248,113,113,0.12);
+            --blue:#60a5fa;    --blue-bg:rgba(96,165,250,0.12);
+        }
+        [data-theme="light"] {
+            --bg:#f0f6e8; --accent:#5a9900; --accent-light:#77ca00; --accent-glow:rgba(90,153,0,0.2);
+            --text:#1a2010; --text-muted:rgba(26,32,16,0.58); --text-faint:rgba(26,32,16,0.35);
+            --icon-faint:rgba(26,32,16,0.32); --icon-muted:rgba(26,32,16,0.65);
+            --glass-bg:rgba(255,255,255,0.82); --glass-border:rgba(26,32,16,0.1);
+            --success-bg:rgba(50,140,70,0.1); --warning-bg:rgba(180,130,0,0.09);
+            --danger-bg:rgba(200,50,50,0.08); --blue-bg:rgba(50,100,200,0.08);
+        }
+        [data-theme="light"] .bg { background: radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%), #f0f6e8; }
+        [data-theme="light"] .orb     { opacity: 0.18; }
+        [data-theme="light"] .sidebar { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar  { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card    { box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+        [data-theme="light"] .nav-item:hover { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .notif-btn, [data-theme="light"] .theme-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .notif-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .notif-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .mark-read-link { color: #4a7000; }
+        [data-theme="light"] .rpt-table thead tr { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .rpt-table td { border-color: rgba(0,0,0,0.05); }
+        [data-theme="light"] .rpt-table tbody tr:hover { background: rgba(0,0,0,0.025); }
+        [data-theme="light"] .bar-fill { opacity: 0.9; }
+        [data-theme="light"] .chart-axis-label { color: rgba(26,32,16,0.35); }
+        [data-theme="light"] .hc-badge { background: rgba(0,0,0,0.04); }
+
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        .bg { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%), radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%), var(--bg); }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ── */
+        .sidebar { width: var(--sidebar-w); height: 100vh; flex-shrink: 0; display: flex; flex-direction: column; background: rgba(255,255,255,0.025); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--glass-border); padding: 24px 14px; overflow: hidden; overflow-y: auto; transition: width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed { width: 64px; }
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        [data-theme="light"] .nav-item.active { color: var(--accent); }
+        [data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item  { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+        .sidebar.collapsed .nav-item[data-tip]:hover::after { content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border); border-radius: 8px; padding: 5px 10px; font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap; pointer-events: none; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+        /* ── Main ── */
+        .main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; scrollbar-width: none; -ms-overflow-style: none; }
+        .main-area::-webkit-scrollbar { display: none; }
+        .topbar { height: var(--topbar-h); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: rgba(7,7,15,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 10; }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+        .topbar-greeting { font-size: 16px; font-weight: 600; }
+        .topbar-sub { font-size: 12px; color: var(--text-muted); }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+        .page-content { padding: 24px; flex: 1; }
+        .card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 18px; padding: 22px; box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.02) inset; margin-bottom: 20px; }
+
+        /* ── Report Controls ── */
+        .report-controls { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+        .ctrl-group { display: flex; flex-direction: column; gap: 6px; }
+        .ctrl-label { font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.6px; }
+        .month-input { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text); font-size: 13px; font-family: inherit; padding: 9px 13px; cursor: pointer; }
+        .month-input:focus { outline: none; border-color: var(--accent); }
+        .action-btn { display: flex; align-items: center; gap: 7px; padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 500; border: none; cursor: pointer; transition: all 0.15s; }
+        .action-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: #fff; box-shadow: 0 4px 14px var(--accent-glow); }
+        .action-btn.primary:hover { box-shadow: 0 6px 20px var(--accent-glow); transform: translateY(-1px); }
+        .action-btn.outline { background: none; border: 1px solid var(--glass-border); color: var(--text-muted); }
+        .action-btn.outline:hover { background: var(--glass-bg); color: var(--text); }
+
+        /* ── Section ── */
+        .section-title { font-size: 13.5px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section-title i { color: var(--accent-light); font-size: 16px; }
+
+        /* ── Dept Table ── */
+        .rpt-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .rpt-table thead tr { background: rgba(255,255,255,0.04); }
+        .rpt-table th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-faint); white-space: nowrap; }
+        .rpt-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        .rpt-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+        .rpt-table tbody tr:last-child td { border-bottom: none; }
+        .rpt-table .mono { font-size: 12.5px; }
+
+        /* ── Bar Chart ── */
+        .chart-container { width: 100%; }
+        .chart-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .chart-month { font-size: 11.5px; color: var(--text-muted); min-width: 50px; text-align: right; flex-shrink: 0; }
+        .chart-bar-track { flex: 1; height: 28px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); transition: width 0.7s cubic-bezier(0.22,1,0.36,1); display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; min-width: 2px; }
+        .bar-label { font-size: 11.5px; font-weight: 600; color: rgba(0,0,0,0.85); white-space: nowrap; }
+        .chart-axis-label { font-size: 11px; color: var(--text-faint); min-width: 70px; flex-shrink: 0; }
+        .chart-empty { text-align: center; padding: 32px; font-size: 13px; color: var(--text-faint); }
+
+        /* ── Headcount ── */
+        .hc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 14px; }
+        .hc-card { padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); text-align: center; }
+        .hc-count { font-size: 26px; font-weight: 800; line-height: 1.1; color: var(--accent-light); }
+        .hc-label { font-size: 12px; color: var(--text-muted); margin-top: 5px; text-transform: capitalize; }
+        .hc-badge { display: inline-block; margin-top: 6px; padding: 2px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 600; background: rgba(255,255,255,0.06); color: var(--text-faint); }
+        .empty-state { text-align: center; padding: 48px 24px; font-size: 13px; color: var(--text-faint); }
+        .results-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 56px 24px; color: var(--text-faint); font-size: 13px; }
+        .results-placeholder i { font-size: 40px; opacity: 0.35; }
+
+        /* ── MoM Trend ── */
+        .trend-up   { color: var(--success); }
+        .trend-down { color: var(--danger); }
+        .trend-flat { color: var(--text-faint); }
+
+        /* ── Cost Share bar ── */
+        .share-bar-track { width: 70px; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 7px; }
+        .share-bar-fill { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+        [data-theme="light"] .share-bar-track { background: rgba(0,0,0,0.08); }
+
+        /* ── Notifications ── */
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6); z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+        .notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 14px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+        .mark-read-link:hover { color: var(--accent-light); }
+        .notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
+        .notif-dropdown-body::-webkit-scrollbar { display: none; }
+        .notif-empty { text-align: center; padding: 28px; font-size: 13px; color: var(--text-faint); }
+        .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 14px 16px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 12px; font-size: 13px; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: slideIn 0.3s cubic-bezier(0.22,1,0.36,1); pointer-events: auto; }
+        .toast.success { border-color: rgba(74,222,128,0.3); }
+        .toast.error   { border-color: rgba(248,113,113,0.3); }
+        [data-theme="light"] .toast { background: #ffffff; color: #1a2010; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-color: rgba(0,0,0,0.1); }
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @media (max-width: 640px) { .sidebar { width: 64px; } .topbar { padding: 0 16px; } .page-content { padding: 16px; } .report-controls { flex-direction: column; align-items: flex-start; } }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+    <div class="bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-shell">
+
+        <!-- ── SIDEBAR ── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <button class="brand-toggle" onclick="toggleSidebar()">
+                    <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                    <div class="brand-hamburger"><span></span><span></span><span></span></div>
+                </button>
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-name">BeanHR</div>
+                    <div class="sidebar-brand-tag">Finance</div>
+                </div>
+            </div>
+            <span class="sidebar-section-label">FINANCE</span>
+            <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+                <span class="nav-icon"><i class="ph-fill ph-house ph-icon-fill"></i><i class="ph ph-house ph-icon-outline"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="payroll.html" class="nav-item" data-tip="Payroll">
+                <span class="nav-icon"><i class="ph-fill ph-money ph-icon-fill"></i><i class="ph ph-money ph-icon-outline"></i></span>
+                <span class="nav-label">Payroll</span>
+            </a>
+            <a href="payouts.html" class="nav-item" data-tip="Payouts">
+                <span class="nav-icon"><i class="ph-fill ph-hand-coins ph-icon-fill"></i><i class="ph ph-hand-coins ph-icon-outline"></i></span>
+                <span class="nav-label">Payouts</span>
+            </a>
+            <a href="reports.html" class="nav-item active" data-tip="Reports">
+                <span class="nav-icon"><i class="ph-fill ph-chart-bar ph-icon-fill"></i><i class="ph ph-chart-bar ph-icon-outline"></i></span>
+                <span class="nav-label">Reports</span>
+            </a>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <span class="nav-icon"><i class="ph-fill ph-sign-out ph-icon-fill"></i><i class="ph ph-sign-out ph-icon-outline"></i></span>
+                    <span class="logout-label">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── MAIN AREA ── -->
+        <div class="main-area">
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-greeting">Reports</div>
+                        <div class="topbar-sub" id="todayDate"></div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" onclick="toggleTheme()">
+                        <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                    </button>
+                    <div style="position:relative;">
+                        <button class="notif-btn" onclick="toggleNotifDropdown(event)">
+                            <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                            <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                            <span class="notif-badge" id="notifBadge" style="display:none;"></span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-dropdown-head">
+                                <div class="notif-dropdown-title">Notifications</div>
+                                <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                            </div>
+                            <div class="notif-dropdown-body" id="notifDropdownBody"><div class="notif-empty">No notifications</div></div>
+                        </div>
+                    </div>
+                    <div class="avatar">F</div>
+                </div>
+            </div>
+
+            <div class="page-content">
+
+                <!-- Report Params Card -->
+                <div class="card">
+                    <div class="report-controls">
+                        <div class="ctrl-group">
+                            <span class="ctrl-label">Start Month</span>
+                            <input type="month" class="month-input" id="startMonth" />
+                        </div>
+                        <div class="ctrl-group">
+                            <span class="ctrl-label">End Month</span>
+                            <input type="month" class="month-input" id="endMonth" />
+                        </div>
+                        <button class="action-btn primary" onclick="generateReport()">
+                            <i class="ph-fill ph-funnel" style="font-size:15px"></i> Generate Report
+                        </button>
+                        <button class="action-btn outline" onclick="exportCSV()" style="margin-left:auto;">
+                            <i class="ph-fill ph-download-simple" style="font-size:15px"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results area -->
+                <div id="reportResults">
+                    <div class="results-placeholder">
+                        <i class="ph-fill ph-chart-line-up"></i>
+                        Select a date range and click Generate Report
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../../js/db.js"></script>
+    <script>
+        // ── AUTH GUARD ──
+        (function() {
+            const role = sessionStorage.getItem('bhr_role');
+            if (!role || role !== 'finance') window.location.replace('../login.html');
+        })();
+
+        // ── THEME / SIDEBAR / UTILS ──
+        function _applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
+        function toggleTheme() {
+            const next = (localStorage.getItem('bhr_theme') || 'dark') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('bhr_theme', next);
+            _applyTheme(next);
+        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+        function toggleNotifDropdown(e) { if (e) e.stopPropagation(); document.getElementById('notifDropdown').classList.toggle('open'); }
+        async function markAllRead(e) {
+            if (e) e.preventDefault();
+            document.querySelectorAll('#notifDropdownBody .notif-item.unread').forEach(el => el.classList.remove('unread'));
+            document.getElementById('notifBadge').style.display = 'none';
+            showToast('All notifications marked as read', 'success');
+            if (window.db && db.markAllNotificationsRead) { try { await db.markAllNotificationsRead(); } catch(err){} }
+        }
+        async function dismissNotif(e, notificationId) {
+            e.stopPropagation();
+            const item = e.target.closest('.notif-item');
+            if (item) item.remove();
+            if (notificationId && window.db && db.deleteNotification) {
+                try { await db.deleteNotification(notificationId); } catch(err) {}
+            }
+        }
+        document.addEventListener('click', (e) => {
+            const d = document.getElementById('notifDropdown');
+            const b = document.querySelector('.notif-btn');
+            if (d && b && !d.contains(e.target) && !b.contains(e.target)) d.classList.remove('open');
+        });
+        function showToast(message, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = message;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+        function logout() {
+            sessionStorage.removeItem('bhr_role');
+            sessionStorage.removeItem('bhr_email');
+            window.location.replace('../login.html');
+        }
+        function updateTopbarDate() {
+            const now = new Date();
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            document.getElementById('todayDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        }
+        function escapeHtml(str) {
+            if (!str && str !== 0) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+        function formatMoney(n) {
+            return '₹' + new Intl.NumberFormat('en-IN').format(n || 0);
+        }
+        function monthLabel(iso) {
+            if (!iso) return '';
+            const [y, m] = iso.split('-');
+            const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${names[parseInt(m, 10) - 1]} '${y.slice(2)}`;
+        }
+
+        // ── REPORT GENERATION ──
+        async function generateReport() {
+            const start = document.getElementById('startMonth').value;
+            const end   = document.getElementById('endMonth').value;
+            if (!start || !end) { showToast('Please select both start and end months', 'error'); return; }
+            if (start > end)    { showToast('Start month must be before end month', 'error'); return; }
+
+            const container = document.getElementById('reportResults');
+            container.innerHTML = '<div class="results-placeholder"><i class="ph-fill ph-spinner" style="font-size:28px;animation:spin 1s linear infinite;"></i><span>Generating report…</span></div>';
+
+            try {
+                const [report, headcount] = await Promise.all([
+                    db.getFinanceReport(start, end),
+                    db.getHeadcountSummary()
+                ]);
+                renderReport(report, headcount);
+            } catch (err) {
+                container.innerHTML = `<div class="empty-state">Failed to generate report. ${escapeHtml(err.message || '')}</div>`;
+            }
+        }
+
+        function renderReport(report, headcount) {
+            const container = document.getElementById('reportResults');
+
+            const burnData = report.monthlyBurn || [];
+
+            // ── Dept table with % cost share column ──
+            const deptTotalBurn = (report.deptBreakdown || []).reduce((s, d) => s + d.totalBurn, 0);
+            const deptRows = (report.deptBreakdown || []).map(d => {
+                const pct = deptTotalBurn ? Math.round((d.totalBurn / deptTotalBurn) * 100) : 0;
+                return `
+                    <tr>
+                        <td>${escapeHtml(d.department)}</td>
+                        <td style="text-align:center;">${escapeHtml(d.headcount)}</td>
+                        <td class="mono">${formatMoney(d.totalBurn)}</td>
+                        <td class="mono">${formatMoney(d.avgSalary)}</td>
+                        <td><span class="share-bar-track"><span class="share-bar-fill" style="width:${pct}%"></span></span><span style="font-size:12px;color:var(--text-muted)">${pct}%</span></td>
+                    </tr>
+                `;
+            }).join('');
+
+            // ── Monthly Burn chart with MoM delta ──
+            const maxBurn   = Math.max(...burnData.map(b => b.amount), 1);
+            const chartBars = burnData.map((b, i) => {
+                const pct    = Math.max(4, Math.round((b.amount / maxBurn) * 100));
+                const mLabel = b.year ? escapeHtml(b.month + '\' ' + b.year) : escapeHtml(monthLabel(b.month));
+                const prev   = burnData[i - 1];
+                let deltaHtml = '<span style="min-width:60px;flex-shrink:0;"></span>';
+                if (prev) {
+                    const delta = ((b.amount - prev.amount) / prev.amount * 100).toFixed(1);
+                    const cls   = delta > 0 ? 'trend-up' : delta < 0 ? 'trend-down' : 'trend-flat';
+                    const arrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '→';
+                    deltaHtml   = `<span class="${cls}" style="font-size:11.5px;min-width:60px;flex-shrink:0;font-weight:600;">${arrow} ${Math.abs(delta)}%</span>`;
+                }
+                return `
+                    <div class="chart-row">
+                        <div class="chart-month">${mLabel}</div>
+                        <div class="chart-bar-track"><div class="bar-fill" style="width:${pct}%;"><span class="bar-label">${formatMoney(b.amount)}</span></div></div>
+                        ${deltaHtml}
+                    </div>
+                `;
+            }).join('');
+
+            // ── Headcount by role cards ──
+            const hcCards = (headcount.byRole || []).map(h => `
+                <div class="hc-card">
+                    <div class="hc-count">${escapeHtml(h.count)}</div>
+                    <div class="hc-label">${escapeHtml(h.role)}</div>
+                    <div class="hc-badge">${Math.round((h.count / (headcount.total || 1)) * 100)}%</div>
+                </div>
+            `).join('');
+
+            // ── Headcount by department bar chart ──
+            const maxDeptCount = Math.max(...(headcount.byDept || []).map(d => d.count), 1);
+            const deptBars = (headcount.byDept || []).map(d => {
+                const pct = Math.max(6, Math.round((d.count / maxDeptCount) * 100));
+                return `
+                    <div class="chart-row" style="margin-bottom:10px;">
+                        <div class="chart-month" style="min-width:150px;">${escapeHtml(d.department)}</div>
+                        <div class="chart-bar-track" style="height:24px;"><div class="bar-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--blue),#93c5fd);"><span class="bar-label">${escapeHtml(d.count)} staff</span></div></div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <!-- Dept Breakdown -->
+                <div class="card">
+                    <div class="section-title"><i class="ph-fill ph-buildings"></i> Department-wise Cost Breakdown</div>
+                    ${deptRows ? `
+                        <div style="overflow-x:auto;">
+                            <table class="rpt-table">
+                                <thead><tr><th>Department</th><th style="text-align:center;">Headcount</th><th>Total Burn</th><th>Avg Salary</th><th>Cost Share</th></tr></thead>
+                                <tbody>${deptRows}</tbody>
+                            </table>
+                        </div>
+                    ` : '<div class="empty-state">No department data for selected range</div>'}
+                </div>
+
+                <!-- Monthly Burn Chart -->
+                <div class="card">
+                    <div class="section-title">
+                        <i class="ph-fill ph-chart-bar"></i> Monthly Payroll Burn
+                    </div>
+                    ${chartBars ? `<div class="chart-container">${chartBars}</div>` : '<div class="chart-empty">No burn data for selected range</div>'}
+                </div>
+
+                <!-- Headcount by Role -->
+                <div class="card">
+                    <div class="section-title">
+                        <i class="ph-fill ph-users-three"></i> Headcount by Role
+                        <span style="font-size:12px;font-weight:500;color:var(--text-muted);margin-left:6px;">Total: ${escapeHtml(headcount.total)}</span>
+                    </div>
+                    ${hcCards ? `<div class="hc-grid">${hcCards}</div>` : '<div class="empty-state">No headcount data</div>'}
+                </div>
+
+                <!-- Headcount by Department -->
+                <div class="card">
+                    <div class="section-title"><i class="ph-fill ph-chart-bar-horizontal"></i> Headcount by Department</div>
+                    ${deptBars ? `<div class="chart-container" style="padding-top:4px;">${deptBars}</div>` : '<div class="chart-empty">No department data</div>'}
+                </div>
+            `;
+        }
+
+        function exportCSV() {
+            showToast('Export coming soon', 'success');
+        }
+
+        // ── NOTIFICATIONS ──
+        async function renderNotifications() {
+            try {
+                const notifs = await db.getAdminNotifications();
+                const body  = document.getElementById('notifDropdownBody');
+                const badge = document.getElementById('notifBadge');
+                if (!notifs || notifs.length === 0) { body.innerHTML = '<div class="notif-empty">No notifications</div>'; badge.style.display = 'none'; return; }
+                const unread = notifs.filter(n => !n.read).length;
+                badge.textContent = unread; badge.style.display = unread > 0 ? 'flex' : 'none';
+                body.innerHTML = notifs.map(n => `<div class="notif-item ${!n.read ? 'unread' : ''}"><div style="flex:1;"><div class="notif-title">${escapeHtml(n.title)}</div><div class="notif-msg">${escapeHtml(n.message)}</div></div><button class="notif-dismiss" onclick="dismissNotif(event)">&#x2715;</button></div>`).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        // ── INIT ──
+        window.addEventListener('DOMContentLoaded', async () => {
+            _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+            updateTopbarDate();
+
+            // Default: last 6 months
+            const now  = new Date();
+            const endV = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`;
+            const past = new Date(now);
+            past.setMonth(past.getMonth() - 5);
+            const startV = `${past.getFullYear()}-${String(past.getMonth() + 1).padStart(2,'0')}`;
+            document.getElementById('startMonth').value = startV;
+            document.getElementById('endMonth').value   = endV;
+
+            await renderNotifications();
+        });
+    </script>
+</body>
+</html>
+

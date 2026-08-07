@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — AI Search</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-light:  #c8854a;
+            --brown-glow:   rgba(168,106,62,0.25);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.2);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --icon-muted:   rgba(241,241,245,0.65);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --sidebar-w:    240px;
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --warning-bg:   rgba(251,191,36,0.12);
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        /* ── Light Theme ───────────────────────────────────── */
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.35);
+            --icon-faint:   rgba(26,32,16,0.32);
+            --icon-muted:   rgba(26,32,16,0.65);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(50,140,70,0.1);
+            --warning-bg:   rgba(180,130,0,0.09);
+            --danger-bg:    rgba(200,50,50,0.08);
+            --blue-bg:      rgba(50,100,200,0.08);
+        }
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb     { opacity: 0.18; }
+        [data-theme="light"] .orb-1   { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2   { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+        [data-theme="light"] .sidebar { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar  { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .chat-input-area { background: rgba(240,246,232,0.6); }
+        [data-theme="light"] .nav-item:hover  { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .notif-btn,
+        [data-theme="light"] .theme-btn       { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .notif-dropdown  { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .mark-read-link  { color: #4a7000; }
+        [data-theme="light"] .chat-input-wrap { background: rgba(255,255,255,0.7); border-color: rgba(26,32,16,0.12); }
+        [data-theme="light"] .chat-input-wrap:focus-within { border-color: rgba(90,153,0,0.45); }
+        [data-theme="light"] .user-bubble    { background: var(--accent); color: #fff; }
+        [data-theme="light"] .ai-bubble      { background: rgba(255,255,255,0.9); border-color: rgba(26,32,16,0.1); }
+        [data-theme="light"] .suggested-chip { background: rgba(255,255,255,0.7); border-color: rgba(26,32,16,0.1); }
+        [data-theme="light"] .suggested-chip:hover { background: rgba(90,153,0,0.08); border-color: rgba(90,153,0,0.3); }
+        [data-theme="light"] .emp-card        { background: rgba(255,255,255,0.7); border-color: rgba(26,32,16,0.08); }
+        [data-theme="light"] .emp-card:hover  { background: rgba(255,255,255,0.95); border-color: rgba(90,153,0,0.25); }
+        [data-theme="light"] .result-table th { background: rgba(26,32,16,0.04); }
+        [data-theme="light"] .result-table tr:hover td { background: rgba(0,0,0,0.02); }
+        [data-theme="light"] .result-card-head { background: rgba(90,153,0,0.07); }
+        [data-theme="light"] .export-btn:hover { background: rgba(90,153,0,0.1); color: var(--accent); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .empty-title     { color: #1a2010; }
+        [data-theme="light"] .suggested-chip  { color: rgba(26,32,16,0.82); }
+        [data-theme="light"] .emp-name        { color: #1a2010; }
+        [data-theme="light"] .emp-role        { color: rgba(26,32,16,0.72); }
+        [data-theme="light"] .ai-bubble       { color: #1a2010; }
+        [data-theme="light"] .result-table td { color: #1a2010; }
+        [data-theme="light"] .result-table th { color: rgba(26,32,16,0.72); }
+        [data-theme="light"] .raw-toggle-btn  { color: rgba(26,32,16,0.7); }
+        [data-theme="light"] .export-btn      { color: rgba(26,32,16,0.7); border-color: rgba(26,32,16,0.1); }
+        [data-theme="light"] .chat-textarea   { color: #1a2010; }
+        [data-theme="light"] .topbar-title    { color: #1a2010; }
+        [data-theme="light"] .result-count    { color: rgba(26,32,16,0.68); }
+        [data-theme="light"] .msg-ts          { color: rgba(26,32,16,0.48); }
+
+        /* ── Phosphor dual-icon ──────────────────────────── */
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── Animated Background ──────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App Shell ────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ──────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w);
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 14px;
+            overflow: hidden;
+            overflow-y: auto;
+            transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        .sidebar.collapsed { width: 64px; }
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        [data-theme="light"] .nav-item.active { color: var(--accent); }
+        [data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label  { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item   { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+        .nav-item[data-tip] { position: relative; }
+        .sidebar.collapsed .nav-item[data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+            background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border);
+            border-radius: 8px; padding: 5px 10px; font-size: 12.5px; font-weight: 500;
+            color: var(--text); white-space: nowrap; pointer-events: none; z-index: 200;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .nav-badge { min-width: 18px; height: 18px; background: var(--warning); border-radius: 9px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 5px; margin-left: auto; flex-shrink: 0; }
+        .sidebar.collapsed .nav-badge { position: absolute; top: 4px; right: 4px; min-width: 14px; height: 14px; font-size: 9px; padding: 0 3px; margin-left: 0; border: 1.5px solid var(--bg); }
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+        /* ── Main Area ────────────────────────────────────── */
+        .main-area { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+
+        /* ── Topbar ───────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(7,7,15,0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 10;
+        }
+        .topbar-left  { display: flex; align-items: center; gap: 14px; }
+        .topbar-right { display: flex; align-items: center; gap: 10px; }
+        .topbar-title { font-size: 16px; font-weight: 600; }
+        .topbar-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .clear-chat-btn { display: flex; align-items: center; gap: 6px; padding: 7px 13px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; color: var(--text-muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+        .clear-chat-btn:hover { background: var(--danger-bg); color: var(--danger); border-color: rgba(248,113,113,0.25); }
+        .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; background: rgba(14,14,24,0.97); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 100; overflow: hidden; display: none; flex-direction: column; max-height: 440px; }
+        .notif-dropdown.open { display: flex; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 13px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: var(--accent-light); cursor: pointer; text-decoration: none; }
+        .notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
+        .notif-dropdown-body::-webkit-scrollbar { display: none; }
+        .notif-empty { padding: 20px; text-align: center; color: var(--text-faint); font-size: 13px; }
+        .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; margin-left: 10px; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+
+        /* ── Chat Layout ──────────────────────────────────── */
+        .chat-wrapper { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+        .chat-messages {
+            flex: 1; overflow-y: auto;
+            padding: 28px 28px 12px;
+            display: flex; flex-direction: column;
+            scrollbar-width: thin;
+            scrollbar-color: var(--glass-border) transparent;
+        }
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 2px; }
+
+        /* ── Empty State ──────────────────────────────────── */
+        .empty-state {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 40px 24px; text-align: center; gap: 14px;
+        }
+        .empty-icon {
+            width: 68px; height: 68px;
+            background: rgba(119,202,0,0.1);
+            border: 1px solid rgba(119,202,0,0.22);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; color: var(--accent-light);
+            box-shadow: 0 0 40px rgba(119,202,0,0.12);
+        }
+        .empty-title { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+        .empty-sub   { font-size: 14px; color: var(--text-muted); max-width: 400px; line-height: 1.65; }
+        .suggested-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; width: 100%; max-width: 640px; margin-top: 10px; }
+        .suggested-chip {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 11px 14px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 12px; cursor: pointer; text-align: left;
+            font-size: 13px; color: var(--text-muted); font-weight: 500;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            line-height: 1.45;
+        }
+        .suggested-chip:hover { background: rgba(119,202,0,0.07); border-color: rgba(119,202,0,0.28); color: var(--text); }
+        .chip-icon { font-size: 15px; color: var(--accent-light); flex-shrink: 0; margin-top: 1px; }
+
+        /* ── Messages ─────────────────────────────────────── */
+        .msg { display: flex; margin-bottom: 18px; }
+        .user-msg { justify-content: flex-end; }
+        .ai-msg   { justify-content: flex-start; align-items: flex-start; gap: 10px; }
+
+        .ai-avatar-icon {
+            width: 32px; height: 32px; min-width: 32px;
+            background: linear-gradient(135deg, rgba(119,202,0,0.2), rgba(160,224,64,0.12));
+            border: 1px solid rgba(119,202,0,0.28);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; color: var(--accent-light);
+            margin-top: 4px; flex-shrink: 0;
+        }
+        .msg-content { max-width: min(700px, 82%); display: flex; flex-direction: column; gap: 6px; }
+        .msg-ts { font-size: 10.5px; color: var(--text-faint); padding-left: 2px; }
+        .user-ts { text-align: right; padding-right: 2px; }
+
+        .user-bubble {
+            background: var(--accent); color: #07070f;
+            padding: 11px 16px;
+            border-radius: 18px 18px 4px 18px;
+            font-size: 14px; font-weight: 500; line-height: 1.55;
+            max-width: 520px; word-break: break-word;
+        }
+        .ai-bubble {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px 18px 18px 18px;
+            padding: 14px 16px;
+            font-size: 14px; line-height: 1.65; color: var(--text);
+            backdrop-filter: blur(10px); word-break: break-word;
+        }
+
+        /* Typing indicator */
+        .typing-dots { display: flex; gap: 5px; align-items: center; padding: 6px 4px; }
+        .typing-dots span { width: 7px; height: 7px; background: var(--text-muted); border-radius: 50%; animation: typingBounce 1.2s infinite ease-in-out; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+        @keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.5} 30%{transform:translateY(-7px);opacity:1} }
+
+        /* ── Result Cards ─────────────────────────────────── */
+        .result-card { margin-top: 12px; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); }
+        .result-card-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px;
+            background: rgba(119,202,0,0.07);
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 12px; font-weight: 600; color: var(--accent-light); gap: 8px;
+        }
+        .result-card-head-left { display: flex; align-items: center; gap: 7px; }
+        .result-count { font-weight: 500; color: var(--text-muted); font-size: 11.5px; margin-left: 2px; }
+        .export-btns { display: flex; gap: 6px; flex-shrink: 0; }
+        .export-btn {
+            display: flex; align-items: center; gap: 5px;
+            padding: 4px 10px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 6px; color: var(--text-muted);
+            font-size: 11.5px; font-weight: 500; cursor: pointer;
+            transition: background 0.12s, color 0.12s, border-color 0.12s;
+        }
+        .export-btn:hover { background: rgba(119,202,0,0.1); color: var(--accent-light); border-color: rgba(119,202,0,0.2); }
+
+        /* Employee grid */
+        .emp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 10px; padding: 12px; }
+        .emp-card {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 10px; padding: 12px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .emp-card:hover { background: rgba(119,202,0,0.05); border-color: rgba(119,202,0,0.22); }
+        .emp-card-top  { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+        .emp-mini-avatar { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .emp-name { font-size: 13px; font-weight: 600; line-height: 1.3; }
+        .emp-role { font-size: 11.5px; color: var(--text-muted); }
+        .emp-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+        .emp-tag  { font-size: 11px; padding: 2px 8px; border-radius: 6px; font-weight: 500; }
+        .emp-tag.dept          { background: var(--blue-bg);    color: var(--blue); }
+        .emp-tag.salary        { background: rgba(119,202,0,0.1); color: var(--accent-light); }
+        .emp-tag.status-active     { background: var(--success-bg); color: var(--success); }
+        .emp-tag.status-probation  { background: var(--warning-bg); color: var(--warning); }
+        .emp-tag.status-inactive   { background: var(--danger-bg);  color: var(--danger); }
+        .emp-tag.status-suspended  { background: var(--danger-bg);  color: var(--danger); }
+
+        /* Generic table */
+        .result-table-wrap { overflow-x: auto; }
+        .result-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .result-table th { padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; background: rgba(255,255,255,0.025); border-bottom: 1px solid var(--glass-border); white-space: nowrap; }
+        .result-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); vertical-align: middle; }
+        [data-theme="light"] .result-table td { border-bottom-color: rgba(0,0,0,0.05); }
+        .result-table tr:last-child td { border-bottom: none; }
+        .result-table tr:hover td { background: rgba(255,255,255,0.025); }
+        .status-pill { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+        .status-pill.pending   { background: var(--warning-bg); color: var(--warning); }
+        .status-pill.approved  { background: var(--success-bg); color: var(--success); }
+        .status-pill.rejected  { background: var(--danger-bg);  color: var(--danger);  }
+        .status-pill.active    { background: var(--success-bg); color: var(--success); }
+        .status-pill.probation { background: var(--warning-bg); color: var(--warning); }
+
+        /* Chart */
+        .chart-wrap { padding: 16px 16px 8px; display: flex; justify-content: center; align-items: center; max-height: 360px; }
+        .chart-wrap canvas { max-height: 320px !important; }
+        .raw-data-toggle { padding: 8px 14px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; }
+        .raw-toggle-btn { font-size: 12px; color: var(--text-muted); background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 0; transition: color 0.12s; }
+        .raw-toggle-btn:hover { color: var(--text); }
+        .raw-data-table { display: none; }
+        .raw-data-table.open { display: block; }
+
+        /* ── Input Bar ────────────────────────────────────── */
+        .chat-input-area {
+            flex-shrink: 0; padding: 14px 24px 18px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(7,7,15,0.5);
+            backdrop-filter: blur(10px);
+        }
+        .chat-input-wrap {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px; padding: 10px 12px 10px 16px;
+            transition: border-color 0.15s;
+        }
+        .chat-input-wrap:focus-within { border-color: rgba(119,202,0,0.45); }
+        .chat-textarea {
+            flex: 1; background: none; border: none; outline: none;
+            color: var(--text); font-family: 'Inter', sans-serif;
+            font-size: 14px; line-height: 1.55; resize: none;
+            max-height: 140px; overflow-y: auto; scrollbar-width: none;
+        }
+        .chat-textarea::-webkit-scrollbar { display: none; }
+        .chat-textarea::placeholder { color: var(--text-faint); }
+        .send-btn {
+            width: 36px; height: 36px; flex-shrink: 0;
+            background: var(--accent); border: none; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: #07070f; font-size: 17px;
+            transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+            box-shadow: 0 2px 12px rgba(119,202,0,0.3);
+        }
+        .send-btn:hover   { background: var(--accent-light); box-shadow: 0 4px 18px rgba(119,202,0,0.45); }
+        .send-btn:active  { transform: scale(0.93); }
+        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        .input-hint { font-size: 11px; color: var(--text-faint); margin-top: 7px; text-align: center; }
+
+        /* ── Responsive ───────────────────────────────────── */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .topbar { padding: 0 16px; }
+            .chat-messages { padding: 16px 16px 8px; }
+            .chat-input-area { padding: 10px 14px 16px; }
+            .suggested-grid { grid-template-columns: 1fr; }
+            .emp-grid { grid-template-columns: 1fr 1fr; }
+            .clear-chat-btn .clear-label { display: none; }
+            .clear-chat-btn { padding: 7px 10px; }
+        }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="app-shell">
+
+    <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <button class="brand-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                <div class="brand-hamburger"><span></span><span></span><span></span></div>
+            </button>
+            <div class="sidebar-brand-text">
+                <div class="sidebar-brand-name">BeanHR</div>
+                <div class="sidebar-brand-tag">Super Admin</div>
+            </div>
+        </div>
+
+        <span class="sidebar-section-label">ADMIN</span>
+
+        <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+            <span class="nav-icon"><i class="ph-fill ph-house ph-icon-fill"></i><i class="ph ph-house ph-icon-outline"></i></span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="employees.html" class="nav-item" data-tip="Employees">
+            <span class="nav-icon"><i class="ph-fill ph-users ph-icon-fill"></i><i class="ph ph-users ph-icon-outline"></i></span>
+            <span class="nav-label">Employees</span>
+        </a>
+        <a href="approvals.html" class="nav-item" data-tip="Approvals">
+            <span class="nav-icon"><i class="ph-fill ph-check-circle ph-icon-fill"></i><i class="ph ph-check-circle ph-icon-outline"></i></span>
+            <span class="nav-label">Approvals</span>
+            <span class="nav-badge" id="sidebarApprovalBadge" style="display:none"></span>
+        </a>
+        <a href="leave-quotas.html" class="nav-item" data-tip="Leave Quotas">
+            <span class="nav-icon"><i class="ph-fill ph-calendar-blank ph-icon-fill"></i><i class="ph ph-calendar-blank ph-icon-outline"></i></span>
+            <span class="nav-label">Leave Quotas</span>
+        </a>
+        <a href="hiring.html" class="nav-item" data-tip="Hiring">
+            <span class="nav-icon"><i class="ph-fill ph-user-plus ph-icon-fill"></i><i class="ph ph-user-plus ph-icon-outline"></i></span>
+            <span class="nav-label">Hiring</span>
+        </a>
+        <a href="payroll.html" class="nav-item" data-tip="Payroll">
+            <span class="nav-icon"><i class="ph-fill ph-money ph-icon-fill"></i><i class="ph ph-money ph-icon-outline"></i></span>
+            <span class="nav-label">Payroll</span>
+        </a>
+        <a href="attendance.html" class="nav-item" data-tip="Attendance">
+            <span class="nav-icon"><i class="ph-fill ph-calendar-check ph-icon-fill"></i><i class="ph ph-calendar-check ph-icon-outline"></i></span>
+            <span class="nav-label">Attendance</span>
+        </a>
+        <a href="audit-logs.html" class="nav-item" data-tip="Audit Logs">
+            <span class="nav-icon"><i class="ph-fill ph-scroll ph-icon-fill"></i><i class="ph ph-scroll ph-icon-outline"></i></span>
+            <span class="nav-label">Audit Logs</span>
+        </a>
+        <a href="ai-search.html" class="nav-item active" data-tip="AI Search">
+            <span class="nav-icon"><i class="ph-fill ph-sparkle ph-icon-fill"></i><i class="ph ph-sparkle ph-icon-outline"></i></span>
+            <span class="nav-label">AI Search</span>
+        </a>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()">
+                <span class="nav-icon"><i class="ph-fill ph-sign-out ph-icon-fill"></i><i class="ph ph-sign-out ph-icon-outline"></i></span>
+                <span class="logout-label">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ── MAIN AREA ─────────────────────────────────────────── -->
+    <div class="main-area">
+
+        <!-- ── TOPBAR ────────────────────────────────────────── -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <div class="topbar-title">AI Search</div>
+            </div>
+            <div class="topbar-right">
+                <button class="clear-chat-btn" id="clearBtn" onclick="clearChat()" style="display:none">
+                    <i class="ph ph-trash" style="font-size:14px"></i>
+                    <span class="clear-label">Clear chat</span>
+                </button>
+                <button class="theme-btn" onclick="toggleTheme()">
+                    <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                    <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                </button>
+                <div style="position: relative;">
+                    <button class="notif-btn" onclick="toggleNotifDropdown(event)">
+                        <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                        <span class="notif-badge" id="notifBadge" style="display:none"></span>
+                    </button>
+                    <div class="notif-dropdown" id="notifDropdown">
+                        <div class="notif-dropdown-head">
+                            <div class="notif-dropdown-title">Notifications</div>
+                            <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                        </div>
+                        <div class="notif-dropdown-body" id="notifDropdownBody">
+                            <div class="notif-empty">No notifications</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="avatar" id="adminAvatar">A</div>
+            </div>
+        </div>
+
+        <!-- ── CHAT ──────────────────────────────────────────── -->
+        <div class="chat-wrapper">
+
+            <div class="chat-messages" id="chatMessages">
+                <!-- Empty state injected here; replaced by messages -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon"><i class="ph-fill ph-sparkle"></i></div>
+                    <div class="empty-title">Ask anything about your team</div>
+                    <div class="suggested-grid">
+                        <button class="suggested-chip" onclick="useSuggestion(this)">
+                            <i class="ph ph-currency-inr chip-icon"></i>
+                            Show employees with salary below ₹45,000
+                        </button>
+                        <button class="suggested-chip" onclick="useSuggestion(this)">
+                            <i class="ph ph-calendar chip-icon"></i>
+                            Show all pending leave requests this month
+                        </button>
+                        <button class="suggested-chip" onclick="useSuggestion(this)">
+                            <i class="ph ph-chart-pie chip-icon"></i>
+                            How many employees are in each department?
+                        </button>
+                        <button class="suggested-chip" onclick="useSuggestion(this)">
+                            <i class="ph ph-user-plus chip-icon"></i>
+                            Who joined in the last 30 days?
+                        </button>
+                        <button class="suggested-chip" onclick="useSuggestion(this)">
+                            <i class="ph ph-chart-bar chip-icon"></i>
+                            Show salary distribution by department
+                        </button>
+                        <button class="suggested-chip" onclick="useSuggestion(this)">
+                            <i class="ph ph-clock chip-icon"></i>
+                            Which employees are on probation?
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── INPUT BAR ─────────────────────────────────── -->
+            <div class="chat-input-area">
+                <div class="chat-input-wrap">
+                    <textarea
+                        class="chat-textarea"
+                        id="chatInput"
+                        placeholder="Ask anything…"
+                        rows="1"
+                        onkeydown="handleInputKeydown(event)"
+                        oninput="autoResize(this)"
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <i class="ph-fill ph-paper-plane-tilt" style="font-size:16px"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div><!-- /chat-wrapper -->
+
+    </div><!-- /main-area -->
+
+</div><!-- /app-shell -->
+
+<script src="../../js/db.js"></script>
+<script src="../../js/notifications.js"></script>
+<script>
+    // ── Auth Guard ───────────────────────────────────────────────
+    const _role  = sessionStorage.getItem('bhr_role');
+    const _email = sessionStorage.getItem('bhr_email');
+    if (_role !== 'super_admin') {
+        window.location.replace('../login.html');
+    }
+
+    document.getElementById('adminAvatar').textContent = (_email || 'A').charAt(0).toUpperCase();
+
+    // ── Sidebar ──────────────────────────────────────────────────
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    // ── Theme ─────────────────────────────────────────────────────
+    function _applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
+    _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+    function toggleTheme() {
+        const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('bhr_theme', next);
+        _applyTheme(next);
+    }
+
+
+
+    function escapeHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+    async function loadApprovalBadge() {
+        try {
+            const counts = await db.getPendingApprovalCounts();
+            const total  = Object.values(counts).reduce((a, b) => a + b, 0);
+            const badge  = document.getElementById('sidebarApprovalBadge');
+            if (badge) {
+                if (total > 0) {
+                    badge.textContent   = total > 99 ? '99+' : total;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        } catch (err) { /* silent */ }
+    }
+    async function loadNotifications() {
+        loadApprovalBadge();
+        await renderAdminNotifications();
+    }
+    window.addEventListener('DOMContentLoaded', loadNotifications);
+
+    // ── Logout ────────────────────────────────────────────────────
+    function logout() {
+        sessionStorage.clear();
+        window.location.replace('../login.html');
+    }
+
+    // ── Textarea helpers ─────────────────────────────────────────
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+    function handleInputKeydown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    }
+
+    // ── Chat state ────────────────────────────────────────────────
+    let _isSending = false;
+    let _msgCount  = 0;
+    let _charts    = {}; // { 'chart-N': Chart } — for cleanup on clear
+
+    let _history = [];
+    try { _history = JSON.parse(sessionStorage.getItem('bhr_ai_history') || '[]'); } catch (_) {}
+
+    // Restore previous session on page load
+    if (_history.length > 0) {
+        document.getElementById('emptyState').remove();
+        document.getElementById('clearBtn').style.display = 'flex';
+        _history.forEach(h => {
+            if (h.role === 'user') _appendUserBubble(h.text);
+            else                   _appendAiBubble(h.text, h.resultType, h.resultData, h.ts);
+        });
+        _scrollBottom();
+    }
+
+    // ── Scroll ───────────────────────────────────────────────────
+    function _scrollBottom() {
+        const el = document.getElementById('chatMessages');
+        requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
+    }
+
+    // ── Append user bubble ────────────────────────────────────────
+    function _appendUserBubble(text) {
+        const container = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = 'msg user-msg';
+        div.innerHTML = `<div class="msg-content"><div class="user-bubble">${_esc(text)}</div></div>`;
+        container.appendChild(div);
+        _scrollBottom();
+    }
+
+    // ── Typing indicator ──────────────────────────────────────────
+    let _typingEl = null;
+    function _showTyping() {
+        const c = document.getElementById('chatMessages');
+        _typingEl = document.createElement('div');
+        _typingEl.className = 'msg ai-msg';
+        _typingEl.innerHTML = `
+            <div class="ai-avatar-icon"><i class="ph-fill ph-sparkle"></i></div>
+            <div class="msg-content">
+                <div class="ai-bubble" style="padding:12px 16px">
+                    <div class="typing-dots"><span></span><span></span><span></span></div>
+                </div>
+            </div>`;
+        c.appendChild(_typingEl);
+        _scrollBottom();
+    }
+    function _hideTyping() { if (_typingEl) { _typingEl.remove(); _typingEl = null; } }
+
+    // ── Append AI bubble ──────────────────────────────────────────
+    function _appendAiBubble(text, resultType, resultData, ts) {
+        const container = document.getElementById('chatMessages');
+        _msgCount++;
+        const id = _msgCount;
+        const div = document.createElement('div');
+        div.className = 'msg ai-msg';
+        div.innerHTML = `
+            <div class="ai-avatar-icon"><i class="ph-fill ph-sparkle"></i></div>
+            <div class="msg-content">
+                <div class="ai-bubble">
+                    <div>${_md(text)}</div>
+                    ${(resultType && resultType !== 'text') ? _buildResultCard(id, resultType, resultData) : ''}
+                </div>
+                ${ts ? `<div class="msg-ts">${_esc(ts)}</div>` : ''}
+            </div>`;
+        container.appendChild(div);
+        if (resultType === 'chart' && resultData) {
+            requestAnimationFrame(() => _initChart(id, resultData));
+        }
+        _scrollBottom();
+    }
+
+    // ── Result card dispatcher ────────────────────────────────────
+    function _buildResultCard(id, type, data) {
+        if (!data) return '';
+        if (type === 'employees')      return _buildEmpCard(id, data);
+        if (type === 'leave_requests') return _buildTableCard(id, data, 'Leave Requests', 'ph-calendar');
+        if (type === 'payroll')        return _buildTableCard(id, data, 'Payroll Records', 'ph-money');
+        if (type === 'table')          return _buildTableCard(id, data, 'Results', 'ph-table');
+        if (type === 'chart')          return _buildChartCard(id, data);
+        return '';
+    }
+
+    // ── Employee cards ────────────────────────────────────────────
+    function _buildEmpCard(id, data) {
+        const emps  = data.employees || [];
+        const cards = emps.map(e => `
+            <div class="emp-card">
+                <div class="emp-card-top">
+                    <div class="emp-mini-avatar">${_esc((e.name || '?').charAt(0))}</div>
+                    <div>
+                        <div class="emp-name">${_esc(e.name || '')}</div>
+                        <div class="emp-role">${_esc(e.role || e.jobTitle || '')}</div>
+                    </div>
+                </div>
+                <div class="emp-meta">
+                    ${e.department ? `<span class="emp-tag dept">${_esc(e.department)}</span>` : ''}
+                    ${e.salary != null ? `<span class="emp-tag salary">₹${Number(e.salary).toLocaleString('en-IN')}</span>` : ''}
+                    ${e.status ? `<span class="emp-tag status-${_esc(e.status)}">${_esc(e.status)}</span>` : ''}
+                </div>
+            </div>`).join('');
+        return `
+            <div class="result-card" id="rc-${id}">
+                <div class="result-card-head">
+                    <div class="result-card-head-left">
+                        <i class="ph ph-users"></i> Employees
+                        <span class="result-count">${emps.length} found</span>
+                    </div>
+                    <div class="export-btns">
+                        <button class="export-btn" onclick="exportEmpCsv(${id})">
+                            <i class="ph ph-download-simple" style="font-size:11px"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="emp-grid" id="empGrid-${id}">${cards}</div>
+            </div>`;
+    }
+
+    // ── Generic table card ────────────────────────────────────────
+    function _buildTableCard(id, data, title, icon) {
+        const rows = data.rows || [];
+        const cols = data.columns || (rows.length ? Object.keys(rows[0]) : []);
+        const thead = `<tr>${cols.map(c => `<th>${_esc(String(c))}</th>`).join('')}</tr>`;
+        const tbody = rows.map(row =>
+            `<tr>${cols.map(c => {
+                const val = row[c];
+                const str = val != null ? String(val) : '—';
+                if (c.toLowerCase() === 'status') {
+                    return `<td><span class="status-pill ${_esc(str.toLowerCase())}">${_esc(str)}</span></td>`;
+                }
+                return `<td>${_esc(str)}</td>`;
+            }).join('')}</tr>`
+        ).join('');
+        return `
+            <div class="result-card" id="rc-${id}">
+                <div class="result-card-head">
+                    <div class="result-card-head-left">
+                        <i class="ph ${_esc(icon)}"></i> ${_esc(title)}
+                        <span class="result-count">${rows.length} records</span>
+                    </div>
+                    <div class="export-btns">
+                        <button class="export-btn" onclick="exportTableCsv(${id})">
+                            <i class="ph ph-download-simple" style="font-size:11px"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="result-table-wrap">
+                    <table class="result-table" id="tbl-${id}">
+                        <thead>${thead}</thead><tbody>${tbody}</tbody>
+                    </table>
+                </div>
+            </div>`;
+    }
+
+    // ── Chart card ────────────────────────────────────────────────
+    function _buildChartCard(id, data) {
+        const title    = data.title || 'Chart';
+        const firstDs  = (data.datasets || [{}])[0];
+        const vals     = firstDs?.data || data.values || [];
+        const rawRows  = (data.labels || []).map((lbl, i) =>
+            `<tr><td>${_esc(String(lbl))}</td><td>${_esc(String(vals[i] ?? ''))}</td></tr>`
+        ).join('');
+        return `
+            <div class="result-card" id="rc-${id}">
+                <div class="result-card-head">
+                    <div class="result-card-head-left">
+                        <i class="ph ph-chart-bar"></i> ${_esc(title)}
+                    </div>
+                    <div class="export-btns">
+                        <button class="export-btn" onclick="exportChartPng(${id})">
+                            <i class="ph ph-image" style="font-size:11px"></i> PNG
+                        </button>
+                        <button class="export-btn" onclick="exportChartCsv(${id})">
+                            <i class="ph ph-download-simple" style="font-size:11px"></i> CSV
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-wrap"><canvas id="chart-${id}"></canvas></div>
+                <div class="raw-data-toggle">
+                    <button class="raw-toggle-btn" onclick="toggleRaw('rawTbl-${id}', this)">
+                        <i class="ph ph-table" style="font-size:12px"></i>
+                        <span>View raw data</span>
+                        <i class="ph ph-caret-down" style="font-size:11px"></i>
+                    </button>
+                </div>
+                <div class="raw-data-table" id="rawTbl-${id}">
+                    <div class="result-table-wrap" style="border-top:1px solid var(--glass-border)">
+                        <table class="result-table">
+                            <thead><tr><th>Label</th><th>Value</th></tr></thead>
+                            <tbody>${rawRows}</tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    // ── Initialize Chart.js ───────────────────────────────────────
+    function _initChart(id, data) {
+        const canvas = document.getElementById(`chart-${id}`);
+        if (!canvas) return;
+        const type  = data.chart_type || 'bar';
+        const isPie = type === 'pie' || type === 'doughnut';
+        const COLORS  = ['rgba(119,202,0,0.8)','rgba(168,106,62,0.8)','rgba(96,165,250,0.8)','rgba(251,191,36,0.8)','rgba(74,222,128,0.8)','rgba(248,113,113,0.8)','rgba(167,139,250,0.8)','rgba(249,168,212,0.8)'];
+        const BORDERS = COLORS.map(c => c.replace('0.8','1'));
+        const isDark  = document.documentElement.getAttribute('data-theme') !== 'light';
+        const gridCol = isDark ? 'rgba(255,255,255,0.06)'  : 'rgba(0,0,0,0.07)';
+        const textCol = isDark ? 'rgba(241,241,245,0.6)'   : 'rgba(26,32,16,0.6)';
+        const tooltipBg = isDark ? 'rgba(14,14,24,0.95)' : 'rgba(255,255,255,0.95)';
+        const tooltipTxt = isDark ? '#f1f1f5' : '#1a2010';
+
+        const datasets = (data.datasets || [{ label: data.title || '', data: data.values || [] }])
+            .map((ds, i) => ({
+                label: ds.label || '',
+                data:  ds.data  || [],
+                backgroundColor: isPie ? (ds.data||[]).map((_,j) => COLORS[j % COLORS.length])  : COLORS[i % COLORS.length],
+                borderColor:     isPie ? (ds.data||[]).map((_,j) => BORDERS[j % BORDERS.length]) : BORDERS[i % BORDERS.length],
+                borderWidth: 1.5,
+                borderRadius: type === 'bar' ? 6 : 0,
+            }));
+
+        const chart = new Chart(canvas, {
+            type,
+            data: { labels: data.labels || [], datasets },
+            options: {
+                responsive: true, maintainAspectRatio: true,
+                plugins: {
+                    legend: { labels: { color: textCol, font: { family: 'Inter', size: 12 }, padding: 14, boxWidth: 12 } },
+                    tooltip: {
+                        backgroundColor: tooltipBg, titleColor: tooltipTxt,
+                        bodyColor: isDark ? 'rgba(241,241,245,0.7)' : 'rgba(26,32,16,0.7)',
+                        borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                        borderWidth: 1, padding: 10,
+                        titleFont: { family: 'Inter', weight: '600' },
+                        bodyFont:  { family: 'Inter' },
+                    }
+                },
+                scales: isPie ? {} : {
+                    x: { grid: { color: gridCol }, ticks: { color: textCol, font: { family: 'Inter', size: 11 } } },
+                    y: { grid: { color: gridCol }, ticks: { color: textCol, font: { family: 'Inter', size: 11 } } },
+                },
+            },
+        });
+        _charts[`chart-${id}`] = chart;
+    }
+
+    // ── Toggle raw data ───────────────────────────────────────────
+    function toggleRaw(tableId, btn) {
+        const open  = document.getElementById(tableId).classList.toggle('open');
+        const caret = btn.querySelector('[class*="ph-caret"]');
+        const span  = btn.querySelector('span');
+        if (caret) caret.className = `ph ph-caret-${open ? 'up' : 'down'}`;
+        if (span)  span.textContent = open ? 'Hide raw data' : 'View raw data';
+    }
+
+    // ── Exports ───────────────────────────────────────────────────
+    function exportEmpCsv(id) {
+        const grid = document.getElementById(`empGrid-${id}`);
+        if (!grid) return;
+        const rows = [['Name','Role','Department','Salary','Status']];
+        grid.querySelectorAll('.emp-card').forEach(c => {
+            rows.push([
+                c.querySelector('.emp-name')?.textContent || '',
+                c.querySelector('.emp-role')?.textContent || '',
+                c.querySelector('.emp-tag.dept')?.textContent || '',
+                c.querySelector('.emp-tag.salary')?.textContent || '',
+                c.querySelector('[class*="status-"]')?.textContent || '',
+            ]);
+        });
+        _dlCsv(rows, `employees-${id}.csv`);
+    }
+
+    function exportTableCsv(id) {
+        const tbl = document.getElementById(`tbl-${id}`);
+        if (!tbl) return;
+        const rows = [];
+        tbl.querySelectorAll('tr').forEach(tr => {
+            rows.push(Array.from(tr.querySelectorAll('th,td')).map(el => el.textContent.trim()));
+        });
+        _dlCsv(rows, `table-${id}.csv`);
+    }
+
+    function exportChartCsv(id) {
+        const tbl = document.getElementById(`rawTbl-${id}`);
+        if (!tbl) return;
+        const rows = [];
+        tbl.querySelectorAll('tr').forEach(tr => {
+            rows.push(Array.from(tr.querySelectorAll('th,td')).map(el => el.textContent.trim()));
+        });
+        _dlCsv(rows, `chart-${id}.csv`);
+    }
+
+    function exportChartPng(id) {
+        const chart = _charts[`chart-${id}`];
+        if (!chart) return;
+        const a = document.createElement('a');
+        a.href = chart.toBase64Image(); a.download = `chart-${id}.png`; a.click();
+    }
+
+    function _dlCsv(rows, filename) {
+        const csv  = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url; a.download = filename; a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    // ── Use suggested prompt ──────────────────────────────────────
+    function useSuggestion(el) {
+        const text = el.textContent.trim();
+        document.getElementById('chatInput').value = text;
+        sendMessage();
+    }
+
+    // ── Send message ──────────────────────────────────────────────
+    async function sendMessage() {
+        if (_isSending) return;
+        const input = document.getElementById('chatInput');
+        const text  = input.value.trim();
+        if (!text) return;
+
+        // Hide empty state on first message
+        const empty = document.getElementById('emptyState');
+        if (empty) empty.remove();
+        document.getElementById('clearBtn').style.display = 'flex';
+
+        _isSending = true;
+        document.getElementById('sendBtn').disabled = true;
+        input.value = '';
+        input.style.height = 'auto';
+
+        const ts = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+        _appendUserBubble(text);
+        _history.push({ role: 'user', text, ts });
+
+        const _typingStart = Date.now();
+        const _minTyping = (ms) => {
+            const wait = ms - (Date.now() - _typingStart);
+            return wait > 0 ? new Promise(r => setTimeout(r, wait)) : Promise.resolve();
+        };
+        _showTyping();
+        try {
+            const res = await _callAI(text);
+            await _minTyping(600);
+            _hideTyping();
+            _appendAiBubble(res.answer, res.result_type, res.results, ts);
+            _history.push({ role: 'ai', text: res.answer, resultType: res.result_type, resultData: res.results, ts });
+            sessionStorage.setItem('bhr_ai_history', JSON.stringify(_history));
+        } catch (err) {
+            await _minTyping(600);
+            _hideTyping();
+            const isNetworkError = err instanceof TypeError && /fetch|network/i.test(err.message);
+            const msg = isNetworkError
+                ? 'AI service is temporarily unavailable. Please try again in a moment.'
+                : (err.message || 'Something went wrong. Please try again.');
+            _appendAiBubble(msg, 'text', null, ts);
+        } finally {
+            _isSending = false;
+            document.getElementById('sendBtn').disabled = false;
+            input.focus();
+        }
+    }
+
+    // ── Clear chat ────────────────────────────────────────────────
+    function clearChat() {
+        _history = [];
+        _msgCount = 0;
+        sessionStorage.removeItem('bhr_ai_history');
+        Object.values(_charts).forEach(c => c.destroy());
+        _charts = {};
+
+        const c = document.getElementById('chatMessages');
+        c.innerHTML = '';
+
+        // Rebuild empty state
+        c.innerHTML = `
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon"><i class="ph-fill ph-sparkle"></i></div>
+                <div class="empty-title">Ask anything about your team</div>
+                <div class="suggested-grid">
+                    <button class="suggested-chip" onclick="useSuggestion(this)"><i class="ph ph-currency-inr chip-icon"></i> Show employees with salary below ₹45,000</button>
+                    <button class="suggested-chip" onclick="useSuggestion(this)"><i class="ph ph-calendar chip-icon"></i> Show all pending leave requests this month</button>
+                    <button class="suggested-chip" onclick="useSuggestion(this)"><i class="ph ph-chart-pie chip-icon"></i> How many employees are in each department?</button>
+                    <button class="suggested-chip" onclick="useSuggestion(this)"><i class="ph ph-user-plus chip-icon"></i> Who joined in the last 30 days?</button>
+                    <button class="suggested-chip" onclick="useSuggestion(this)"><i class="ph ph-chart-bar chip-icon"></i> Show salary distribution by department</button>
+                    <button class="suggested-chip" onclick="useSuggestion(this)"><i class="ph ph-clock chip-icon"></i> Which employees are on probation?</button>
+                </div>
+            </div>`;
+        document.getElementById('clearBtn').style.display = 'none';
+    }
+
+    // ── Security helpers ──────────────────────────────────────────
+    function _esc(str) {
+        return String(str)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // Minimal safe markdown: bold, italic, inline code, line breaks
+    function _md(text) {
+        return _esc(text)
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/`(.+?)`/g, '<code style="background:rgba(119,202,0,0.1);padding:1px 5px;border-radius:4px;font-size:13px">$1</code>')
+            .replace(/\n/g, '<br>');
+    }
+
+    // ── Mock responses (remove when Flask /api/ai/search is live) ─
+    const _MOCK = {
+        'Show employees with salary below ₹45,000': {
+            answer: 'Found **4 employees** with a salary below ₹45,000. Karan Singh is on probation — the others are active.',
+            result_type: 'employees',
+            results: { employees: [
+                { name: 'Priya Sharma', role: 'Junior Developer', department: 'Engineering', salary: 38000, status: 'active'    },
+                { name: 'Rahul Verma',  role: 'Customer Support', department: 'Operations',  salary: 42000, status: 'active'    },
+                { name: 'Ananya Patel', role: 'HR Executive',      department: 'HR',          salary: 35000, status: 'active'    },
+                { name: 'Karan Singh',  role: 'Data Analyst',      department: 'Analytics',   salary: 44500, status: 'probation' },
+            ]}
+        },
+        'Show all pending leave requests this month': {
+            answer: 'There are **3 pending leave requests** for May–June 2026. The longest is Meena Iyer\'s 5-day paid leave.',
+            result_type: 'leave_requests',
+            results: {
+                columns: ['Employee', 'Leave Type', 'From', 'To', 'Days', 'Status'],
+                rows: [
+                    { Employee: 'Priya Sharma', 'Leave Type': 'Sick Leave',   From: 'May 22, 2026', To: 'May 23, 2026', Days: 2, Status: 'pending' },
+                    { Employee: 'Rahul Verma',  'Leave Type': 'Casual Leave', From: 'May 26, 2026', To: 'May 26, 2026', Days: 1, Status: 'pending' },
+                    { Employee: 'Meena Iyer',   'Leave Type': 'Paid Leave',   From: 'Jun 2, 2026',  To: 'Jun 6, 2026',  Days: 5, Status: 'pending' },
+                ]
+            }
+        },
+        'How many employees are in each department?': {
+            answer: 'Engineering leads with **12 employees**, followed by Operations (9) and Sales (8). Total: **41 active employees** across 6 departments.',
+            result_type: 'chart',
+            results: {
+                chart_type: 'pie', title: 'Employees by Department',
+                labels: ['Engineering', 'Sales', 'HR', 'Operations', 'Analytics', 'Finance'],
+                datasets: [{ label: 'Headcount', data: [12, 8, 5, 9, 4, 3] }]
+            }
+        },
+        'Who joined in the last 30 days?': {
+            answer: '**2 employees** joined in the last 30 days. Both are currently on probation.',
+            result_type: 'employees',
+            results: { employees: [
+                { name: 'Riya Kapoor', role: 'Frontend Developer', department: 'Engineering', salary: 55000, status: 'probation' },
+                { name: 'Deepak Nair', role: 'Sales Executive',    department: 'Sales',       salary: 40000, status: 'probation' },
+            ]}
+        },
+        'Show salary distribution by department': {
+            answer: 'Engineering and Finance have the highest average salaries. Operations and HR are at the lower end of the scale.',
+            result_type: 'chart',
+            results: {
+                chart_type: 'bar', title: 'Average Salary by Department (₹)',
+                labels: ['Engineering', 'Finance', 'Analytics', 'Sales', 'HR', 'Operations'],
+                datasets: [{ label: 'Avg. Monthly Salary (₹)', data: [72000, 68000, 55000, 48000, 41000, 39000] }]
+            }
+        },
+        'Which employees are on probation?': {
+            answer: '**3 employees** are currently on probation — all joined within the last 90 days.',
+            result_type: 'employees',
+            results: { employees: [
+                { name: 'Karan Singh',  role: 'Data Analyst',      department: 'Analytics',   salary: 44500, status: 'probation' },
+                { name: 'Riya Kapoor',  role: 'Frontend Developer', department: 'Engineering', salary: 55000, status: 'probation' },
+                { name: 'Deepak Nair',  role: 'Sales Executive',    department: 'Sales',       salary: 40000, status: 'probation' },
+            ]}
+        },
+    };
+
+    async function _callAI(message) {
+        // Canned mock responses for suggested prompts
+        if (_MOCK[message]) {
+            await new Promise(r => setTimeout(r, 700 + Math.random() * 500));
+            return _MOCK[message];
+        }
+
+        // Live backend call — wait for Firebase Auth state to be ready before requesting a token
+        const _currentUser = await new Promise(resolve => {
+            const unsub = firebase.auth().onAuthStateChanged(u => { unsub(); resolve(u); });
+        });
+        if (!_currentUser) throw new Error('Session expired. Please log in again.');
+        const token = await _currentUser.getIdToken();
+        const res = await fetch('http://localhost:5000/api/ai/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ message, history: _history.slice(-10) }),
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || `Server error (${res.status})`);
+        }
+        return await res.json();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Application Status</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-glow:   rgba(168,106,62,0.25);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.22);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --warning-bg:   rgba(251,191,36,0.12);
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.32);
+            --icon-faint:   rgba(26,32,16,0.3);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(40,130,60,0.09);
+            --warning-bg:   rgba(180,130,0,0.09);
+            --danger-bg:    rgba(200,50,50,0.07);
+            --blue-bg:      rgba(50,100,200,0.07);
+        }
+
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb        { opacity: 0.18; }
+        [data-theme="light"] .orb-1      { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2      { background: radial-gradient(circle, rgba(168,106,62,0.12), transparent 70%); }
+        [data-theme="light"] .topbar     { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card       { box-shadow: 0 4px 24px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04) inset; }
+        [data-theme="light"] .portal-nav { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .pnav-link:hover { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .pnav-link.active { background: rgba(90,153,0,0.12); color: var(--accent); }
+        [data-theme="light"] .logout-btn { color: rgba(220,50,50,0.65); }
+
+        /* ── Phosphor dual-icon ─────────────────────────────── */
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+
+        /* ── Background ─────────────────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.22), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App shell ──────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* ── Topbar ─────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 28px;
+            background: rgba(7,7,15,0.72);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+            gap: 16px;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .brand-mark  { width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+        .brand-name  { font-size: 14px; font-weight: 700; letter-spacing: -0.3px; }
+        .brand-tag   { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.4px; }
+
+        /* ── Portal nav tabs ────────────────────────────────── */
+        .portal-nav { display: flex; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px; }
+        .pnav-link  { display: flex; align-items: center; gap: 7px; padding: 7px 16px; border-radius: 9px; text-decoration: none; font-size: 13px; font-weight: 500; color: var(--text-muted); transition: background 0.15s, color 0.15s; white-space: nowrap; }
+        .pnav-link:hover  { background: rgba(255,255,255,0.06); color: var(--text); }
+        .pnav-link.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        [data-theme="light"] .pnav-link.active { color: var(--accent); }
+
+        .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .theme-btn  { width: 36px; height: 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; transition: background 0.2s, box-shadow 0.2s; }
+        .theme-btn:hover { background: rgba(119,202,0,0.1); box-shadow: 0 0 0 2px rgba(119,202,0,0.2); }
+        .logout-btn { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; font-weight: 500; color: rgba(248,113,113,0.7); cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); border-color: rgba(248,113,113,0.22); }
+
+        /* ── Main content ───────────────────────────────────── */
+        .main-content  { flex: 1; overflow-y: auto; padding: 36px 24px 56px; }
+        .content-wrap  { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+        /* ── Glass card ─────────────────────────────────────── */
+        .card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 18px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.02) inset; }
+        .card-title { font-size: 11.5px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .card-title i { font-size: 16px; color: var(--accent); }
+
+        /* ── Application header ─────────────────────────────── */
+        .app-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+        .app-name   { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 10px; }
+        .app-meta   { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .meta-pill  { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+        .meta-pill.role { background: rgba(119,202,0,0.1); color: var(--accent-light); border: 1px solid rgba(119,202,0,0.2); }
+        .meta-pill.dept { background: var(--glass-bg); color: var(--text-muted); border: 1px solid var(--glass-border); }
+        [data-theme="light"] .meta-pill.role { color: var(--accent); }
+        .app-date   { font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+
+        .app-status-col   { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .overall-badge    { display: inline-flex; align-items: center; gap: 6px; padding: 7px 15px; border-radius: 22px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .overall-badge.in-progress { background: var(--warning-bg); color: #fbbf24; border: 1px solid rgba(251,191,36,0.25); }
+        .overall-badge.selected    { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.25); }
+        .overall-badge.rejected    { background: var(--danger-bg);  color: var(--danger);  border: 1px solid rgba(248,113,113,0.25); }
+
+        /* ── Stage timeline ─────────────────────────────────── */
+        .timeline { display: flex; flex-direction: column; }
+        .timeline-item { display: flex; gap: 16px; position: relative; padding-bottom: 24px; }
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .tl-left { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; width: 26px; }
+        .tl-dot  { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; border: 2px solid; transition: box-shadow 0.3s; }
+        .tl-line { flex: 1; width: 2px; min-height: 16px; margin-top: 4px; border-radius: 2px; background: var(--glass-border); }
+
+        .timeline-item.completed .tl-dot  { background: rgba(74,222,128,0.12); color: var(--success); border-color: rgba(74,222,128,0.4); }
+        .timeline-item.completed .tl-line { background: linear-gradient(to bottom, rgba(74,222,128,0.3), rgba(74,222,128,0.07)); }
+        .timeline-item.pending   .tl-dot  { background: rgba(251,191,36,0.1); color: #fbbf24; border-color: rgba(251,191,36,0.4); animation: pendingPulse 2.2s ease-in-out infinite; }
+        .timeline-item.rejected  .tl-dot  { background: var(--danger-bg); color: var(--danger); border-color: rgba(248,113,113,0.4); }
+
+        @keyframes pendingPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0.15); }
+            50%      { box-shadow: 0 0 0 7px rgba(251,191,36,0); }
+        }
+
+        .tl-content  { flex: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; padding-top: 2px; }
+        .tl-info     { display: flex; flex-direction: column; gap: 3px; }
+        .tl-name     { font-size: 15px; font-weight: 600; line-height: 1.3; }
+        .timeline-item.completed .tl-name { color: var(--text-muted); }
+        .timeline-item.pending   .tl-name { color: var(--text); }
+        .timeline-item.rejected  .tl-name { color: var(--text-muted); text-decoration: line-through; text-decoration-color: rgba(248,113,113,0.4); }
+        .tl-date  { font-size: 11.5px; color: var(--text-faint); }
+        .tl-locked-tag { font-size: 10.5px; color: var(--text-faint); font-style: italic; }
+
+        .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 20px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+        .status-pill.completed { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.2); }
+        .status-pill.pending   { background: var(--warning-bg); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+        .status-pill.rejected  { background: var(--danger-bg);  color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+
+        /* ── Outcome banner ─────────────────────────────────── */
+        .outcome-banner { border-radius: 14px; padding: 18px 20px; display: flex; align-items: flex-start; gap: 14px; }
+        .outcome-banner.success { background: rgba(74,222,128,0.07); border: 1px solid rgba(74,222,128,0.2); }
+        .outcome-banner.warning { background: var(--warning-bg); border: 1px solid rgba(251,191,36,0.2); }
+        .outcome-banner.danger  { background: var(--danger-bg);  border: 1px solid rgba(248,113,113,0.2); }
+        .outcome-icon  { font-size: 24px; flex-shrink: 0; margin-top: 1px; }
+        .outcome-banner.success .outcome-icon { color: var(--success); }
+        .outcome-banner.warning .outcome-icon { color: #fbbf24; }
+        .outcome-banner.danger  .outcome-icon { color: var(--danger); }
+        .outcome-title { font-size: 14.5px; font-weight: 700; margin-bottom: 5px; }
+        .outcome-msg   { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+        /* ── Offer letter card ──────────────────────────────── */
+        .offer-body    { display: flex; align-items: center; gap: 18px; }
+        .offer-icon    { width: 52px; height: 60px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.18); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--danger); flex-shrink: 0; }
+        .offer-details { flex: 1; min-width: 0; }
+        .offer-name    { font-size: 15px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .offer-meta    { font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px; }
+        .offer-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn-primary  { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border: none; border-radius: 10px; font-size: 13.5px; font-weight: 600; color: #fff; cursor: pointer; transition: transform 0.12s, box-shadow 0.15s; box-shadow: 0 4px 16px var(--accent-glow); }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px var(--accent-glow); }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-secondary { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); cursor: pointer; text-decoration: none; transition: background 0.15s, color 0.15s; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        [data-theme="light"] .btn-secondary:hover { background: rgba(0,0,0,0.06); }
+        .btn-danger-ghost { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: transparent; border: 1px solid rgba(248,113,113,0.25); border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.7); cursor: pointer; transition: background 0.15s, color 0.15s; }
+        .btn-danger-ghost:hover { background: rgba(248,113,113,0.08); color: var(--danger); }
+
+
+        /* ── Negotiation thread ─────────────────────────────── */
+        .nego-thread { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 20px; }
+        .nego-msg { display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 12px; min-width: 200px; max-width: 90%; }
+        .nego-msg.candidate { background: rgba(119,202,0,0.1); border: 1px solid rgba(119,202,0,0.2); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .nego-msg.company { background: var(--glass-bg); border: 1px solid var(--glass-border); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .nego-meta { font-size: 11px; color: var(--text-faint); display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .nego-text { font-size: 13.5px; line-height: 1.5; color: var(--text); white-space: pre-wrap; }
+        .nego-input-row { display: flex; gap: 10px; margin-top: 14px; align-items: flex-end; }
+        .nego-input { flex: 1; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; padding: 10px 14px; font-size: 13.5px; color: var(--text); outline: none; font-family: inherit; resize: none; min-height: 42px; transition: border-color 0.15s; }
+        .nego-input:focus { border-color: rgba(119,202,0,0.4); }
+
+        /* ── Documents snapshot ─────────────────────────────── */
+        .docs-snap { display: flex; align-items: center; justify-content: space-between; gap: 16px; text-decoration: none; color: var(--text); }
+        .docs-snap:hover .docs-snap-arrow { transform: translateX(4px); }
+        .docs-snap:hover .docs-snap-icon  { background: rgba(119,202,0,0.16); }
+        .docs-snap-left  { display: flex; align-items: center; gap: 14px; }
+        .docs-snap-icon  { width: 44px; height: 44px; background: rgba(119,202,0,0.1); border: 1px solid rgba(119,202,0,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--accent-light); flex-shrink: 0; transition: background 0.15s; }
+        [data-theme="light"] .docs-snap-icon { color: var(--accent); }
+        .docs-snap-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+        .docs-snap-sub   { font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px; }
+        .docs-prog-row   { display: flex; align-items: center; gap: 9px; }
+        .docs-prog-track { height: 4px; width: 150px; background: rgba(255,255,255,0.07); border-radius: 4px; overflow: hidden; }
+        [data-theme="light"] .docs-prog-track { background: rgba(0,0,0,0.09); }
+        .docs-prog-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 4px; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); width: 0; }
+        .docs-prog-label { font-size: 11.5px; color: var(--text-faint); }
+        .docs-snap-arrow { color: var(--accent-light); font-size: 22px; flex-shrink: 0; transition: transform 0.15s; }
+        [data-theme="light"] .docs-snap-arrow { color: var(--accent); }
+
+        /* ── Credential modal ───────────────────────────────── */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-box { background: #12121b; border: 1px solid var(--glass-border); border-radius: 20px; padding: 32px; max-width: 480px; width: 100%; box-shadow: 0 24px 64px rgba(0,0,0,0.6); transform: scale(0.93); transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); }
+        .modal-overlay.open .modal-box { transform: scale(1); }
+        [data-theme="light"] .modal-box { background: #fff; }
+        .modal-title    { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .modal-subtitle { font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin-bottom: 22px; }
+        .modal-warning  { display: flex; align-items: flex-start; gap: 10px; padding: 14px; background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.2); border-radius: 12px; margin-bottom: 22px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+        .modal-warning i { color: #fbbf24; flex-shrink: 0; margin-top: 1px; font-size: 18px; }
+        .modal-actions  { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-modal-cancel  { padding: 10px 20px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s; }
+        .btn-modal-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        [data-theme="light"] .btn-modal-cancel:hover { background: rgba(0,0,0,0.05); }
+
+        /* Credential reveal box */
+        .cred-box     { background: rgba(119,202,0,0.06); border: 1px solid rgba(119,202,0,0.2); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px; }
+        .cred-row     { display: flex; flex-direction: column; gap: 4px; }
+        .cred-label   { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); }
+        .cred-value   { font-size: 15px; font-weight: 600; font-family: 'Courier New', monospace; color: var(--accent-light); letter-spacing: 0.4px; }
+        [data-theme="light"] .cred-value { color: var(--accent); }
+        .cred-notice  { font-size: 12px; color: var(--text-faint); text-align: center; line-height: 1.55; }
+
+        /* ── Toast ──────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 12px 18px; background: #16161f; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); pointer-events: auto; display: flex; align-items: center; gap: 10px; animation: toastIn 0.28s cubic-bezier(0.22,1,0.36,1) forwards; }
+        [data-theme="light"] .toast { background: #fff; color: #1a2010; border-color: rgba(0,0,0,0.1); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        .toast.out { animation: toastOut 0.22s ease forwards; }
+        @keyframes toastIn  { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(16px); } }
+
+        /* ── Responsive ─────────────────────────────────────── */
+        @media (max-width: 640px) {
+            .topbar { padding: 0 16px; }
+            .pnav-label { display: none; }
+            .pnav-link  { padding: 7px 12px; }
+            .main-content { padding: 20px 16px 40px; }
+            .app-header { flex-direction: column; gap: 12px; }
+            .app-status-col { align-items: flex-start; }
+            .offer-body { flex-direction: column; }
+            .docs-prog-track { width: 110px; }
+        }
+        @media (max-width: 380px) {
+            .brand-name { display: none; }
+            .portal-nav { padding: 3px; }
+            .pnav-link  { padding: 7px 10px; }
+        }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+            firebase.initializeApp({
+                apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+                authDomain:        "beanhr-portal.firebaseapp.com",
+                projectId:         "beanhr-portal",
+                storageBucket:     "beanhr-portal.firebasestorage.app",
+                messagingSenderId: "1056336656581",
+                appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+            });
+        }
+    </script>
+    <script src="../../js/db.js"></script>
+</head>
+<body>
+
+<div class="bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="app-shell">
+
+    <!-- ── Topbar ───────────────────────────────────────────── -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="brand-mark" style="padding: 4px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+            <div>
+                <div class="brand-name">Bean HR</div>
+                <div class="brand-tag">Candidate Portal</div>
+            </div>
+        </div>
+
+        <nav class="portal-nav">
+            <a href="dashboard.html" class="pnav-link active">
+                <i class="ph-fill ph-list-checks ph-icon-fill"></i>
+                <i class="ph ph-list-checks ph-icon-outline"></i>
+                <span class="pnav-label">Application Status</span>
+            </a>
+            <a href="documents.html" class="pnav-link">
+                <i class="ph-fill ph-files ph-icon-fill"></i>
+                <i class="ph ph-files ph-icon-outline"></i>
+                <span class="pnav-label">Documents</span>
+            </a>
+        </nav>
+
+        <div class="topbar-right">
+            <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme"></button>
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="ph-fill ph-sign-out ph-icon-fill"></i>
+                <i class="ph ph-sign-out ph-icon-outline"></i>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <!-- ── Main content ─────────────────────────────────────── -->
+    <main class="main-content">
+        <div class="content-wrap" id="mainContent">
+            <!-- rendered by JS -->
+        </div>
+    </main>
+
+</div>
+
+<!-- ── Toast container ───────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // ── Auth guard ────────────────────────────────────────────
+    (function () {
+        if (sessionStorage.getItem('bhr_role') !== 'candidate') {
+            window.location.replace('../login.html');
+        }
+    })();
+
+    // ── Helpers ───────────────────────────────────────────────
+    function escapeHtml(s) {
+        if (s == null) return '';
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function showToast(msg, type) {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        const colors = { success: '#4ade80', danger: '#f87171', info: '#60a5fa', warning: '#fbbf24' };
+        const icons  = { success: 'check-circle', danger: 'x-circle', info: 'info', warning: 'warning' };
+        const col = colors[type] || colors.info;
+        const ico = icons[type]  || 'info';
+        t.className = 'toast';
+        t.innerHTML = `<i class="ph-fill ph-${ico}" style="color:${col};font-size:18px;flex-shrink:0;"></i>${escapeHtml(msg)}`;
+        c.appendChild(t);
+        setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 280); }, 3600);
+    }
+
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // ── Candidate Live Data State ─────────────────────────────
+    let _currentCandidateData = null;
+
+    // ── Render helpers ────────────────────────────────────────
+    function overallBadgeHtml(decision) {
+        if (decision === 'selected') {
+            return `<span class="overall-badge selected"><i class="ph-fill ph-check-circle"></i> Selected</span>`;
+        }
+        if (decision === 'rejected') {
+            return `<span class="overall-badge rejected"><i class="ph-fill ph-x-circle"></i> Not Selected</span>`;
+        }
+        return `<span class="overall-badge in-progress"><i class="ph-fill ph-clock"></i> In Progress</span>`;
+    }
+
+    function statusPillHtml(status) {
+        const map = {
+            completed: `<span class="status-pill completed"><i class="ph-fill ph-check-circle"></i> Completed</span>`,
+            pending:   `<span class="status-pill pending"><i class="ph-fill ph-clock"></i> Pending</span>`,
+            rejected:  `<span class="status-pill rejected"><i class="ph-fill ph-x-circle"></i> Rejected</span>`,
+        };
+        return map[status] || '';
+    }
+
+    function dotIconMap(status) {
+        return { completed: 'check', pending: 'clock', rejected: 'x' }[status] || 'circle';
+    }
+
+    function renderTimeline(rounds) {
+        const sorted = rounds.slice().sort((a, b) => a.order - b.order);
+        return sorted.map((r, idx) => {
+            const isLast    = idx === sorted.length - 1;
+            const name      = escapeHtml(r.stageName);
+            const lockedTag = r.locked ? `<span class="tl-locked-tag"> (locked)</span>` : '';
+            const dateStr   = r.date ? escapeHtml(r.date) : 'Date not confirmed yet';
+            return `
+            <div class="timeline-item ${escapeHtml(r.status)}">
+                <div class="tl-left">
+                    <div class="tl-dot">
+                        <i class="ph-fill ph-${dotIconMap(r.status)}"></i>
+                    </div>
+                    ${!isLast ? '<div class="tl-line"></div>' : ''}
+                </div>
+                <div class="tl-content">
+                    <div class="tl-info">
+                        <div class="tl-name">${name}${lockedTag}</div>
+                        <div class="tl-date">${dateStr}</div>
+                    </div>
+                    <div>${statusPillHtml(r.status)}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderOutcomeBanner(data) {
+        if (data.holdDetails && data.holdDetails.isOnHold) {
+            const reasonStr = data.holdDetails.reason ? ` — Reason: ${data.holdDetails.reason}` : '';
+            return `
+            <div class="outcome-banner warning" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#f59e0b;padding:16px 20px;border-radius:12px;display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+                <i class="ph-fill ph-pause-circle" style="font-size:24px;flex-shrink:0;"></i>
+                <div>
+                    <div style="font-size:15px;font-weight:600;margin-bottom:2px;">Application Status: On Hold</div>
+                    <div style="font-size:13px;opacity:0.9;">Your application is currently on hold${escapeHtml(reasonStr)}. Your coordinator will update you once review resumes.</div>
+                </div>
+            </div>`;
+        }
+        if (data.companyDecision === 'rejected') {
+            return `
+            <div class="outcome-banner danger">
+                <i class="ph-fill ph-x-circle outcome-icon"></i>
+                <div>
+                    <div class="outcome-title">Application Unsuccessful</div>
+                    <div class="outcome-msg">Thank you for the time and effort you put into this process. Unfortunately, this position has been filled. Your portal access will remain active for 48 hours.</div>
+                </div>
+            </div>`;
+        }
+        if (data.offerLetterStatus === 'accepted') {
+            return `
+            <div class="outcome-banner success">
+                <i class="ph-fill ph-check-circle outcome-icon" style="color:var(--success);"></i>
+                <div>
+                    <div class="outcome-title">Offer Accepted</div>
+                    <div class="outcome-msg">Congratulations! Your offer has been accepted. Your team will be in touch regarding your joining formalities.</div>
+                </div>
+            </div>`;
+        }
+        return '';
+    }
+
+    
+    function renderNegotiationThread(data) {
+        if (!data.offerNegotiations || data.offerNegotiations.length === 0) return '';
+        const threadHtml = data.offerNegotiations.map(msg => {
+            const isMe = msg.senderRole === 'candidate';
+            const cls = isMe ? 'candidate' : 'company';
+            const senderName = isMe ? 'You' : escapeHtml(msg.senderName);
+            return `
+            <div class="nego-msg ${cls}">
+                <div class="nego-meta"><span>${senderName}</span><span>${escapeHtml(msg.timestamp || 'Just now')}</span></div>
+                <div class="nego-text">${escapeHtml(msg.message)}</div>
+            </div>`;
+        }).join('');
+        return `<div class="nego-thread">${threadHtml}</div>`;
+    }
+
+    function renderOfferCard(data) {
+        if (data.offerLetterStatus !== 'sent' && data.offerLetterStatus !== 'negotiating') return '';
+        const joiningStr = data.offerLetterDraftDetails?.joiningDate ? new Date(data.offerLetterDraftDetails.joiningDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
+        
+        let actionArea = '';
+        if (data.offerLetterStatus === 'sent') {
+            actionArea = `
+                <div class="offer-actions" style="margin-top:10px;">
+                    <button class="btn-primary" onclick="handleAcceptOffer()">
+                        <i class="ph-bold ph-check"></i> Accept Offer
+                    </button>
+                    <button class="btn-secondary" onclick="handleOpenNegotiation()">
+                        <i class="ph-bold ph-chat-centered-text"></i> Open for Discussion
+                    </button>
+                    <button class="btn-danger-ghost" onclick="handleRejectOffer()">
+                        <i class="ph-bold ph-x"></i> Decline
+                    </button>
+                </div>
+            `;
+        } else if (data.offerLetterStatus === 'negotiating') {
+            actionArea = `
+                ${renderNegotiationThread(data)}
+                <div class="nego-input-row">
+                    <textarea id="negoMsgInput" class="nego-input" rows="1" placeholder="Type your message..." oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"></textarea>
+                    <button class="btn-primary" onclick="sendNegotiationMsg()">Send <i class="ph-bold ph-paper-plane-right"></i></button>
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); margin-top:12px;">
+                    <i class="ph-fill ph-info"></i> Your offer is currently open for discussion. The company will review your messages.
+                </div>
+            `;
+        }
+
+        return `
+        <div class="card">
+            <div class="card-title"><i class="ph-fill ph-envelope-open"></i> Offer Letter</div>
+            <div class="offer-body">
+                <div class="offer-icon"><i class="ph-fill ph-file-pdf"></i></div>
+                <div class="offer-details">
+                    <div class="offer-name">Offer Letter — ${escapeHtml(data.fullName)}</div>
+                    <div class="offer-meta">Sent recently${joiningStr ? ' &nbsp;&middot;&nbsp; Joining: ' + escapeHtml(joiningStr) : ''}</div>
+                    <div class="offer-actions">
+                        <a class="btn-secondary" href="${escapeHtml(data.offerLetterUrl || '#')}" target="_blank" rel="noopener">
+                            <i class="ph-fill ph-file-pdf"></i> Offer Letter PDF
+                        </a>
+                        <a class="btn-secondary" href="${escapeHtml(data.financeTermsUrl || '#')}" target="_blank" rel="noopener">
+                            <i class="ph-fill ph-file-text"></i> Terms &amp; Conditions
+                        </a>
+                    </div>
+                    ${actionArea}
+                </div>
+            </div>
+        </div>`;
+    }
+
+
+    function renderDocsSnapshot(docs) {
+        const pct = docs.total > 0 ? Math.round((docs.submitted / docs.total) * 100) : 0;
+        const s = docs.total !== 1 ? 's' : '';
+        return `
+        <a href="documents.html" class="docs-snap">
+            <div class="docs-snap-left">
+                <div class="docs-snap-icon">
+                    <i class="ph-fill ph-files ph-icon-fill"></i>
+                    <i class="ph ph-files ph-icon-outline"></i>
+                </div>
+                <div>
+                    <div class="docs-snap-title">Required Documents</div>
+                    <div class="docs-snap-sub">${docs.submitted} of ${docs.total} document${s} submitted</div>
+                    <div class="docs-prog-row">
+                        <div class="docs-prog-track">
+                            <div class="docs-prog-fill" id="docsProgFill"></div>
+                        </div>
+                        <span class="docs-prog-label">${pct}%</span>
+                    </div>
+                </div>
+            </div>
+            <i class="ph-fill ph-arrow-right docs-snap-arrow ph-icon-fill"></i>
+        </a>`;
+    }
+
+    // ── Main render ───────────────────────────────────────────
+    function render() {
+        const wrap = document.getElementById('mainContent');
+        if (!_currentCandidateData) {
+            wrap.innerHTML = `
+                <div class="card" style="text-align:center;padding:60px 20px;">
+                    <div style="font-size:32px;margin-bottom:12px;color:var(--accent-light);"><i class="ph-fill ph-hourglass"></i></div>
+                    <div style="font-size:16px;font-weight:600;color:var(--text-main);">Loading your application portal...</div>
+                </div>`;
+            return;
+        }
+
+        const data = _currentCandidateData;
+
+        wrap.innerHTML = `
+            ${renderOutcomeBanner(data)}
+
+            <div class="card">
+                <div class="app-header">
+                    <div>
+                        <div class="app-name">${escapeHtml(data.fullName)}</div>
+                        <div class="app-meta">
+                            <span class="meta-pill role">
+                                <i class="ph-fill ph-briefcase"></i>
+                                ${escapeHtml(data.designation)}
+                            </span>
+                            <span class="meta-pill dept">
+                                <i class="ph-fill ph-buildings"></i>
+                                ${escapeHtml(data.department)}
+                            </span>
+                        </div>
+                        <div class="app-date">Applied on ${escapeHtml(data.appliedOn)}</div>
+                    </div>
+                    <div class="app-status-col">
+                        ${overallBadgeHtml(data.companyDecision)}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="ph-fill ph-list-checks"></i>
+                    Hiring Stages
+                </div>
+                <div class="timeline">
+                    ${renderTimeline(data.hiringRounds)}
+                </div>
+            </div>
+
+            ${renderOfferCard(data)}
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="ph-fill ph-files"></i>
+                    Documents
+                </div>
+                ${renderDocsSnapshot(data.documents)}
+            </div>
+        `;
+
+        // Animate progress bar after DOM is painted
+        requestAnimationFrame(() => {
+            const fill = document.getElementById('docsProgFill');
+            if (fill && data.documents) {
+                const pct = data.documents.total > 0
+                    ? Math.round((data.documents.submitted / data.documents.total) * 100)
+                    : 0;
+                fill.style.width = pct + '%';
+            }
+        });
+    }
+
+    // ── Offer actions ─────────────────────────────────────────
+    async function handleAcceptOffer() {
+        if (!_currentCandidateData) return;
+        if (!confirm('Are you sure you want to accept this offer?')) return;
+        _currentCandidateData.offerLetterStatus = 'accepted';
+        _currentCandidateData.companyDecision   = 'selected';
+        showToast('Offer accepted! The hiring team has been notified.', 'success');
+        render();
+        if (typeof db !== 'undefined' && db.submitCandidateOfferDecision) {
+            await db.submitCandidateOfferDecision(_currentCandidateData.id, 'accepted');
+        }
+    }
+
+    async function handleRejectOffer() {
+        if (!_currentCandidateData) return;
+        if (!confirm('Are you sure you want to decline this offer? Your portal access will remain active for 48 hours.')) return;
+        _currentCandidateData.offerLetterStatus = 'rejected';
+        _currentCandidateData.companyDecision   = 'rejected';
+        showToast('Offer declined. The hiring team has been notified.', 'info');
+        render();
+        if (typeof db !== 'undefined' && db.submitCandidateOfferDecision) {
+            await db.submitCandidateOfferDecision(_currentCandidateData.id, 'rejected');
+        }
+    }
+
+    function handleOpenNegotiation() {
+        if (!_currentCandidateData) return;
+        _currentCandidateData.offerLetterStatus = 'negotiating';
+        if (!_currentCandidateData.offerNegotiations) _currentCandidateData.offerNegotiations = [];
+        render();
+    }
+
+    async function sendNegotiationMsg() {
+        const inp = document.getElementById('negoMsgInput');
+        const msg = inp ? inp.value.trim() : '';
+        if (!msg || !_currentCandidateData) return;
+        
+        if (!_currentCandidateData.offerNegotiations) _currentCandidateData.offerNegotiations = [];
+        _currentCandidateData.offerLetterStatus = 'negotiating';
+        
+        _currentCandidateData.offerNegotiations.push({
+            senderRole: 'candidate',
+            senderName: _currentCandidateData.fullName || 'Candidate',
+            message: msg,
+            timestamp: new Date().toLocaleDateString('en-IN', { hour: '2-digit', minute: '2-digit' })
+        });
+        
+        showToast('Message sent to the hiring team.', 'success');
+        
+        if (typeof db !== 'undefined' && db.submitNegotiationMessage) {
+            await db.submitNegotiationMessage(_currentCandidateData.id, 'candidate', _currentCandidateData.fullName || 'Candidate', msg);
+        }
+        
+        if (inp) inp.value = '';
+        render();
+    }
+
+    // ── Logout ────────────────────────────────────────────────
+    function handleLogout() {
+        sessionStorage.clear();
+        window.location.replace('../login.html');
+    }
+
+    // ── Theme ─────────────────────────────────────────────────
+    function _applyTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        const btn = document.getElementById('themeToggle');
+        if (!btn) return;
+        btn.innerHTML = t === 'light'
+            ? '<i class="ph-fill ph-moon" style="font-size:17px;"></i>'
+            : '<i class="ph-fill ph-sun"  style="font-size:17px;"></i>';
+    }
+
+    function toggleTheme() {
+        const cur = localStorage.getItem('bhr_theme') || 'dark';
+        const nxt = cur === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('bhr_theme', nxt);
+        _applyTheme(nxt);
+    }
+
+    // ── Init ──────────────────────────────────────────────────
+    function init() {
+        _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+        render();
+        loadLiveCandidateData();
+    }
+
+    function loadLiveCandidateData() {
+        console.log('[BeanHR Candidate Debug] loadLiveCandidateData invoked');
+        if (typeof firebase === 'undefined') {
+            console.error('[BeanHR Candidate Debug] Firebase is undefined!');
+            return;
+        }
+        firebase.auth().onAuthStateChanged(function (user) {
+            console.log('[BeanHR Candidate Debug] Auth state changed:', user ? { uid: user.uid, email: user.email } : 'No authenticated user');
+            const uid   = user ? user.uid : sessionStorage.getItem('bhr_uid');
+            const email = user ? user.email : sessionStorage.getItem('bhr_email');
+            console.log('[BeanHR Candidate Debug] Searching with parameters:', { uid, email });
+            _fetchCandidateDoc(uid, email);
+        });
+    }
+
+    async function _fetchCandidateDoc(uid, email) {
+        let candDoc = null;
+        
+        // Tier 1: doc(uid) in candidates
+        if (uid) {
+            try {
+                console.log('[BeanHR Candidate Debug] Tier 1 lookup: candidates.doc(', uid, ')');
+                const snap = await firebase.firestore().collection('candidates').doc(uid).get();
+                if (snap.exists) {
+                    candDoc = { id: snap.id, ...snap.data() };
+                    console.log('[BeanHR Candidate Debug] Tier 1 match found:', candDoc);
+                }
+            } catch(e) { console.warn('[BeanHR Candidate Debug] Tier 1 error:', e); }
+        }
+        
+        // Tier 2: doc(uid) in candidateProfiles
+        if (!candDoc && uid) {
+            try {
+                console.log('[BeanHR Candidate Debug] Tier 2 lookup: candidateProfiles.doc(', uid, ')');
+                const snap = await firebase.firestore().collection('candidateProfiles').doc(uid).get();
+                if (snap.exists) {
+                    candDoc = { id: snap.id, ...snap.data() };
+                    console.log('[BeanHR Candidate Debug] Tier 2 match found:', candDoc);
+                }
+            } catch(e) { console.warn('[BeanHR Candidate Debug] Tier 2 error:', e); }
+        }
+        
+        // Tier 3: email in candidates
+        if (!candDoc && email) {
+            try {
+                console.log('[BeanHR Candidate Debug] Tier 3 lookup: candidates by email (', email, ')');
+                const snap = await firebase.firestore().collection('candidates').where('email', '==', email.toLowerCase()).get();
+                if (!snap.empty) {
+                    candDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                    console.log('[BeanHR Candidate Debug] Tier 3 match found:', candDoc);
+                }
+            } catch(e) { console.warn('[BeanHR Candidate Debug] Tier 3 error:', e); }
+        }
+
+        // Tier 4: email in candidateProfiles
+        if (!candDoc && email) {
+            try {
+                console.log('[BeanHR Candidate Debug] Tier 4 lookup: candidateProfiles by email (', email, ')');
+                const snap = await firebase.firestore().collection('candidateProfiles').where('email', '==', email.toLowerCase()).get();
+                if (!snap.empty) {
+                    candDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
+                    console.log('[BeanHR Candidate Debug] Tier 4 match found:', candDoc);
+                }
+            } catch(e) { console.warn('[BeanHR Candidate Debug] Tier 4 error:', e); }
+        }
+
+        if (candDoc) {
+            if (candDoc.id) {
+                try {
+                    const pSnap = await firebase.firestore().collection('candidateProfiles').doc(candDoc.id).get().catch(() => null);
+                    const cSnap = await firebase.firestore().collection('candidates').doc(candDoc.id).get().catch(() => null);
+                    const pData = pSnap && pSnap.exists ? pSnap.data() : {};
+                    const cData = cSnap && cSnap.exists ? cSnap.data() : {};
+                    const r1 = pData.hiringRounds || [];
+                    const r2 = cData.hiringRounds || [];
+                    const bestRounds = r1.length >= r2.length ? r1 : r2;
+                    candDoc = { ...cData, ...pData, ...candDoc, hiringRounds: bestRounds.length ? bestRounds : candDoc.hiringRounds };
+                } catch(e) {}
+            }
+
+            const reqDocs = candDoc.requestedDocuments || candDoc.documents || [];
+            const verifiedDocsCount = reqDocs.filter(d => d.finalStatus === 'manager_verified' || d.finalStatus === 'fully_verified').length;
+
+            _currentCandidateData = {
+                id: candDoc.id || uid,
+                fullName: candDoc.fullName || candDoc.candidateName || 'Candidate',
+                designation: candDoc.designation || candDoc.role || 'Position',
+                department: candDoc.department || candDoc.dept || 'Department',
+                appliedOn: candDoc.appliedOn || (candDoc.submittedAt ? new Date(candDoc.submittedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recently'),
+                companyDecision: candDoc.companyDecision || 'pending',
+                offerLetterStatus: candDoc.offerLetterStatus || 'not_started',
+                offerLetterUrl: candDoc.offerLetterUrl || null,
+                financeTermsUrl: candDoc.financeTermsUrl || null,
+                joiningDate: candDoc.joiningDate || '',
+                joiningConfirmed: candDoc.joiningConfirmed || false,
+                hiringRounds: candDoc.hiringRounds && candDoc.hiringRounds.length ? candDoc.hiringRounds : [
+                    { roundId: 'r1', stageName: 'Job Application', status: 'completed', order: 1, locked: true, date: 'Applied' }
+                ],
+                offerDetails: candDoc.offerDetails || null,
+                offerNegotiations: candDoc.offerNegotiations || [],
+                documents: {
+                    submitted: verifiedDocsCount,
+                    total: reqDocs.length
+                }
+            };
+            console.log('[BeanHR Candidate Debug] State constructed successfully:', _currentCandidateData);
+            render();
+        } else {
+            console.error('[BeanHR Candidate Debug] No matching candidate document found in Firestore for UID/Email:', { uid, email });
+        }
+    }
+
+    init();
+</script>
+</body>
+</html>
+

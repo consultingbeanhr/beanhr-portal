@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Hiring</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-light:  #c8854a;
+            --brown-glow:   rgba(168,106,62,0.25);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.2);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --icon-muted:   rgba(241,241,245,0.65);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --sidebar-w:    240px;
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --warning:      #fbbf24;
+            --danger:       #f87171;
+            --blue:         #60a5fa;
+        }
+
+        /* ── Scrollbar Hiding ───────────────────────────────────── */
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
+        /* ── Light Theme ────────────────────────────────────────── */
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.35);
+            --icon-faint:   rgba(26,32,16,0.32);
+            --icon-muted:   rgba(26,32,16,0.65);
+            --blue-bg:      rgba(96,165,250,0.12);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+        }
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb   { opacity: 0.18; }
+        [data-theme="light"] .orb-1 { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2 { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+        [data-theme="light"] .sidebar  { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar   { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .nav-item:hover { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .notif-btn,
+        [data-theme="light"] .theme-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .mark-read-link { color: #4a7000; }
+        [data-theme="light"] .notif-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .notif-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .section-card { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .form-input,
+        [data-theme="light"] .form-select,
+        [data-theme="light"] .form-textarea { background-color: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        [data-theme="light"] .form-input::placeholder,
+        [data-theme="light"] .form-textarea::placeholder { color: rgba(26,32,16,0.3); }
+        [data-theme="light"] .form-select option { background-color: #ffffff; color: #1a2010; }
+        [data-theme="light"] .form-label { color: rgba(26,32,16,0.55); }
+        [data-theme="light"] .tab-bar { background: rgba(255,255,255,0.6); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .tab-btn { color: rgba(26,32,16,0.5); }
+        [data-theme="light"] .tab-btn.active { color: var(--accent); background: rgba(90,153,0,0.08); }
+        [data-theme="light"] .proposal-card { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .proposal-card:hover { border-color: rgba(90,153,0,0.25); }
+        [data-theme="light"] .meta-label { color: rgba(26,32,16,0.4); }
+        [data-theme="light"] .prop-reason { color: rgba(26,32,16,0.55); }
+        [data-theme="light"] .divider { border-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .removal-member { background: rgba(255,255,255,0.7); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .removal-member:hover { border-color: rgba(90,153,0,0.3); }
+        [data-theme="light"] .removal-member.selected { background: rgba(90,153,0,0.08); border-color: rgba(90,153,0,0.35); }
+        [data-theme="light"] .admin-note { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); color: rgba(26,32,16,0.5); }
+        [data-theme="light"] .confirm-modal-panel { background: #ffffff; border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .confirm-modal-panel .form-textarea { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }
+        [data-theme="light"] .cm-cancel { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); color: var(--text); }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── Animated Background ───────────────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App Shell ─────────────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ───────────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w); height: 100vh; flex-shrink: 0;
+            display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 14px; overflow: hidden; overflow-y: auto;
+            transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        .sidebar.collapsed { width: 64px; }
+
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger  { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none; }
+        [data-theme="light"] .ph-icon-fill    { display: none; }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item  { justify-content: center; padding: 10px 0; gap: 0; }
+
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+        /* ── Main Area ─────────────────────────────────────────────── */
+        .main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; }
+
+        /* ── Topbar ────────────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(7,7,15,0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+        .topbar-title { font-size: 16px; font-weight: 700; letter-spacing: -0.2px; }
+        .topbar-sub   { font-size: 12px; color: var(--text-faint); margin-top: 1px; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .notif-badge {
+            position: absolute; top: -4px; right: -4px;
+            min-width: 16px; height: 16px; border-radius: 8px;
+            background: var(--accent); color: #fff;
+            font-size: 10px; font-weight: 700; display: flex;
+            align-items: center; justify-content: center; padding: 0 4px;
+            border: 2px solid var(--bg);
+        }
+        @keyframes avatarPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff; cursor: pointer;
+            box-shadow: 0 2px 12px var(--accent-glow); flex-shrink: 0;
+            transition: transform 0.15s;
+        }
+        .avatar:hover { transform: scale(1.05); }
+        .avatar.skeleton { animation: avatarPulse 1.5s ease-in-out infinite; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: none; color: transparent; }
+
+        /* ── Content ───────────────────────────────────────────────── */
+        .content-area { flex: 1; padding: 28px 28px 60px; max-width: 1040px; width: 100%; margin: 0 auto; }
+
+        .page-header { margin-bottom: 26px; }
+        .page-title  { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; }
+        .page-sub    { font-size: 13px; color: var(--text-faint); margin-top: 4px; }
+
+        /* ── Two-column layout ─────────────────────────────────────── */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+        @media (max-width: 820px) { .two-col { grid-template-columns: 1fr; } }
+
+        /* ── Section Card ──────────────────────────────────────────── */
+        .section-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px; padding: 22px;
+        }
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .section-icon {
+            width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .section-icon.hire   { background: rgba(74,222,128,0.12); color: var(--success); }
+        .section-icon.remove { background: rgba(248,113,113,0.12); color: var(--danger); }
+        .section-title { font-size: 15px; font-weight: 700; }
+        .section-sub   { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+
+        /* ── Form ──────────────────────────────────────────────────── */
+        .form-grid { display: flex; flex-direction: column; gap: 14px; }
+        .form-row  { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-label {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--text-faint);
+        }
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%; padding: 10px 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 10px; font-size: 13px; font-family: 'Inter', sans-serif;
+            color: var(--text); outline: none;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus { border-color: rgba(119,202,0,0.4); background: rgba(119,202,0,0.03); }
+        .form-input::placeholder,
+        .form-textarea::placeholder { color: var(--text-faint); }
+        .form-input.error { border-color: rgba(248,113,113,0.5); }
+        .form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+        .form-select { cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 12px center;
+            padding-right: 32px;
+        }
+        .form-select option { background-color: #12121e; color: #f1f1f5; }
+        [data-theme="light"] .form-select option { background-color: #ffffff; color: #1a2010; }
+        .field-error { font-size: 11px; color: var(--danger); margin-top: 3px; display: none; }
+        .field-error.visible { display: block; }
+
+        /* ── JD Upload Zone ─────────────────────────────────────── */
+        .jd-upload-zone {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 14px;
+            background: rgba(255,255,255,0.03); border: 1.5px dashed var(--glass-border);
+            border-radius: 10px; cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .jd-upload-zone:hover { border-color: rgba(119,202,0,0.4); background: rgba(119,202,0,0.03); }
+        .jd-upload-zone.has-file { border-style: solid; border-color: rgba(119,202,0,0.35); background: rgba(119,202,0,0.04); }
+        [data-theme="light"] .jd-upload-zone { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.15); }
+        [data-theme="light"] .jd-upload-zone:hover { border-color: rgba(90,153,0,0.4); background: rgba(90,153,0,0.04); }
+        [data-theme="light"] .jd-upload-zone.has-file { border-color: rgba(90,153,0,0.5); background: rgba(90,153,0,0.06); }
+        .jd-upload-icon { width: 34px; height: 34px; border-radius: 8px; background: rgba(96,165,250,0.1); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--blue); flex-shrink: 0; }
+        .jd-upload-zone.has-file .jd-upload-icon { background: rgba(119,202,0,0.12); color: var(--accent-light); }
+        .jd-upload-text { flex: 1; min-width: 0; }
+        .jd-upload-title { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .jd-upload-zone.has-file .jd-upload-title { color: var(--text); }
+        .jd-upload-hint { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+        .jd-remove-btn {
+            width: 26px; height: 26px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 6px; display: none; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--danger); font-size: 13px; flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .jd-remove-btn:hover { background: rgba(248,113,113,0.2); }
+        .jd-upload-zone.has-file .jd-remove-btn { display: flex; }
+        .jd-optional-tag { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; background: rgba(255,255,255,0.06); color: var(--text-faint); margin-left: 6px; vertical-align: middle; }
+        [data-theme="light"] .jd-optional-tag { background: rgba(0,0,0,0.06); }
+
+        .submit-btn {
+            width: 100%; padding: 11px; border-radius: 11px; border: none;
+            font-size: 13.5px; font-weight: 700; cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s, box-shadow 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+        }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .submit-btn.hire-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: #07120a; box-shadow: 0 4px 18px var(--accent-glow);
+        }
+        .submit-btn.hire-btn:hover:not(:disabled) { box-shadow: 0 4px 28px var(--accent-glow); }
+
+        .divider { border: none; border-top: 1px solid var(--glass-border); margin: 20px 0; }
+
+        /* ── History list in form card ─────────────────────────────── */
+        .form-history-label {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-faint); margin-bottom: 10px;
+        }
+
+        /* ── Proposal Cards ────────────────────────────────────────── */
+        .proposal-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+            transition: border-color 0.15s;
+        }
+        .proposal-card:last-child { margin-bottom: 0; }
+        .proposal-card:hover { border-color: rgba(119,202,0,0.2); }
+
+        .prop-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+        .prop-name { font-size: 13.5px; font-weight: 600; }
+        .prop-sub  { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+        .prop-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+        .meta-label { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.7px; }
+        .meta-value { font-size: 12px; font-weight: 500; margin-top: 2px; }
+        .prop-reason {
+            font-size: 12px; color: var(--text-muted); line-height: 1.45;
+            padding: 8px 10px; background: rgba(255,255,255,0.03);
+            border-radius: 7px; border-left: 2px solid var(--glass-border);
+        }
+        .admin-note {
+            display: flex; align-items: flex-start; gap: 8px; margin-top: 8px;
+            font-size: 12px; color: var(--text-muted); line-height: 1.4;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 8px; padding: 8px 10px;
+        }
+
+        /* ── Status Badges ─────────────────────────────────────────── */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0;
+        }
+        .status-badge.pending  { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.22); }
+        .status-badge.approved { background: rgba(74,222,128,0.12); color: #4ade80; border: 1px solid rgba(74,222,128,0.22); }
+        .status-badge.rejected { background: rgba(248,113,113,0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.22); }
+
+        /* ── Empty State ───────────────────────────────────────────── */
+        .empty-state { text-align: center; padding: 32px 16px; }
+        .empty-icon  { display: flex; justify-content: center; margin-bottom: 10px; color: var(--text-faint); }
+        .empty-text  { font-size: 13.5px; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; }
+        .empty-sub   { font-size: 12px; color: var(--text-faint); }
+
+        /* ── Removal Member Picker ──────────────────────────────────── */
+        .member-picker {
+            display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;
+            max-height: 190px; overflow-y: auto; padding-right: 4px;
+        }
+        .member-picker::-webkit-scrollbar { width: 4px; }
+        .member-picker::-webkit-scrollbar-track { background: transparent; }
+        .member-picker::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+        .removal-member {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: 11px;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            cursor: pointer; transition: border-color 0.15s, background 0.15s;
+        }
+        .removal-member:hover    { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.14); }
+        .removal-member.selected { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.3); }
+        .member-avatar {
+            width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: #fff;
+        }
+        .member-name { font-size: 13px; font-weight: 600; }
+        .member-role { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+        .member-check {
+            margin-left: auto; width: 18px; height: 18px; border-radius: 50%;
+            border: 2px solid var(--glass-border); background: transparent;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.15s, background 0.15s;
+            flex-shrink: 0;
+        }
+        .removal-member.selected .member-check {
+            border-color: var(--danger); background: var(--danger);
+        }
+        .member-check::after {
+            content: ''; display: none;
+            width: 4px; height: 8px;
+            border: 2px solid #fff; border-top: none; border-left: none;
+            transform: rotate(45deg) translate(0, -1px);
+        }
+        .removal-member.selected .member-check::after { display: block; }
+        .member-status-badge {
+            display: inline-flex; align-items: center; padding: 1px 6px;
+            border-radius: 20px; font-size: 10px; font-weight: 600;
+            vertical-align: middle; margin-left: 5px;
+        }
+        .badge-notice   { background: rgba(251,191,36,0.12);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.22); }
+        .badge-resigned { background: rgba(248,113,113,0.10); color: #f87171; border: 1px solid rgba(248,113,113,0.22); }
+
+        .remove-btn {
+            width: 100%; padding: 11px; border-radius: 11px; border: none;
+            background: rgba(248,113,113,0.12); color: var(--danger);
+            border: 1px solid rgba(248,113,113,0.25);
+            font-size: 13.5px; font-weight: 700; cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+        }
+        .remove-btn:hover:not(:disabled) { background: rgba(248,113,113,0.2); border-color: rgba(248,113,113,0.4); }
+        .remove-btn:active { transform: scale(0.98); }
+        .remove-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ── Confirm Modal ─────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 500;
+            background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .confirm-modal-panel {
+            width: 460px; max-width: calc(100vw - 32px);
+            background: #0f0f1a; border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 26px;
+            transform: translateY(16px) scale(0.97);
+            transition: transform 0.22s cubic-bezier(0.22,1,0.36,1);
+            box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+        }
+        .modal-overlay.open .confirm-modal-panel { transform: translateY(0) scale(1); }
+        .cm-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 18px; }
+        .cm-title  { font-size: 16px; font-weight: 700; }
+        .cm-sub    { font-size: 12px; color: var(--text-faint); margin-top: 3px; }
+        .cm-close  {
+            width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+            background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-muted); font-size: 15px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .cm-close:hover { background: rgba(248,113,113,0.1); color: var(--danger); }
+        .cm-employee {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; border-radius: 11px;
+            background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.15);
+            margin-bottom: 16px;
+        }
+        .cm-emp-avatar {
+            width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: #fff;
+        }
+        .cm-emp-name { font-size: 14px; font-weight: 600; }
+        .cm-emp-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .cm-label { font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+        .cm-actions { display: flex; gap: 10px; margin-top: 18px; }
+        .cm-cancel {
+            flex: 1; padding: 10px; border-radius: 10px;
+            background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+            font-size: 13px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; transition: background 0.15s;
+        }
+        .cm-cancel:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+        .cm-submit {
+            flex: 2; padding: 10px; border-radius: 10px;
+            background: linear-gradient(135deg, #f87171, #ef4444); color: #fff;
+            font-size: 13px; font-weight: 700; cursor: pointer; border: none;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .cm-submit:active { transform: scale(0.98); }
+        .cm-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── Notification Dropdown ──────────────────────────────────── */
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset; z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+        .notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 14px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; }
+        .notif-dropdown-body { flex: 1; overflow-y: auto; padding: 10px; }
+        .notif-dropdown-body::-webkit-scrollbar { width: 3px; }
+        .notif-dropdown-body::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 3px; }
+        .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; color: var(--text); }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+        .notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px 4px; border-radius: 4px; transition: background 0.15s, color 0.15s; line-height: 1; opacity: 0.7; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); opacity: 1; }
+        .notif-empty { text-align: center; padding: 32px 16px; font-size: 13px; color: var(--text-faint); }
+        [data-theme="light"] .notif-dropdown { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
+        [data-theme="light"] .notif-item { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.08); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .notif-title { color: #1a1a1a; }
+        [data-theme="light"] .notif-msg { color: #555555; }
+        [data-theme="light"] .notif-time { color: #888888; }
+
+        /* ── Toast ─────────────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+        .toast { padding: 12px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 500; backdrop-filter: blur(16px); border: 1px solid; animation: toastIn 0.25s cubic-bezier(0.22,1,0.36,1); }
+        .toast.success { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.3); color: #4ade80; }
+        .toast.error   { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); color: #f87171; }
+        .toast.info    { background: rgba(96,165,250,0.15);  border-color: rgba(96,165,250,0.3);  color: #60a5fa; }
+        @keyframes toastIn { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── Candidate Pipeline ────────────────────────────────────────────── */
+        .pipeline-section { margin-top: 36px; }
+        .history-section  { margin-top: 20px; margin-bottom: 4px; }
+        .pipeline-header  { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+        .pipeline-title   { font-size: 15px; font-weight: 700; }
+        .pipeline-count {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 22px; height: 22px; border-radius: 11px;
+            background: rgba(119,202,0,0.15); color: var(--accent);
+            font-size: 11px; font-weight: 700; padding: 0 6px;
+        }
+        .candidate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        @media (max-width: 980px) { .candidate-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 640px) { .candidate-grid { grid-template-columns: 1fr; } }
+        .candidate-card {
+            background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+            border-radius: 14px; padding: 16px; transition: border-color 0.15s;
+        }
+        .candidate-card:hover { border-color: rgba(119,202,0,0.18); }
+        .candidate-card.rejected-card { opacity: 0.55; }
+        .candidate-card.closed-card { opacity: 0.4; cursor: pointer; }
+        .candidate-card.closed-card:hover { opacity: 0.65; border-color: rgba(119,202,0,0.1); }
+        .closed-toggle-btn {
+            display: flex; align-items: center; gap: 6px; width: 100%;
+            padding: 10px 14px; border-radius: 10px; margin-top: 20px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: var(--text-muted); font-size: 12.5px; font-weight: 500;
+            cursor: pointer; transition: background .15s, border-color .15s;
+        }
+        .closed-toggle-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
+        .closed-toggle-btn .closed-caret { margin-left: auto; font-size: 11px; transition: transform .2s; }
+        .closed-toggle-btn.expanded .closed-caret { transform: rotate(180deg); }
+        .cand-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .cand-avatar {
+            width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff;
+        }
+        .cand-name { font-size: 13.5px; font-weight: 600; }
+        .cand-role { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+        .cand-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+        .cand-pill {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; border: 1px solid;
+        }
+        .cand-pill.stage-docs     { background: rgba(96,165,250,0.10);  color: #60a5fa; border-color: rgba(96,165,250,0.22); }
+        .cand-pill.stage-offer    { background: rgba(251,191,36,0.10);  color: #fbbf24; border-color: rgba(251,191,36,0.22); }
+        .cand-pill.stage-joined   { background: rgba(74,222,128,0.10);  color: #4ade80; border-color: rgba(74,222,128,0.22); }
+        .cand-pill.stage-rejected { background: rgba(248,113,113,0.10); color: #f87171; border-color: rgba(248,113,113,0.22); }
+        .cand-pill.stage-draft    { background: rgba(192,132,252,0.10); color: #c084fc; border-color: rgba(192,132,252,0.22); }
+        .cand-pill.stage-post-accept { background: rgba(74,222,128,0.10); color: #4ade80; border-color: rgba(74,222,128,0.22); }
+        .cand-pill.stage-hold     { background: rgba(251,191,36,0.10);  color: #fbbf24; border-color: rgba(251,191,36,0.22); }
+        .cand-pill.doc-progress   { background: rgba(255,255,255,0.04); color: var(--text-muted); border-color: var(--glass-border); }
+        .cand-pill.offer-sent     { background: rgba(251,191,36,0.10);  color: #fbbf24; border-color: rgba(251,191,36,0.22); }
+        .cand-pill.offer-draft    { background: rgba(192,132,252,0.10); color: #c084fc; border-color: rgba(192,132,252,0.22); }
+        .cand-pill.offer-review   { background: rgba(96,165,250,0.10);  color: #60a5fa; border-color: rgba(96,165,250,0.22); }
+        .cand-pill.offer-approved { background: rgba(119,202,0,0.10);   color: var(--accent); border-color: rgba(119,202,0,0.22); }
+        .cand-pill.offer-accepted { background: rgba(74,222,128,0.10);  color: #4ade80; border-color: rgba(74,222,128,0.22); }
+        .cand-pill.offer-rejected { background: rgba(248,113,113,0.10); color: #f87171; border-color: rgba(248,113,113,0.22); }
+        /* ── Card footer: doc progress + primary btn + kebab ──────────── */
+        .candidate-card { cursor: pointer; position: relative; }
+        .candidate-card.hold-card { border-color: rgba(251,191,36,0.28); }
+        .candidate-card.hold-card:hover { border-color: rgba(251,191,36,0.48); }
+        .cand-hold-reason {
+            font-size: 11px; color: #fbbf24; margin-top: 2px; margin-bottom: 6px;
+            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+            overflow: hidden; line-height: 1.4;
+        }
+        .cand-footer {
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 12px; padding-top: 10px;
+            border-top: 1px solid var(--glass-border);
+        }
+        .cand-doc-area { flex: 1; min-width: 0; }
+        .cand-doc-bar {
+            height: 3px; background: rgba(255,255,255,0.07); border-radius: 4px; margin-bottom: 4px;
+        }
+        .cand-doc-fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width 0.3s; }
+        .cand-doc-label { font-size: 10.5px; color: var(--text-faint); }
+        .cand-primary-btn {
+            flex-shrink: 0; padding: 7px 13px; border-radius: 9px; border: 1px solid;
+            font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;
+            display: inline-flex; align-items: center;
+            transition: background 0.15s;
+        }
+        .cand-primary-btn.btn-green  { background: rgba(119,202,0,0.10); border-color: rgba(119,202,0,0.26); color: var(--accent); }
+        .cand-primary-btn.btn-green:hover  { background: rgba(119,202,0,0.18); }
+        .cand-primary-btn.btn-blue   { background: rgba(96,165,250,0.10); border-color: rgba(96,165,250,0.24); color: #60a5fa; }
+        .cand-primary-btn.btn-blue:hover   { background: rgba(96,165,250,0.18); }
+        .cand-primary-btn.btn-amber  { background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.26); color: #fbbf24; }
+        .cand-primary-btn.btn-amber:hover  { background: rgba(251,191,36,0.18); }
+        .cand-primary-btn.btn-muted  { background: var(--glass-bg); border-color: var(--glass-border); color: var(--text-muted); }
+        .cand-primary-btn.btn-muted:hover  { background: rgba(255,255,255,0.08); color: var(--text); }
+        /* Kebab menu */
+        .cand-kebab-wrap { position: relative; flex-shrink: 0; }
+        .cand-kebab-btn {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: transparent; border: 1px solid transparent;
+            color: var(--text-faint); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .cand-kebab-btn:hover { background: var(--glass-bg); border-color: var(--glass-border); color: var(--text-muted); }
+        .cand-kebab-menu {
+            display: none; position: absolute; bottom: calc(100% + 6px); right: 0;
+            background: #13131f; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 11px; padding: 5px; min-width: 168px; z-index: 60;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+        }
+        .cand-kebab-menu.open { display: block; }
+        .cand-kebab-item {
+            display: flex; align-items: center; gap: 8px;
+            width: 100%; padding: 8px 11px; border-radius: 7px;
+            background: transparent; border: none;
+            font-size: 12.5px; font-weight: 500; color: var(--text-muted);
+            cursor: pointer; text-align: left; transition: background 0.12s, color 0.12s;
+        }
+        .cand-kebab-item:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+        .cand-kebab-item.danger { color: var(--danger); }
+        .cand-kebab-item.danger:hover { background: rgba(248,113,113,0.08); }
+        .cand-kebab-item.amber { color: #fbbf24; }
+        .cand-kebab-item.amber:hover { background: rgba(251,191,36,0.08); }
+        /* Light overrides — pipeline */
+        [data-theme="light"] .candidate-card { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .candidate-card:hover { border-color: rgba(90,153,0,0.25); }
+        [data-theme="light"] .cand-kebab-menu { background: #fff; border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .cand-doc-bar { background: rgba(0,0,0,0.07); }
+
+        /* ── Standardized Modals (Matching Admin Design) ────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 900;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+            opacity: 0; pointer-events: none; transition: opacity .2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px;
+            width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+            transform: scale(.96); transition: transform .2s cubic-bezier(0.22,1,0.36,1); display: flex; flex-direction: column;
+        }
+        [data-theme="light"] .modal-box { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+        .modal-overlay.open .modal-box { transform: scale(1); }
+        .modal-header { padding: 20px 22px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .modal-title  { font-size: 15px; font-weight: 700; }
+        .modal-sub    { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+        .modal-close  { width: 32px; height: 32px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-size: 16px; transition: background .15s, color .15s; padding: 0; }
+        .modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+        .modal-body   { padding: 20px 22px; overflow-y: auto; scrollbar-width: thin; flex: 1; }
+        .modal-footer { padding: 14px 22px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+        .modal-btn { height: 36px; padding: 0 18px; border-radius: 9px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; font-family: 'Inter', sans-serif; border: 1px solid var(--glass-border); display: inline-flex; align-items: center; gap: 6px; }
+        .modal-btn-secondary { background: transparent; color: var(--text-muted); }
+        .modal-btn-secondary:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .cand-action-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; border: none; cursor: pointer; transition: opacity .15s; }
+        .cand-action-btn:hover { opacity: .82; }
+        .cand-action-btn.view-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); }
+        .cand-action-btn.unhold-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); }
+
+        /* ── Offer / Hold modals ──────────────────────────────────────── */
+        .ofm-overlay {
+            position: fixed; inset: 0; z-index: 900; background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+        }
+        .ofm-overlay.open { display: flex; }
+        .ofm-box {
+            background: #0e0e1a; border: 1px solid var(--glass-border); border-radius: 18px;
+            padding: 28px 30px; width: 100%; max-width: 480px; max-height: 90vh;
+            overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.55);
+        }
+        [data-theme="light"] .ofm-box { background: #fff; }
+        .ofm-title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+        .ofm-sub   { font-size: 12px; color: var(--text-muted); margin-bottom: 22px; }
+        .ofm-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+        .ofm-row.full { grid-template-columns: 1fr; }
+        .ofm-label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 5px; }
+        .ofm-input, .ofm-select, .ofm-textarea {
+            width: 100%; background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 9px; padding: 9px 12px; color: var(--text); font-family: inherit;
+            font-size: 13px; outline: none; transition: border-color 0.15s; box-sizing: border-box;
+        }
+        .ofm-input:focus, .ofm-select:focus, .ofm-textarea:focus { border-color: var(--accent); }
+        .ofm-textarea { resize: vertical; min-height: 72px; }
+        [data-theme="light"] .ofm-input, [data-theme="light"] .ofm-select, [data-theme="light"] .ofm-textarea {
+            background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: #1a1a1a;
+        }
+        .ofm-actions { display: flex; gap: 10px; margin-top: 22px; justify-content: flex-end; }
+        .ofm-save  { background: var(--accent); color: #0a1200; border: none; border-radius: 10px; padding: 10px 22px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .ofm-save:hover { background: var(--accent-light); }
+        .ofm-cancel { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted); border-radius: 10px; padding: 10px 18px; font-size: 13px; cursor: pointer; }
+        .ofm-cancel:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        select.ofm-select { appearance: none; -webkit-appearance: none; background-color: #13131e; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 32px; }
+        [data-theme="light"] select.ofm-select { background-color: rgba(0,0,0,0.04); }
+        .ofm-input.error, .ofm-select.error, .ofm-textarea.error { border-color: var(--danger); }
+        .ofm-field-err { font-size: 11px; color: var(--danger); margin-top: 3px; display: none; }
+        .ofm-field-err.visible { display: block; }
+
+        /* ── Candidate Detail Modal ──────────────────────────────────────── */
+        .cand-detail-overlay {
+            position: fixed; inset: 0; z-index: 700;
+            background: rgba(0,0,0,0.72);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .cand-detail-overlay.open {
+            opacity: 1; pointer-events: all;
+        }
+        .cand-detail-panel {
+            width: 100%; max-width: 760px; max-height: 88vh;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 18px; display: flex; flex-direction: column;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+            transform: scale(0.95) translateY(12px);
+            transition: transform 0.22s ease;
+            overflow: hidden;
+        }
+        .cand-detail-overlay.open .cand-detail-panel {
+            transform: scale(1) translateY(0);
+        }
+        .cdp-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 20px 22px 16px; border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+        .cdp-avatar {
+            width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: 700; color: #fff;
+        }
+        .cdp-info { flex: 1; min-width: 0; }
+        .cdp-name  { font-size: 15px; font-weight: 700; }
+        .cdp-meta  { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+        .cdp-close {
+            width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--glass-border);
+            background: transparent; color: var(--text-faint); cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+        }
+        .cdp-close:hover { background: rgba(248,113,113,0.12); color: var(--danger); border-color: rgba(248,113,113,0.3); }
+
+        /* Tab bar */
+        .cdp-tabs {
+            display: flex; gap: 4px; padding: 10px 22px 0;
+            border-bottom: 1px solid var(--glass-border); flex-shrink: 0;
+        }
+        .cdp-tab {
+            padding: 7px 16px; border-radius: 8px 8px 0 0; border: none;
+            background: transparent; color: var(--text-faint); font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: background 0.15s, color 0.15s;
+            position: relative; bottom: -1px; border: 1px solid transparent;
+            border-bottom: none;
+        }
+        .cdp-tab:hover { color: var(--text); }
+        .cdp-tab.active {
+            background: var(--glass-bg); color: var(--accent-light);
+            border-color: var(--glass-border);
+            border-bottom-color: var(--glass-bg);
+        }
+        [data-theme="light"] .cdp-tab.active { background: #fff; border-bottom-color: #fff; }
+
+        /* Tab content */
+        .cdp-body { flex: 1; overflow-y: auto; padding: 20px 22px; }
+        .cdp-tab-pane { display: none; }
+        .cdp-tab-pane.active { display: block; }
+
+        /* ── Rounds timeline ── */
+        .modal-timeline { display: flex; flex-direction: column; gap: 0; }
+        .mtl-item {
+            display: flex; gap: 14px; position: relative;
+        }
+        .mtl-left {
+            display: flex; flex-direction: column; align-items: center;
+            width: 22px; flex-shrink: 0; padding-top: 3px;
+        }
+        .mtl-dot {
+            width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+            border: 2px solid; position: relative; z-index: 1;
+        }
+        .mtl-dot.completed  { background: var(--accent);      border-color: var(--accent);      }
+        .mtl-dot.pending    { background: transparent;         border-color: var(--warning);      box-shadow: 0 0 0 4px rgba(251,191,36,0.12); }
+        .mtl-dot.rejected   { background: var(--danger);       border-color: var(--danger);       }
+        .mtl-connector {
+            flex: 1; width: 2px; background: rgba(255,255,255,0.08); margin: 2px 0;
+            min-height: 16px;
+        }
+        [data-theme="light"] .mtl-connector { background: rgba(0,0,0,0.08); }
+        .mtl-content { flex: 1; min-width: 0; padding-bottom: 18px; }
+        .mtl-row { display: flex; align-items: flex-start; gap: 8px; }
+        .mtl-name { font-size: 13px; font-weight: 600; flex: 1; }
+        .mtl-badge {
+            display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 600; border: 1px solid;
+        }
+        .mtl-badge.completed { background: rgba(119,202,0,0.1); color: var(--accent); border-color: rgba(119,202,0,0.22); }
+        .mtl-badge.pending   { background: rgba(251,191,36,0.1); color: var(--warning); border-color: rgba(251,191,36,0.22); }
+        .mtl-badge.rejected  { background: rgba(248,113,113,0.1); color: var(--danger); border-color: rgba(248,113,113,0.22); }
+        .mtl-lock-badge {
+            display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 500;
+            background: rgba(255,255,255,0.04); color: var(--text-faint);
+            border: 1px solid var(--glass-border);
+        }
+        [data-theme="light"] .mtl-lock-badge { background: rgba(0,0,0,0.04); }
+        .mtl-edit-btn {
+            width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--glass-border);
+            background: transparent; color: var(--text-faint); cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+            transition: background 0.15s, color 0.15s;
+        }
+        .mtl-edit-btn:hover { background: rgba(119,202,0,0.1); color: var(--accent); border-color: rgba(119,202,0,0.3); }
+        .mtl-date  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .mtl-notes { font-size: 11.5px; color: var(--text-muted); margin-top: 5px; font-style: italic; }
+
+        /* Inline edit/add form for rounds */
+        .round-form {
+            margin-top: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 10px; padding: 14px 16px;
+        }
+        [data-theme="light"] .round-form { background: rgba(0,0,0,0.02); }
+        .round-form-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .round-form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .round-form-row .rfi {
+            flex: 1; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.04); color: var(--text); font-size: 12.5px;
+            outline: none; font-family: inherit;
+        }
+        [data-theme="light"] .round-form-row .rfi { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        .round-form-row .rfi:focus { border-color: var(--accent); }
+        .round-form-row .rfi-select { appearance: none; background: #12121f; color-scheme: dark; }
+        [data-theme="light"] .round-form-row .rfi-select { background: rgba(255,255,255,0.85); color-scheme: light; }
+        .round-form-notes {
+            width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.04); color: var(--text); font-size: 12.5px;
+            outline: none; font-family: inherit; resize: vertical; min-height: 56px;
+            box-sizing: border-box; margin-bottom: 10px;
+        }
+        [data-theme="light"] .round-form-notes { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        .round-form-notes:focus { border-color: var(--accent); }
+        .round-form-actions { display: flex; gap: 8px; justify-content: flex-end; }
+        .rfa-save {
+            padding: 7px 16px; border-radius: 8px; border: none;
+            background: var(--accent); color: #fff; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: opacity 0.15s;
+        }
+        .rfa-save:hover { opacity: 0.87; }
+        .rfa-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        .rfa-cancel {
+            padding: 7px 14px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .rfa-cancel:hover { background: rgba(255,255,255,0.06); }
+        .add-round-btn {
+            margin-top: 4px; padding: 9px 16px; border-radius: 9px;
+            border: 1px dashed rgba(119,202,0,0.35); background: rgba(119,202,0,0.05);
+            color: var(--accent); font-size: 12.5px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s;
+            width: 100%;
+        }
+        .add-round-btn:hover { background: rgba(119,202,0,0.10); border-color: rgba(119,202,0,0.5); }
+        [data-theme="light"] .add-round-btn { background: rgba(90,153,0,0.05); border-color: rgba(90,153,0,0.3); color: var(--accent); }
+        [data-theme="light"] .add-round-btn:hover { background: rgba(90,153,0,0.1); }
+
+        /* ── Documents tab ── */
+        .modal-doc-item {
+            padding: 13px 0; border-bottom: 1px solid var(--glass-border);
+        }
+        .modal-doc-item:last-child { border-bottom: none; }
+        .mdi-top { display: flex; align-items: flex-start; gap: 10px; }
+        .mdi-icon {
+            width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+            background: rgba(96,165,250,0.10); border: 1px solid rgba(96,165,250,0.18);
+            display: flex; align-items: center; justify-content: center;
+            color: #60a5fa; font-size: 15px;
+        }
+        .mdi-info { flex: 1; min-width: 0; }
+        .mdi-label { font-size: 13px; font-weight: 600; }
+        .mdi-desc  { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+        .mdi-status-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .mdi-status-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid;
+        }
+        .mdi-status-badge.pending          { background: rgba(251,191,36,0.1);  color: var(--warning);  border-color: rgba(251,191,36,0.25); }
+        .mdi-status-badge.not_uploaded     { background: rgba(255,255,255,0.04);color: var(--text-faint);border-color: var(--glass-border); }
+        .mdi-status-badge.manager_verified { background: rgba(119,202,0,0.1);   color: var(--accent);   border-color: rgba(119,202,0,0.25); }
+        .mdi-status-badge.fully_verified   { background: rgba(74,222,128,0.1);  color: var(--success);  border-color: rgba(74,222,128,0.25); }
+        .mdi-status-badge.rejected         { background: rgba(248,113,113,0.1); color: var(--danger);   border-color: rgba(248,113,113,0.25); }
+        [data-theme="light"] .mdi-status-badge.not_uploaded { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: rgba(26,32,16,0.45); }
+        .mdi-file { font-size: 11px; color: var(--text-faint); display: flex; align-items: center; gap: 4px; }
+        .mdi-actions { display: flex; gap: 6px; margin-top: 10px; }
+        .mdi-verify-btn {
+            padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+            border: 1px solid rgba(119,202,0,0.3); background: rgba(119,202,0,0.08); color: var(--accent);
+            transition: background 0.15s;
+        }
+        .mdi-verify-btn:hover:not(:disabled) { background: rgba(119,202,0,0.16); }
+        .mdi-verify-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .mdi-reject-btn {
+            padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+            border: 1px solid rgba(248,113,113,0.3); background: rgba(248,113,113,0.07); color: var(--danger);
+            transition: background 0.15s;
+        }
+        .mdi-reject-btn:hover:not(:disabled) { background: rgba(248,113,113,0.14); }
+        .mdi-reject-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .mdi-reject-form {
+            margin-top: 8px; display: flex; gap: 7px; align-items: center;
+        }
+        .mdi-reject-input {
+            flex: 1; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.04); color: var(--text); font-size: 12.5px;
+            outline: none; font-family: inherit;
+        }
+        [data-theme="light"] .mdi-reject-input { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.12); }
+        .mdi-reject-input:focus { border-color: var(--danger); }
+        .mdi-reject-confirm-btn {
+            padding: 6px 12px; border-radius: 8px; border: none;
+            background: var(--danger); color: #fff; font-size: 12px; font-weight: 600;
+            cursor: pointer; white-space: nowrap;
+        }
+        .mdi-reject-confirm-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .mdi-rejection-reason {
+            font-size: 11.5px; color: var(--danger); margin-top: 6px;
+            background: rgba(248,113,113,0.07); border: 1px solid rgba(248,113,113,0.18);
+            border-radius: 7px; padding: 5px 9px;
+        }
+        .req-doc-form {
+            margin-top: 14px; border-top: 1px solid var(--glass-border); padding-top: 14px;
+        }
+        .req-doc-form-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+        .rdf-input {
+            width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.04); color: var(--text); font-size: 12.5px;
+            outline: none; font-family: inherit; box-sizing: border-box; margin-bottom: 8px;
+        }
+        [data-theme="light"] .rdf-input { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.12); }
+        .rdf-input:focus { border-color: var(--accent); }
+        .add-doc-req-btn {
+            margin-top: 14px; padding: 9px 16px; border-radius: 9px;
+            border: 1px dashed rgba(96,165,250,0.35); background: rgba(96,165,250,0.05);
+            color: #60a5fa; font-size: 12.5px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 7px; transition: background 0.15s, border-color 0.15s;
+            width: 100%;
+        }
+        .add-doc-req-btn:hover { background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.5); }
+        [data-theme="light"] .add-doc-req-btn { background: rgba(37,99,235,0.05); border-color: rgba(37,99,235,0.25); color: #2563eb; }
+        [data-theme="light"] .add-doc-req-btn:hover { background: rgba(37,99,235,0.1); }
+
+        /* Light overrides — modal */
+        [data-theme="light"] .cand-detail-panel { background: #fff; }
+        [data-theme="light"] .round-form { background: rgba(0,0,0,0.02); }
+        [data-theme="light"] .mdi-icon { background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.15); color: #2563eb; }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+    <div class="bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="app-shell">
+        <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <button class="brand-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                    <span class="brand-hamburger"><span></span><span></span><span></span></span>
+                </button>
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-name">BeanHR</div>
+                    <div class="sidebar-brand-tag">Manager Portal</div>
+                </div>
+            </div>
+
+            <span class="sidebar-section-label">MENU</span>
+            <a href="dashboard.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-house ph-icon-fill"></i>
+                    <i class="ph ph-house ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="team.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-users-three ph-icon-fill"></i>
+                    <i class="ph ph-users-three ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Team</span>
+            </a>
+            <a href="approvals.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-check-circle ph-icon-fill"></i>
+                    <i class="ph ph-check-circle ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Approvals</span>
+            </a>
+            <a href="hiring.html" class="nav-item active">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-user-plus ph-icon-fill"></i>
+                    <i class="ph ph-user-plus ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Hiring</span>
+            </a>
+
+            <span class="sidebar-section-label">PERSONAL</span>
+            <a href="leave.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-calendar ph-icon-fill"></i>
+                    <i class="ph ph-calendar ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Leave</span>
+            </a>
+            <a href="payslips.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-money ph-icon-fill"></i>
+                    <i class="ph ph-money ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Payslips</span>
+            </a>
+            <a href="documents.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-files ph-icon-fill"></i>
+                    <i class="ph ph-files ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Documents</span>
+            </a>
+            <a href="resignation.html" class="nav-item">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-door-open ph-icon-fill"></i>
+                    <i class="ph ph-door-open ph-icon-outline"></i>
+                </span>
+                <span class="nav-label">Exit</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <span class="nav-icon" style="position:relative">
+                    <i class="ph-fill ph-user-circle ph-icon-fill"></i>
+                    <i class="ph ph-user-circle ph-icon-outline"></i>
+                    <span id="profileNavBadge" style="display:none;position:absolute;top:-3px;right:-5px;width:14px;height:14px;background:var(--warning);border-radius:50%;font-size:9px;font-weight:800;color:#1a1a1a;align-items:center;justify-content:center;pointer-events:none;z-index:1;">!</span>
+                </span>
+                <span class="nav-label">Profile</span>
+            </a>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <span class="nav-icon">
+                        <i class="ph-fill ph-sign-out ph-icon-fill"></i>
+                        <i class="ph ph-sign-out ph-icon-outline"></i>
+                    </span>
+                    <span class="logout-label">Logout</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ── MAIN AREA ───────────────────────────────────────────── -->
+        <div class="main-area">
+            <!-- TOPBAR -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-title">Hiring</div>
+                        <div class="topbar-sub" id="todayDate"></div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                        <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                    </button>
+                    <div style="position:relative;">
+                        <button class="notif-btn" onclick="toggleNotifDropdown(event)" aria-label="Notifications">
+                            <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                            <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                            <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-dropdown-head">
+                                <span class="notif-dropdown-title">Notifications</span>
+                                <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                            </div>
+                            <div class="notif-dropdown-body" id="notifDropdownBody">
+                                <div class="notif-empty">No notifications yet</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="avatar skeleton" id="managerAvatar" onclick="window.location.href='profile.html'" title="View Profile"></div>
+                </div>
+            </header>
+
+            <!-- CONTENT -->
+            <div class="content-area">
+
+                <div class="page-header">
+                    <div class="page-title">Hiring &amp; Team Changes</div>
+                    <div class="page-sub">Submit headcount requests and team change proposals for your department.</div>
+                </div>
+
+                <!-- TWO COLUMN LAYOUT -->
+                <div class="two-col">
+
+                    <!-- LEFT: PROPOSE HIRE -->
+                    <div>
+                        <div class="section-card">
+                            <div class="section-header">
+                                <div class="section-icon hire">
+                                    <i class="ph-fill ph-user-plus"></i>
+                                </div>
+                                <div>
+                                    <div class="section-title">New Hire Request</div>
+                                    <div class="section-sub">Specify the role, department, and reason for the new hire</div>
+                                </div>
+                            </div>
+
+                            <form class="form-grid" id="hireForm" onsubmit="submitHireForm(event)" novalidate>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label" for="designation">Designation</label>
+                                        <input class="form-input" id="designation" type="text" placeholder="e.g. Software Engineer" autocomplete="off" />
+                                        <span class="field-error" id="errDesignation">Designation is required</span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="department">Department</label>
+                                        <select class="form-select" id="department">
+                                            <option value="">Select department</option>
+                                            <option value="Engineering">Engineering</option>
+                                            <option value="Design">Design</option>
+                                            <option value="Marketing">Marketing</option>
+                                            <option value="Sales">Sales</option>
+                                            <option value="HR">HR</option>
+                                            <option value="Finance">Finance</option>
+                                            <option value="Operations">Operations</option>
+                                            <option value="Product">Product</option>
+                                        </select>
+                                        <span class="field-error" id="errDepartment">Select a department</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="companyTag">Company / Entity</label>
+                                    <input class="form-input" type="text" id="companyTag" placeholder="e.g. BeanTech, Main Branch...">
+                                    <span class="field-error" id="errCompanyTag">Enter an entity</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="hireReason">Reason for Hiring</label>
+                                    <textarea class="form-textarea" id="hireReason" placeholder="Why is this hire needed?"></textarea>
+                                    <span class="field-error" id="errHireReason">Reason is required</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Job Description <span class="jd-optional-tag">Optional</span></label>
+                                    <input type="file" id="jdFileInput" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none;position:absolute;width:0;height:0;opacity:0;" onchange="handleJdFile(this)" />
+                                    <div class="jd-upload-zone" id="jdUploadZone" onclick="document.getElementById('jdFileInput').click()">
+                                        <div class="jd-upload-icon">
+                                            <i class="ph-fill ph-file-doc" id="jdUploadIconEl"></i>
+                                        </div>
+                                        <div class="jd-upload-text">
+                                            <div class="jd-upload-title" id="jdUploadTitle">Attach JD document</div>
+                                            <div class="jd-upload-hint" id="jdUploadHint">PDF, DOC or DOCX &mdash; max 10 MB</div>
+                                        </div>
+                                        <button type="button" class="jd-remove-btn" id="jdRemoveBtn" onclick="removeJdFile(event)" title="Remove">
+                                            <i class="ph ph-x"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button class="submit-btn hire-btn" type="submit" id="hireBtnSubmit">
+                                    <i class="ph-fill ph-paper-plane-right" style="font-size:15px;"></i>
+                                    Submit Proposal
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: PROPOSE REMOVAL -->
+                    <div>
+                        <div class="section-card">
+                            <div class="section-header">
+                                <div class="section-icon remove">
+                                    <i class="ph-fill ph-user-minus"></i>
+                                </div>
+                                <div>
+                                    <div class="section-title">Propose Removal</div>
+                                    <div class="section-sub">Select a team member and state the reason for the proposed offboarding</div>
+                                </div>
+                            </div>
+
+                            <div class="form-history-label" style="margin-bottom:10px;">Select Team Member</div>
+                            <div class="member-picker" id="memberPicker">
+                                <div class="empty-state">
+                                    <div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div>
+                                    <div class="empty-text">Loading team...</div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom:14px;">
+                                <label class="form-label" for="removalReason">Reason for Removal</label>
+                                <textarea class="form-textarea" id="removalReason" placeholder="Provide a clear reason (performance, conduct, restructuring...)"></textarea>
+                                <span class="field-error" id="errRemovalReason">Reason is required</span>
+                            </div>
+
+                            <button class="remove-btn" id="removeBtnSubmit" onclick="openRemoveConfirm()" disabled>
+                                <i class="ph-fill ph-user-minus" style="font-size:15px;"></i>
+                                <span id="removeBtnLabel">Select a member first</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div><!-- /two-col -->
+
+                <!-- ── PROPOSAL HISTORY ──────────────────────────────────────────── -->
+                <div class="two-col history-section">
+                    <div>
+                        <div class="form-history-label" style="margin-bottom:12px;">Hire Proposal History</div>
+                        <div id="hireHistoryList">
+                            <div class="empty-state">
+                                <div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div>
+                                <div class="empty-text">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-history-label" style="margin-bottom:12px;">Removal Proposal History</div>
+                        <div id="removalHistoryList">
+                            <div class="empty-state">
+                                <div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div>
+                                <div class="empty-text">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── CANDIDATE PIPELINE ─────────────────────────────────────────── -->
+                <div class="pipeline-section">
+                    <div class="pipeline-header">
+                        <div class="section-icon" style="width:30px;height:30px;font-size:15px;background:rgba(119,202,0,0.12);">
+                            <i class="ph-fill ph-user-list"></i>
+                        </div>
+                        <div class="pipeline-title">In Progress Hiring</div>
+                        <span class="pipeline-count" id="pipelineCount" style="display:none;">0</span>
+                    </div>
+                    <div class="candidate-grid" id="candidateGrid">
+                        <div class="empty-state" style="grid-column:1/-1;">
+                            <div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:32px"></i></div>
+                            <div class="empty-text">Loading...</div>
+                        </div>
+                    </div>
+                    <!-- Closed / archived candidates -->
+                    <button class="closed-toggle-btn" id="closedToggleBtn" style="display:none;" onclick="toggleClosedSection()">
+                        <i class="ph-fill ph-archive" style="font-size:13px;"></i>
+                        Closed &mdash; <span id="closedCountLabel">0</span>
+                        <i class="ph ph-caret-down closed-caret"></i>
+                    </button>
+                    <div class="candidate-grid" id="closedGrid" style="display:none;margin-top:12px;"></div>
+                </div>
+
+            </div><!-- /content-area -->
+        </div><!-- /main-area -->
+    </div><!-- /app-shell -->
+
+    <!-- ── CANDIDATE DETAIL MODAL ─────────────────────────────────── -->
+    <div class="cand-detail-overlay" id="candDetailOverlay" onclick="handleCandDetailOverlayClick(event)">
+        <div class="cand-detail-panel">
+            <div class="cdp-header">
+                <div class="cdp-avatar" id="cdpAvatar"></div>
+                <div class="cdp-info">
+                    <div class="cdp-name" id="cdpName"></div>
+                    <div class="cdp-meta" id="cdpMeta"></div>
+                </div>
+                <button class="cdp-close" onclick="closeCandDetailModal()" aria-label="Close">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <div class="cdp-tabs">
+                <button class="cdp-tab active" id="cdpTabRounds"    onclick="switchCandTab('rounds')">
+                    <i class="ph-fill ph-list-bullets" style="font-size:13px;margin-right:5px;"></i>Rounds
+                </button>
+                <button class="cdp-tab"        id="cdpTabDocuments" onclick="switchCandTab('documents')">
+                    <i class="ph-fill ph-files" style="font-size:13px;margin-right:5px;"></i>Documents
+                </button>
+            </div>
+            <div class="cdp-body">
+                <div class="cdp-tab-pane active" id="cdpRoundsPane">
+                    <div id="cdpRoundsContent">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div>
+                            <div class="empty-text">Loading rounds...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cdp-tab-pane" id="cdpDocumentsPane">
+                    <div id="cdpDocsContent">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div>
+                            <div class="empty-text">Loading documents...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── REMOVAL CONFIRM MODAL ───────────────────────────────────── -->
+    <div class="modal-overlay" id="removeModal" onclick="handleModalOverlayClick(event)">
+        <div class="confirm-modal-panel">
+            <div class="cm-header">
+                <div>
+                    <div class="cm-title">Confirm Removal Proposal</div>
+                    <div class="cm-sub">This will notify Admin for final review and action.</div>
+                </div>
+                <button class="cm-close" onclick="closeRemoveModal()" aria-label="Close">&times;</button>
+            </div>
+            <div class="cm-employee" id="cmEmployee"></div>
+            <div class="cm-label">Reason</div>
+            <div id="cmReason" style="font-size:13px;color:var(--text-muted);line-height:1.5;padding:10px 12px;background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.15);border-radius:9px;margin-bottom:4px;"></div>
+            <div class="cm-actions">
+                <button class="cm-cancel" onclick="closeRemoveModal()">Cancel</button>
+                <button class="cm-submit" id="cmSubmitBtn" onclick="submitRemoval()">Submit Proposal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ── HOLD REMINDER POPUP ───────────────────────────────────── -->
+    <div class="modal-overlay" id="holdReminderOverlay" style="align-items:flex-start;padding-top:80px;">
+        <div class="modal-box" style="max-width:500px;width:100%;">
+            <div class="modal-header" style="border-color:rgba(251,191,36,.2);">
+                <div>
+                    <div class="modal-title" style="color:var(--warning);"><i class="ph-fill ph-bell-ringing" style="margin-right:6px;"></i>Hold Reminders Due</div>
+                    <div class="modal-sub">These candidates have a hold reminder due today. Review and take action.</div>
+                </div>
+                <button class="modal-close" onclick="closeHoldReminderPopup()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="holdReminderList" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeHoldReminderPopup()">Dismiss All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PREPARE OFFER LETTER MODAL ────────────────────────────── -->
+    <div class="ofm-overlay" id="prepareOfferOverlay" onclick="if(event.target===this)closePrepareOfferModal()">
+        <div class="ofm-box">
+            <div class="ofm-title">Prepare Offer Letter</div>
+            <div class="ofm-sub">Fill in the offer details for <strong id="ofmCandName"></strong>. This will be sent to Admin for review before reaching the candidate.</div>
+            <div class="ofm-row">
+                <div>
+                    <div class="ofm-label">Annual Salary (₹)</div>
+                    <input class="ofm-input" id="ofmSalary" type="number" min="1" placeholder="e.g. 800000">
+                    <div class="ofm-field-err" id="ofmSalaryErr">Enter a valid salary</div>
+                </div>
+                <div>
+                    <div class="ofm-label">Joining Date</div>
+                    <input class="ofm-input" id="ofmJoiningDate" type="date">
+                    <div class="ofm-field-err" id="ofmJoiningDateErr">Select a joining date</div>
+                </div>
+            </div>
+            <div class="ofm-row">
+                <div>
+                    <div class="ofm-label">Designation</div>
+                    <input class="ofm-input" id="ofmDesignation" type="text" placeholder="e.g. Senior Engineer">
+                    <div class="ofm-field-err" id="ofmDesignationErr">Required</div>
+                </div>
+                <div>
+                    <div class="ofm-label">Department</div>
+                    <input class="ofm-input" id="ofmDepartment" type="text" placeholder="e.g. Engineering">
+                    <div class="ofm-field-err" id="ofmDepartmentErr">Required</div>
+                </div>
+            </div>
+            <div class="ofm-row full">
+                <div>
+                    <div class="ofm-label">Company / Entity</div>
+                    <select class="ofm-select" id="ofmEntity">
+                        <option value="">Select entity</option>
+                        <option value="BeanTech">BeanTech</option>
+                        <option value="BeanSales">BeanSales</option>
+                        <option value="BeanOps">BeanOps</option>
+                    </select>
+                    <div class="ofm-field-err" id="ofmEntityErr">Select an entity</div>
+                </div>
+            </div>
+            <div class="ofm-row full">
+                <div>
+                    <div class="ofm-label">Employment Type <span style="color:var(--danger)">*</span></div>
+                    <select class="ofm-select" id="ofmEmploymentType">
+                        <option value="regular">Regular (permanent salaried)</option>
+                        <option value="contractual">Contractual</option>
+                    </select>
+                    <div class="ofm-field-err" id="ofmEmploymentTypeErr">Select employment type</div>
+                </div>
+            </div>
+            <div class="ofm-row full">
+                <div>
+                    <div class="ofm-label">Other Terms (optional)</div>
+                    <textarea class="ofm-textarea" id="ofmOtherTerms" placeholder="e.g. Probation 3 months, performance review cycle..."></textarea>
+                </div>
+            </div>
+            <div class="ofm-actions">
+                <button class="ofm-cancel" onclick="closePrepareOfferModal()">Cancel</button>
+                <button class="ofm-save" id="ofmSubmitBtn" onclick="submitPrepareOffer()">Submit to Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PUT ON HOLD MODAL ─────────────────────────────────────── -->
+    <div class="ofm-overlay" id="holdOverlay" onclick="if(event.target===this)closeHoldModal()">
+        <div class="ofm-box" style="max-width:400px;">
+            <div class="ofm-title">Put Candidate On Hold</div>
+            <div class="ofm-sub">Pause progress for <strong id="holdCandName"></strong>. You can remove the hold at any time.</div>
+            <div class="ofm-row full">
+                <div>
+                    <div class="ofm-label">Reason for Hold</div>
+                    <textarea class="ofm-textarea" id="holdReason" placeholder="e.g. Candidate requested time to consider other offers..."></textarea>
+                </div>
+            </div>
+            <div class="ofm-row full">
+                <div>
+                    <div class="ofm-label">Follow-up Reminder (optional)</div>
+                    <input class="ofm-input" id="holdReminder" type="datetime-local">
+                </div>
+            </div>
+            <div class="ofm-actions">
+                <button class="ofm-cancel" onclick="closeHoldModal()">Cancel</button>
+                <button class="ofm-save" id="holdSubmitBtn" onclick="submitHold()" style="background:rgba(251,191,36,0.9);color:#1a1200;">Confirm Hold</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── REMOVE HOLD CONFIRM MODAL ─────────────────────────────── -->
+    <div class="ofm-overlay" id="unholdOverlay" onclick="if(event.target===this)closeUnholdModal()">
+        <div class="ofm-box" style="max-width:380px;">
+            <div class="ofm-title">Remove Hold</div>
+            <div class="ofm-sub">This will resume the hiring process for <strong id="unholdCandName"></strong>.</div>
+            <div class="ofm-actions">
+                <button class="ofm-cancel" onclick="closeUnholdModal()">Cancel</button>
+                <button class="ofm-save" id="unholdSubmitBtn" onclick="submitRemoveHold()">Remove Hold</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── REJECT CANDIDATE MODAL ────────────────────────────────── -->
+    <div class="ofm-overlay" id="rejectCandOverlay" onclick="if(event.target===this)closeRejectCandModal()">
+        <div class="ofm-box" style="max-width:400px;">
+            <div class="ofm-title" style="color:var(--danger);">Reject Candidate</div>
+            <div class="ofm-sub">This action will close the hiring process for <strong id="rejectCandName"></strong>. Their portal access expires in 48 hours.</div>
+            <div class="ofm-row full">
+                <div>
+                    <div class="ofm-label">Reason for Rejection</div>
+                    <textarea class="ofm-textarea" id="rejectCandReason" placeholder="Briefly describe the reason..."></textarea>
+                </div>
+            </div>
+            <div class="ofm-actions">
+                <button class="ofm-cancel" onclick="closeRejectCandModal()">Cancel</button>
+                <button id="rejectCandSubmitBtn" onclick="submitRejectCandidate()" style="background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.3);color:var(--danger);border-radius:10px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/db.js"></script>
+    <script src="../../js/notifications.js"></script>
+    <script>
+        // ───────────────────────────────────────────────────────────────
+        // AUTH GUARD
+        // ───────────────────────────────────────────────────────────────
+        (function checkAuth() {
+            const role = sessionStorage.getItem('bhr_role');
+            if (!role || role !== 'manager') window.location.href = '../login.html';
+        })();
+
+        // ───────────────────────────────────────────────────────────────
+        // STATE
+        // ───────────────────────────────────────────────────────────────
+        let _teamMembers       = [];
+        let _selectedMemberId  = null;
+        let _hireProposals     = [];
+        let _removalProposals  = [];
+        let _candidatePipeline = [];
+        let _jdFile            = null;
+        let _jdFileDataUrl     = null;
+
+        // ───────────────────────────────────────────────────────────────
+        // THEME / SIDEBAR / LOGOUT
+        // ───────────────────────────────────────────────────────────────
+        function _applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
+        function toggleTheme() {
+            const next = (localStorage.getItem('bhr_theme') || 'dark') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('bhr_theme', next);
+            _applyTheme(next);
+        }
+        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('collapsed'); }
+        function logout() {
+            db.endSession('manual');
+            sessionStorage.removeItem('bhr_role');
+            sessionStorage.removeItem('bhr_email');
+            window.location.replace('../login.html');
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // DATE
+        // ───────────────────────────────────────────────────────────────
+        function updateTopbarDate() {
+            const d = new Date();
+            const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            document.getElementById('todayDate').textContent =
+                `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        async function renderNotifications() {
+            await renderManagerNotifications();
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // LOAD ALL DATA
+        // ───────────────────────────────────────────────────────────────
+        async function loadAll() {
+            try {
+                [_teamMembers, _hireProposals, _removalProposals, _candidatePipeline] = await Promise.all([
+                    db.getManagerTeam(),
+                    db.getHiringProposals(),
+                    db.getRemovalProposals(),
+                    db.getCandidatePipeline(),
+                ]);
+
+                // Filter out resigned/on_notice members from picker
+                const eligible = _teamMembers.filter(m =>
+                    m.employmentStatus === 'active' || m.employmentStatus == null
+                );
+
+                renderMemberPicker(eligible);
+                renderHireHistory();
+                renderRemovalHistory();
+                renderCandidatePipeline();
+            } catch (err) {
+                console.error('Failed to load hiring page data:', err);
+                showToast('Failed to load data. Please refresh.', 'error');
+            }
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // MEMBER PICKER (removal side)
+        // ───────────────────────────────────────────────────────────────
+        function renderMemberPicker(members) {
+            const container = document.getElementById('memberPicker');
+            if (members.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="ph-fill ph-users-three" style="font-size:28px"></i></div>
+                        <div class="empty-text">No team members found</div>
+                        <div class="empty-sub">Your team members will appear here</div>
+                    </div>
+                `;
+                return;
+            }
+            container.innerHTML = members.map(m => {
+                const isLeaving = m.employmentStatus === 'resigned' || m.employmentStatus === 'on_notice';
+                const badge = isLeaving
+                    ? `<span class="member-status-badge ${m.employmentStatus === 'resigned' ? 'badge-resigned' : 'badge-notice'}">${m.employmentStatus === 'resigned' ? 'Resigned' : 'On Notice'}</span>`
+                    : '';
+                return `
+                    <div class="removal-member" id="member-${m.id}" onclick="selectMember('${m.id}')">
+                        <div class="member-avatar">${getInitials(m.fullName)}</div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="member-name">${escapeHtml(m.fullName)}${badge}</div>
+                            <div class="member-role">${escapeHtml(m.designation)} &bull; ${escapeHtml(m.employeeCode)}</div>
+                        </div>
+                        <div class="member-check" id="check-${m.id}"></div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectMember(memberId) {
+            // Deselect previous
+            if (_selectedMemberId) {
+                document.getElementById(`member-${_selectedMemberId}`)?.classList.remove('selected');
+            }
+
+            // Toggle off if same member clicked again
+            if (_selectedMemberId === memberId) {
+                _selectedMemberId = null;
+                updateRemoveBtn();
+                return;
+            }
+
+            _selectedMemberId = memberId;
+            document.getElementById(`member-${memberId}`)?.classList.add('selected');
+            updateRemoveBtn();
+        }
+
+        function updateRemoveBtn() {
+            const btn   = document.getElementById('removeBtnSubmit');
+            const label = document.getElementById('removeBtnLabel');
+            if (_selectedMemberId) {
+                const m = _teamMembers.find(x => x.id === _selectedMemberId);
+                btn.disabled    = false;
+                label.textContent = m ? `Propose Removal: ${m.fullName}` : 'Submit Proposal';
+            } else {
+                btn.disabled    = true;
+                label.textContent = 'Select a member first';
+            }
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // JD FILE UPLOAD
+        // ───────────────────────────────────────────────────────────────
+        function handleJdFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const allowed = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            if (!allowed.includes(file.type)) {
+                showToast('Only PDF, DOC, or DOCX files are accepted.', 'error');
+                input.value = '';
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('File size must not exceed 10 MB.', 'error');
+                input.value = '';
+                return;
+            }
+            _jdFile = file;
+            const reader = new FileReader();
+            reader.onload = e => { _jdFileDataUrl = e.target.result; };
+            reader.readAsDataURL(file);
+            const zone  = document.getElementById('jdUploadZone');
+            const title = document.getElementById('jdUploadTitle');
+            const hint  = document.getElementById('jdUploadHint');
+            const icon  = document.getElementById('jdUploadIconEl');
+            zone.classList.add('has-file');
+            title.textContent = escapeHtml(file.name);
+            hint.textContent  = (file.size / 1024 < 1024)
+                ? Math.round(file.size / 1024) + ' KB'
+                : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+            icon.className = 'ph-fill ph-file-doc';
+        }
+
+        function removeJdFile(e) {
+            if (e) { e.stopPropagation(); }
+            _jdFile = null;
+            _jdFileDataUrl = null;
+            const input = document.getElementById('jdFileInput');
+            if (input) input.value = '';
+            const zone  = document.getElementById('jdUploadZone');
+            const title = document.getElementById('jdUploadTitle');
+            const hint  = document.getElementById('jdUploadHint');
+            zone.classList.remove('has-file');
+            title.textContent = 'Attach JD document';
+            hint.textContent  = 'PDF, DOC or DOCX — max 10 MB';
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // HIRE FORM
+        // ───────────────────────────────────────────────────────────────
+        function submitHireForm(e) {
+            e.preventDefault();
+            const fields = {
+                designation: document.getElementById('designation').value.trim(),
+                department:  document.getElementById('department').value,
+                companyTag:  document.getElementById('companyTag').value,
+                reason:      document.getElementById('hireReason').value.trim(),
+            };
+
+            // Validate
+            let valid = true;
+            const setError = (id, errId, show) => {
+                document.getElementById(id).classList.toggle('error', show);
+                document.getElementById(errId).classList.toggle('visible', show);
+                if (show) valid = false;
+            };
+
+            setError('designation', 'errDesignation', !fields.designation);
+            setError('department',  'errDepartment',  !fields.department);
+            setError('companyTag',  'errCompanyTag',  !fields.companyTag);
+            setError('hireReason',  'errHireReason',  !fields.reason);
+
+            if (!valid) return;
+
+            const btn = document.getElementById('hireBtnSubmit');
+            btn.disabled    = true;
+            btn.textContent = 'Submitting...';
+
+            db.submitHiringProposal({
+                designation:  fields.designation,
+                department:   fields.department,
+                companyTag:   fields.companyTag,
+                reason:       fields.reason,
+                jdFileName:   _jdFile ? _jdFile.name : null,
+                jdFileData:   _jdFile ? _jdFileDataUrl : null,
+            }).then(result => {
+                _hireProposals.unshift({ ...result });
+                renderHireHistory();
+                document.getElementById('hireForm').reset();
+                removeJdFile();
+                showToast('Proposal submitted. You\'ll be notified once it\'s reviewed.', 'success');
+            }).catch(err => {
+                console.error('Hire proposal error:', err);
+                showToast('Failed to submit proposal. Try again.', 'error');
+            }).finally(() => {
+                btn.disabled    = false;
+                btn.innerHTML   = '<i class="ph-fill ph-paper-plane-right" style="font-size:15px;"></i> Submit Proposal';
+            });
+        }
+
+        // Clear error on input
+        ['designation','hireReason'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', () => {
+                document.getElementById(id).classList.remove('error');
+                const errId = 'err' + id.charAt(0).toUpperCase() + id.slice(1);
+                document.getElementById(errId)?.classList.remove('visible');
+            });
+        });
+        ['department','companyTag'].forEach(id => {
+            document.getElementById(id)?.addEventListener('change', () => {
+                const errId = 'err' + id.charAt(0).toUpperCase() + id.slice(1);
+                document.getElementById(errId)?.classList.remove('visible');
+            });
+        });
+
+        // ───────────────────────────────────────────────────────────────
+        // REMOVAL MODAL
+        // ───────────────────────────────────────────────────────────────
+        function openRemoveConfirm() {
+            const reason = document.getElementById('removalReason').value.trim();
+
+            // Validate reason
+            const errEl = document.getElementById('errRemovalReason');
+            const raEl  = document.getElementById('removalReason');
+            if (!reason) {
+                raEl.classList.add('error');
+                errEl.classList.add('visible');
+                raEl.focus();
+                return;
+            }
+            raEl.classList.remove('error');
+            errEl.classList.remove('visible');
+
+            if (!_selectedMemberId) return;
+            const m = _teamMembers.find(x => x.id === _selectedMemberId);
+            if (!m) return;
+
+            // Populate modal
+            document.getElementById('cmEmployee').innerHTML = `
+                <div class="cm-emp-avatar">${getInitials(m.fullName)}</div>
+                <div>
+                    <div class="cm-emp-name">${escapeHtml(m.fullName)}</div>
+                    <div class="cm-emp-role">${escapeHtml(m.designation)} &bull; ${escapeHtml(m.employeeCode)}</div>
+                </div>
+            `;
+            document.getElementById('cmReason').textContent = reason;
+
+            document.getElementById('removeModal').classList.add('open');
+        }
+
+        function closeRemoveModal() {
+            document.getElementById('removeModal').classList.remove('open');
+        }
+
+        function handleModalOverlayClick(e) {
+            if (e.target === document.getElementById('removeModal')) closeRemoveModal();
+        }
+
+        function submitRemoval() {
+            const reason = document.getElementById('removalReason').value.trim();
+            const btn    = document.getElementById('cmSubmitBtn');
+            btn.disabled    = true;
+            btn.textContent = 'Submitting...';
+
+            db.submitRemovalProposal(_selectedMemberId, reason)
+                .then(result => {
+                    _removalProposals.unshift({ ...result });
+                    renderRemovalHistory();
+                    closeRemoveModal();
+
+                    // Reset selection and textarea
+                    selectMember(_selectedMemberId); // toggles off
+                    document.getElementById('removalReason').value = '';
+                    showToast('Removal proposal submitted. You\'ll be notified once it\'s reviewed.', 'info');
+                })
+                .catch(err => {
+                    console.error('Removal proposal error:', err);
+                    showToast('Failed to submit. Please try again.', 'error');
+                })
+                .finally(() => {
+                    btn.disabled    = false;
+                    btn.textContent = 'Submit Proposal';
+                });
+        }
+
+        document.getElementById('removalReason').addEventListener('input', () => {
+            document.getElementById('removalReason').classList.remove('error');
+            document.getElementById('errRemovalReason').classList.remove('visible');
+        });
+
+        // ───────────────────────────────────────────────────────────────
+        // RENDER HIRE HISTORY
+        // ───────────────────────────────────────────────────────────────
+        function renderHireHistory() {
+            const el = document.getElementById('hireHistoryList');
+            if (_hireProposals.length === 0) {
+                el.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="ph-fill ph-user-plus" style="font-size:32px"></i></div>
+                        <div class="empty-text">No hire proposals yet</div>
+                        <div class="empty-sub">Submitted proposals will appear here</div>
+                    </div>
+                `;
+                return;
+            }
+            el.innerHTML = _hireProposals.map(p => `
+                <div class="proposal-card">
+                    <div class="prop-top">
+                        <div>
+                            <div class="prop-name">${escapeHtml(p.designation)}</div>
+                            <div class="prop-sub">${escapeHtml(p.department)} &bull; ${escapeHtml(p.companyTag)}</div>
+                        </div>
+                        <span class="status-badge ${p.status}">${statusLabel(p.status)}</span>
+                    </div>
+                    <div class="prop-meta">
+                        <div>
+                            <div class="meta-label">Submitted</div>
+                            <div class="meta-value">${formatRelative(p.submittedAt)}</div>
+                        </div>
+                    </div>
+                    <div class="prop-reason">${escapeHtml(p.reason)}</div>
+                    ${p.adminComment ? `
+                        <div class="admin-note">
+                            <i class="ph-fill ph-info" style="font-size:14px;flex-shrink:0;margin-top:1px;"></i>
+                            <span><strong>Admin:</strong> ${escapeHtml(p.adminComment)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // RENDER REMOVAL HISTORY
+        // ───────────────────────────────────────────────────────────────
+        function renderRemovalHistory() {
+            const el = document.getElementById('removalHistoryList');
+            if (_removalProposals.length === 0) {
+                el.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="ph-fill ph-user-minus" style="font-size:32px"></i></div>
+                        <div class="empty-text">No removal proposals yet</div>
+                        <div class="empty-sub">Submitted proposals will appear here</div>
+                    </div>
+                `;
+                return;
+            }
+            el.innerHTML = _removalProposals.map(p => `
+                <div class="proposal-card">
+                    <div class="prop-top">
+                        <div>
+                            <div class="prop-name">${escapeHtml(p.employeeName)}</div>
+                            <div class="prop-sub">${escapeHtml(p.designation)} &bull; ${escapeHtml(p.employeeCode)}</div>
+                        </div>
+                        <span class="status-badge ${p.status}">${statusLabel(p.status)}</span>
+                    </div>
+                    <div class="prop-meta">
+                        <div>
+                            <div class="meta-label">Department</div>
+                            <div class="meta-value">${escapeHtml(p.department)}</div>
+                        </div>
+                        <div>
+                            <div class="meta-label">Submitted</div>
+                            <div class="meta-value">${formatRelative(p.submittedAt)}</div>
+                        </div>
+                    </div>
+                    <div class="prop-reason">${escapeHtml(p.reason)}</div>
+                    ${p.adminComment ? `
+                        <div class="admin-note">
+                            <i class="ph-fill ph-info" style="font-size:14px;flex-shrink:0;margin-top:1px;"></i>
+                            <span><strong>Admin:</strong> ${escapeHtml(p.adminComment)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // RENDER CANDIDATE PIPELINE
+        // ───────────────────────────────────────────────────────────────
+        function renderCandidatePipeline() {
+            const grid        = document.getElementById('candidateGrid');
+            const closedGrid  = document.getElementById('closedGrid');
+            const toggleBtn   = document.getElementById('closedToggleBtn');
+            const badge       = document.getElementById('pipelineCount');
+
+            const active = _candidatePipeline.filter(c => c.currentStage !== 'rejected' && c.currentStage !== 'joined');
+            const closed = _candidatePipeline.filter(c => c.currentStage === 'rejected' || c.currentStage === 'joined');
+
+            badge.textContent   = active.length;
+            badge.style.display = active.length > 0 ? 'inline-flex' : 'none';
+
+            // ── Active candidates ──────────────────────────────────────
+            if (_candidatePipeline.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <div class="empty-icon"><i class="ph-fill ph-user-list" style="font-size:32px"></i></div>
+                        <div class="empty-text">No candidates in progress</div>
+                        <div class="empty-sub">Candidates appear here once Admin approves a hire request and creates their portal account</div>
+                    </div>
+                `;
+            } else if (active.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <div class="empty-icon"><i class="ph-fill ph-check-circle" style="font-size:32px;color:var(--success)"></i></div>
+                        <div class="empty-text">No active candidates</div>
+                        <div class="empty-sub">All candidates have been closed. See the archive below.</div>
+                    </div>
+                `;
+            } else {
+                grid.innerHTML = active.map(c => buildCandCard(c, false)).join('');
+            }
+
+            // ── Closed / archived candidates ───────────────────────────
+            if (closed.length > 0) {
+                document.getElementById('closedCountLabel').textContent = closed.length;
+                toggleBtn.style.display = 'flex';
+                closedGrid.innerHTML = closed.map(c => buildCandCard(c, true)).join('');
+            } else {
+                toggleBtn.style.display = 'none';
+                closedGrid.style.display = 'none';
+            }
+        }
+
+        // Helper: toggle closed section
+        function toggleClosedSection() {
+            const btn  = document.getElementById('closedToggleBtn');
+            const grid = document.getElementById('closedGrid');
+            const open = grid.style.display !== 'none';
+            grid.style.display = open ? 'none' : 'grid';
+            btn.classList.toggle('expanded', !open);
+        }
+
+        // Helper: close all open kebab menus
+        function closeAllKebabs() {
+            document.querySelectorAll('.cand-kebab-menu.open').forEach(m => m.classList.remove('open'));
+        }
+
+        // Helper: toggle a specific kebab menu
+        window.toggleCandKebab = function(id) {
+            const menu = document.getElementById('kebab_' + id);
+            if (!menu) return;
+            const wasOpen = menu.classList.contains('open');
+            closeAllKebabs();
+            if (!wasOpen) menu.classList.add('open');
+        };
+
+        // Helper: build a single candidate card (closed = no action buttons, muted)
+        function buildCandCard(c, isClosed) {
+            const stageClass = {
+                document_collection: 'stage-docs',
+                offer_draft:         'stage-draft',
+                offer_stage:         'stage-offer',
+                post_acceptance:     'stage-post-accept',
+                joined:              'stage-joined',
+                rejected:            'stage-rejected',
+            };
+            const stageText = {
+                document_collection: 'Collecting Docs',
+                offer_draft:         'Offer Draft',
+                offer_stage:         'Offer Stage',
+                post_acceptance:     'Post Acceptance',
+                joined:              'Joined',
+                rejected:            'Rejected',
+            };
+            const sc       = stageClass[c.currentStage] || 'stage-docs';
+            let st         = stageText[c.currentStage]  || c.currentStage;
+            const isOnHold = c.holdDetails?.isOnHold === true;
+            const ols      = c.offerLetterStatus;
+
+            const latestRndName = c.latestRoundName || (c.hiringRounds && c.hiringRounds.length ? (c.hiringRounds[c.hiringRounds.length - 1].stageName || c.hiringRounds[c.hiringRounds.length - 1].name) : null);
+            if (c.currentStage === 'document_collection' && latestRndName && latestRndName !== 'Job Application') {
+                st = latestRndName;
+            }
+            const roundPill = (latestRndName && latestRndName !== 'Job Application' && st !== latestRndName)
+                ? `<span class="cand-pill stage-docs"><i class="ph-fill ph-target" style="font-size:10px;margin-right:3px;"></i>${escapeHtml(latestRndName)}</span>`
+                : '';
+
+            const offerPillMap = {
+                negotiating:         `<span class="cand-pill" style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.25);"><i class="ph-fill ph-chats" style="font-size:10px;"></i>Negotiating</span>`,
+                draft_by_manager:    `<span class="cand-pill offer-draft"><i class="ph-fill ph-pencil-simple" style="font-size:10px;"></i>Draft Submitted</span>`,
+                pending_admin_review:`<span class="cand-pill offer-review"><i class="ph-fill ph-hourglass" style="font-size:10px;"></i>Admin Reviewing</span>`,
+                admin_approved:      `<span class="cand-pill offer-approved"><i class="ph-bold ph-check" style="font-size:10px;"></i>Admin Approved</span>`,
+                sent:                `<span class="cand-pill offer-sent"><i class="ph-fill ph-envelope-open" style="font-size:10px;"></i>Offer Sent</span>`,
+                accepted:            `<span class="cand-pill offer-accepted"><i class="ph-fill ph-check-circle" style="font-size:10px;"></i>Offer Accepted</span>`,
+                rejected:            `<span class="cand-pill offer-rejected"><i class="ph-fill ph-x-circle" style="font-size:10px;"></i>Offer Declined</span>`,
+            };
+            // Show offer pill only when there's a meaningful status beyond not_started
+            const offerPill = (ols && ols !== 'not_started') ? (offerPillMap[ols] || '') : '';
+
+            // Hold reason — 1 line, truncated
+            const holdReason = isOnHold && c.holdDetails?.reason
+                ? `<div class="cand-hold-reason"><i class="ph-fill ph-pause-circle" style="font-size:10px;margin-right:4px;"></i>${escapeHtml(c.holdDetails.reason)}</div>`
+                : '';
+
+            // Doc progress
+            const docsTotal    = c.docsRequested || 0;
+            const docsVerified = c.docsVerified   || 0;
+            const docPct       = docsTotal > 0 ? Math.round((docsVerified / docsTotal) * 100) : 0;
+
+            // Footer
+            let footerHtml = '';
+            if (!isClosed) {
+                // Kebab item templates
+                const rejectItem  = `<button class="cand-kebab-item danger" onclick="event.stopPropagation();closeAllKebabs();openRejectCandModal('${c.id}')"><i class="ph-bold ph-x" style="font-size:12px;"></i>Reject Candidate</button>`;
+                const reqDocItem  = `<button class="cand-kebab-item" onclick="event.stopPropagation();closeAllKebabs();openCandDetailModal('${c.id}','documents')"><i class="ph-fill ph-file-plus" style="font-size:12px;"></i>Request Document</button>`;
+                const holdItem    = `<button class="cand-kebab-item amber" onclick="event.stopPropagation();closeAllKebabs();openHoldModal('${c.id}')"><i class="ph-fill ph-pause-circle" style="font-size:12px;"></i>Put on Hold</button>`;
+                const stageItem   = `<button class="cand-kebab-item" onclick="event.stopPropagation();closeAllKebabs();openCandDetailModal('${c.id}','rounds')"><i class="ph-fill ph-list-bullets" style="font-size:12px;"></i>Update Stage</button>`;
+
+                let primaryHtml  = '';
+                let kebabItems   = [];
+
+                if (isOnHold) {
+                    primaryHtml = `<button class="cand-primary-btn btn-amber" onclick="event.stopPropagation();openRemoveHoldModal('${c.id}')"><i class="ph-fill ph-play-circle" style="font-size:12px;margin-right:5px;"></i>Remove Hold</button>`;
+                    kebabItems  = [reqDocItem, rejectItem];
+                } else if (!ols || ols === 'not_sent' || ols === 'not_started') {
+                    primaryHtml = `<button class="cand-primary-btn btn-green" onclick="event.stopPropagation();openPrepareOfferModal('${c.id}')"><i class="ph-fill ph-file-text" style="font-size:12px;margin-right:5px;"></i>Prepare Offer</button>`;
+                    kebabItems  = [stageItem, reqDocItem, holdItem, rejectItem];
+                } else if (ols === 'draft_by_manager' || ols === 'pending_admin_review') {
+                    primaryHtml = `<button class="cand-primary-btn btn-blue" onclick="event.stopPropagation();viewOfferDraftReadOnly('${c.id}')"><i class="ph-fill ph-eye" style="font-size:12px;margin-right:5px;"></i>View Draft</button>`;
+                    kebabItems  = [reqDocItem, holdItem, rejectItem];
+                } else if (ols === 'admin_approved') {
+                    primaryHtml = `<button class="cand-primary-btn btn-blue" onclick="event.stopPropagation();viewOfferDraftReadOnly('${c.id}')"><i class="ph-fill ph-eye" style="font-size:12px;margin-right:5px;"></i>View Offer Letter</button>`;
+                    kebabItems  = [reqDocItem, holdItem, rejectItem];
+                } else if (ols === 'sent' || ols === 'negotiating') {
+                    const btnColor = ols === 'negotiating' ? 'btn-amber' : 'btn-blue';
+                    const btnIcon = ols === 'negotiating' ? 'ph-chats' : 'ph-eye';
+                    const btnLabel = ols === 'negotiating' ? 'Negotiations' : 'View Offer';
+                    primaryHtml = `<button class="cand-primary-btn ${btnColor}" onclick="event.stopPropagation();openNegoModal('${c.id}')"><i class="ph-fill ${btnIcon}" style="font-size:12px;margin-right:5px;"></i>${btnLabel}</button>`;
+                    kebabItems  = [reqDocItem, holdItem, rejectItem];
+                } else if (ols === 'accepted') {
+                    primaryHtml = `<button class="cand-primary-btn btn-muted" onclick="event.stopPropagation();openCandDetailModal('${c.id}','documents')"><i class="ph-fill ph-file-plus" style="font-size:12px;margin-right:5px;"></i>Request Doc</button>`;
+                    kebabItems  = [rejectItem];
+                }
+
+                const kebabHtml = kebabItems.length > 0
+                    ? `<div class="cand-kebab-wrap">
+                            <button class="cand-kebab-btn" onclick="event.stopPropagation();toggleCandKebab('${c.id}')">
+                                <i class="ph-bold ph-dots-three-vertical" style="font-size:14px;"></i>
+                            </button>
+                            <div class="cand-kebab-menu" id="kebab_${c.id}">${kebabItems.join('')}</div>
+                        </div>`
+                    : '';
+
+                footerHtml = `<div class="cand-footer">
+                    <div class="cand-doc-area">
+                        <div class="cand-doc-bar"><div class="cand-doc-fill" style="width:${docPct}%"></div></div>
+                        <div class="cand-doc-label">${docsVerified}/${docsTotal} docs verified</div>
+                    </div>
+                    ${primaryHtml}${kebabHtml}
+                </div>`;
+            } else {
+                // Closed card — doc progress only, no actions
+                footerHtml = `<div class="cand-footer">
+                    <div class="cand-doc-area">
+                        <div class="cand-doc-bar"><div class="cand-doc-fill" style="width:${docPct}%"></div></div>
+                        <div class="cand-doc-label">${docsVerified}/${docsTotal} docs verified</div>
+                    </div>
+                </div>`;
+            }
+
+            // Closed card status note
+            let closedNote = '';
+            if (isClosed) {
+                if (c.currentStage === 'joined') {
+                    const jDate = c.joiningDate
+                        ? new Date(c.joiningDate + 'T00:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+                        : '';
+                    closedNote = `<div style="font-size:11px;color:var(--success);margin-top:6px;"><i class="ph-fill ph-check-circle" style="font-size:11px;margin-right:4px;"></i>Employee credentials sent${jDate ? ' on ' + jDate : ''}</div>`;
+                } else {
+                    closedNote = `<div style="font-size:11px;color:var(--danger);margin-top:6px;"><i class="ph-fill ph-x-circle" style="font-size:11px;margin-right:4px;"></i>Candidate rejected</div>`;
+                }
+            }
+
+            const showStagePill = (st && st !== 'Collecting Docs');
+            const stagePillHtml = showStagePill
+                ? `<span class="cand-pill ${sc}"><i class="ph-fill ph-circle" style="font-size:7px;"></i>${st}</span>`
+                : '';
+
+            return `
+                <div class="candidate-card ${isClosed ? 'closed-card' : ''} ${isOnHold && !isClosed ? 'hold-card' : ''}" onclick="openCandDetailModal('${c.id}','rounds')">
+                    <div class="cand-top">
+                        <div class="cand-avatar">${getInitials(c.fullName)}</div>
+                        <div style="flex:1;min-width:0;">
+                            <div class="cand-name">${escapeHtml(c.fullName)}</div>
+                            <div class="cand-role">${escapeHtml(c.designation)} &bull; ${escapeHtml(c.department)}</div>
+                        </div>
+                    </div>
+                    <div class="cand-pills">
+                        ${stagePillHtml}
+                        ${roundPill}
+                        ${isOnHold ? `<span class="cand-pill stage-hold"><i class="ph-fill ph-pause-circle" style="font-size:10px;"></i>On Hold</span>` : ''}
+                        ${offerPill}
+                    </div>
+                    ${holdReason}
+                    ${closedNote}
+                    ${footerHtml}
+                </div>
+            `;
+        }
+
+        function requestDocument(candidateId) {
+            openCandDetailModal(candidateId, 'documents');
+        }
+
+        
+        // ── Negotiations Logic ───────────────────────────────────────
+        let _negoCandId = null;
+        function openNegoModal(candidateId) {
+            _negoCandId = candidateId;
+            const c = _candidatePipeline.find(x => x.id === candidateId);
+            if (!c) return;
+            document.getElementById('negoCandName').textContent = c.fullName;
+            renderNegoThread(c);
+            
+            const isManager = window.location.pathname.includes('manager');
+            const reviseArea = document.getElementById('negoReviseArea');
+            if (isManager && c.offerLetterStatus === 'negotiating') {
+                reviseArea.innerHTML = `<button class="cand-primary-btn btn-amber" onclick="mgrReviseOffer()"><i class="ph-fill ph-pencil-simple" style="font-size:12px;margin-right:5px;"></i>Revise Offer Letter</button>`;
+            } else {
+                reviseArea.innerHTML = '';
+            }
+            
+            document.getElementById('negotiationOverlay').classList.add('open');
+        }
+        
+        function closeNegoModal() {
+            document.getElementById('negotiationOverlay').classList.remove('open');
+            _negoCandId = null;
+        }
+        
+        function renderNegoThread(c) {
+            const wrap = document.getElementById('negoThreadContent');
+            const thread = c.offerNegotiations || [];
+            if (thread.length === 0) {
+                wrap.innerHTML = `<div style="font-size:13px; color:var(--text-faint); font-style:italic;">No negotiation messages yet.</div>`;
+                return;
+            }
+            
+            const isManager = window.location.pathname.includes('manager');
+            const myRole = isManager ? 'manager' : 'admin';
+            
+            wrap.innerHTML = thread.map(msg => {
+                const isCompany = msg.senderRole !== 'candidate';
+                const bg = isCompany ? 'rgba(96,165,250,0.1)' : 'rgba(119,202,0,0.1)';
+                const border = isCompany ? 'rgba(96,165,250,0.2)' : 'rgba(119,202,0,0.2)';
+                const align = isCompany ? 'flex-end' : 'flex-start';
+                return `
+                <div style="align-self:${align}; background:${bg}; border:1px solid ${border}; border-radius:12px; padding:10px 14px; max-width:85%;">
+                    <div style="font-size:11px; color:var(--text-faint); margin-bottom:4px; display:flex; justify-content:space-between; gap:12px;">
+                        <span>${escapeHtml(msg.senderName)} (${escapeHtml(msg.senderRole)})</span>
+                        <span>${escapeHtml(msg.timestamp || '')}</span>
+                    </div>
+                    <div style="font-size:13px; color:var(--text); white-space:pre-wrap;">${escapeHtml(msg.message)}</div>
+                </div>
+                `;
+            }).join('');
+            wrap.scrollTop = wrap.scrollHeight;
+        }
+        
+        async function mgrSendNego() {
+            if (!_negoCandId) return;
+            const inp = document.getElementById('mgrNegoInput');
+            const msg = inp.value.trim();
+            if (!msg) return;
+            
+            const c = _candidatePipeline.find(x => x.id === _negoCandId);
+            if (!c.offerNegotiations) c.offerNegotiations = [];
+            
+            const isManager = window.location.pathname.includes('manager');
+            const role = isManager ? 'manager' : 'admin';
+            const name = role === 'manager' ? 'Hiring Manager' : 'HR Admin';
+            
+            c.offerNegotiations.push({
+                senderRole: role,
+                senderName: name,
+                message: msg,
+                timestamp: new Date().toLocaleDateString('en-IN', { hour: '2-digit', minute: '2-digit' })
+            });
+            
+            inp.value = '';
+            renderNegoThread(c);
+            
+            if (typeof db !== 'undefined' && db.submitNegotiationMessage) {
+                await db.submitNegotiationMessage(_negoCandId, role, name, msg);
+            }
+        }
+        
+        async function mgrReviseOffer() {
+            if (!_negoCandId) return;
+            const c = _candidatePipeline.find(x => x.id === _negoCandId);
+            
+            c.offerLetterStatus = 'not_started';
+            c.currentStage = 'offer_draft';
+            
+            if (typeof db !== 'undefined' && db.setOfferStatusToDraft) {
+                await db.setOfferStatusToDraft(_negoCandId);
+            }
+            
+            closeNegoModal();
+            renderCandidatePipeline();
+            openPrepareOfferModal(_negoCandId);
+            showToast('Offer status reset to Draft. You can now revise the details.', 'info');
+        }
+
+// ── Prepare Offer Letter Modal ────────────────────────────────
+        let _prepareOfferId = null;
+        function openPrepareOfferModal(candidateId) {
+            _prepareOfferId = candidateId;
+            const c = _candidatePipeline.find(x => x.id === candidateId);
+            if (!c) return;
+            const d = c.offerLetterDraftDetails || {};
+            // Pre-fill with candidate's known details + existing draft
+            document.getElementById('ofmDesignation').value = d.designation || c.designation || '';
+            document.getElementById('ofmDepartment').value  = d.department || c.department  || '';
+            document.getElementById('ofmSalary').value      = d.salary || '';
+            document.getElementById('ofmEntity').value      = d.entity || '';
+            document.getElementById('ofmJoiningDate').value = d.joiningDate || '';
+            document.getElementById('ofmOtherTerms').value  = d.otherTerms || '';
+            document.getElementById('ofmEmploymentType').value = d.employmentType || 'regular';
+            document.getElementById('ofmCandName').textContent = c.fullName;
+            // Clear errors
+            ['ofmSalary','ofmDesignation','ofmDepartment','ofmEntity','ofmJoiningDate'].forEach(id => {
+                document.getElementById(id).classList.remove('error');
+            });
+            document.getElementById('prepareOfferOverlay').classList.add('open');
+        }
+        function closePrepareOfferModal() {
+            document.getElementById('prepareOfferOverlay').classList.remove('open');
+            _prepareOfferId = null;
+        }
+        async function submitPrepareOffer() {
+            const salary         = document.getElementById('ofmSalary').value.trim();
+            const designation    = document.getElementById('ofmDesignation').value.trim();
+            const department     = document.getElementById('ofmDepartment').value.trim();
+            const entity         = document.getElementById('ofmEntity').value;
+            const joiningDate    = document.getElementById('ofmJoiningDate').value;
+            const otherTerms     = document.getElementById('ofmOtherTerms').value.trim();
+            const employmentType = document.getElementById('ofmEmploymentType').value;
+
+            let valid = true;
+            const setErr = (id, show) => {
+                document.getElementById(id).classList.toggle('error', show);
+                const errEl = document.getElementById(id + 'Err');
+                if (errEl) errEl.classList.toggle('visible', show);
+                if (show) valid = false;
+            };
+            setErr('ofmSalary',      !salary || isNaN(Number(salary)) || Number(salary) < 1);
+            setErr('ofmDesignation', !designation);
+            setErr('ofmDepartment',  !department);
+            setErr('ofmEntity',      !entity);
+            setErr('ofmJoiningDate', !joiningDate);
+            if (!valid) return;
+
+            const btn = document.getElementById('ofmSubmitBtn');
+            btn.disabled = true; btn.textContent = 'Submitting...';
+            try {
+                await db.prepareOfferLetterDraft(_prepareOfferId, { salary: Number(salary), designation, department, entity, joiningDate, otherTerms, employmentType });
+                // Update local data
+                const c = _candidatePipeline.find(x => x.id === _prepareOfferId);
+                if (c) { c.offerLetterStatus = 'draft_by_manager'; c.currentStage = 'offer_draft'; }
+                renderCandidatePipeline();
+                closePrepareOfferModal();
+                showToast('Offer letter draft submitted to Admin for review.', 'success');
+            } catch (e) {
+                showToast('Failed to submit draft. Please try again.', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Submit to Admin';
+            }
+        }
+
+        // ── View Offer Draft (read-only) ──────────────────────────────
+        function viewOfferDraftReadOnly(candidateId) {
+            showToast('Offer draft view — PDF viewer would open here.', 'info');
+        }
+
+        // ── Put On Hold Modal ─────────────────────────────────────────
+        let _holdCandidateId = null;
+        function openHoldModal(candidateId) {
+            _holdCandidateId = candidateId;
+            const c = _candidatePipeline.find(x => x.id === candidateId);
+            document.getElementById('holdCandName').textContent = c ? c.fullName : '';
+            document.getElementById('holdReason').value      = '';
+            document.getElementById('holdReminder').value    = '';
+            document.getElementById('holdReason').classList.remove('error');
+            document.getElementById('holdOverlay').classList.add('open');
+        }
+        function closeHoldModal() {
+            document.getElementById('holdOverlay').classList.remove('open');
+            _holdCandidateId = null;
+        }
+        async function submitHold() {
+            const reason   = document.getElementById('holdReason').value.trim();
+            const reminder = document.getElementById('holdReminder').value;
+            if (!reason) {
+                document.getElementById('holdReason').classList.add('error');
+                return;
+            }
+            const btn = document.getElementById('holdSubmitBtn');
+            btn.disabled = true; btn.textContent = 'Saving...';
+            try {
+                await db.putCandidateOnHold(_holdCandidateId, reason, reminder || null);
+                const c = _candidatePipeline.find(x => x.id === _holdCandidateId);
+                if (c) {
+                    c.holdDetails = { isOnHold: true, reason, reminderAt: reminder || null,
+                        setByEmployeeId: 'MGR001', setByRole: 'manager', setAt: new Date().toISOString() };
+                }
+                renderCandidatePipeline();
+                closeHoldModal();
+                showToast('Candidate placed on hold.', 'success');
+            } catch (e) {
+                showToast('Failed to place on hold. Try again.', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Confirm Hold';
+            }
+        }
+        document.getElementById('holdReason')?.addEventListener('input', () => {
+            document.getElementById('holdReason').classList.remove('error');
+        });
+
+        // ── Remove Hold Modal ─────────────────────────────────────────
+        let _unholdCandidateId = null;
+        function openRemoveHoldModal(candidateId) {
+            _unholdCandidateId = candidateId;
+            const c = _candidatePipeline.find(x => x.id === candidateId);
+            document.getElementById('unholdCandName').textContent = c ? c.fullName : '';
+            document.getElementById('unholdOverlay').classList.add('open');
+        }
+        function closeUnholdModal() {
+            document.getElementById('unholdOverlay').classList.remove('open');
+            _unholdCandidateId = null;
+        }
+        async function submitRemoveHold() {
+            const btn = document.getElementById('unholdSubmitBtn');
+            btn.disabled = true; btn.textContent = 'Removing...';
+            try {
+                await db.removeCandidateHold(_unholdCandidateId);
+                const c = _candidatePipeline.find(x => x.id === _unholdCandidateId);
+                if (c && c.holdDetails) c.holdDetails.isOnHold = false;
+                renderCandidatePipeline();
+                closeUnholdModal();
+                showToast('Hold removed. Candidate is active again.', 'success');
+            } catch (e) {
+                showToast('Failed to remove hold. Try again.', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Remove Hold';
+            }
+        }
+
+        // ── Reject Candidate Modal ────────────────────────────────────
+        let _rejectCandId = null;
+        function openRejectCandModal(candidateId) {
+            _rejectCandId = candidateId;
+            const c = _candidatePipeline.find(x => x.id === candidateId);
+            document.getElementById('rejectCandName').textContent = c ? c.fullName : '';
+            document.getElementById('rejectCandReason').value = '';
+            document.getElementById('rejectCandReason').classList.remove('error');
+            document.getElementById('rejectCandOverlay').classList.add('open');
+        }
+        function closeRejectCandModal() {
+            document.getElementById('rejectCandOverlay').classList.remove('open');
+            _rejectCandId = null;
+        }
+        async function submitRejectCandidate() {
+            const reason = document.getElementById('rejectCandReason').value.trim();
+            if (!reason) {
+                document.getElementById('rejectCandReason').classList.add('error');
+                return;
+            }
+            const btn = document.getElementById('rejectCandSubmitBtn');
+            btn.disabled = true; btn.textContent = 'Rejecting...';
+            try {
+                await db.managerRejectCandidate(_rejectCandId, reason);
+                const c = _candidatePipeline.find(x => x.id === _rejectCandId);
+                if (c) { c.currentStage = 'rejected'; c.companyDecision = 'rejected'; }
+                renderCandidatePipeline();
+                closeRejectCandModal();
+                showToast('Candidate rejected. Portal access expires in 48 hours.', 'info');
+            } catch (e) {
+                showToast('Failed to reject candidate. Try again.', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Confirm Rejection';
+            }
+        }
+        document.getElementById('rejectCandReason')?.addEventListener('input', () => {
+            document.getElementById('rejectCandReason').classList.remove('error');
+        });
+
+        // ───────────────────────────────────────────────────────────────
+        // CANDIDATE DETAIL MODAL — STATE
+        // ───────────────────────────────────────────────────────────────
+        let _cdModal = {
+            candidateId:    null,
+            tab:            'rounds',
+            candidate:      null,
+            rounds:         [],
+            docs:           [],
+            editingRoundId: null,
+            addingRound:    false,
+            requestingDoc:  false,
+            rejectingDocId: null,
+        };
+
+        // ── Open / Close ─────────────────────────────────────────────
+        async function openCandDetailModal(candidateId, tab) {
+            tab = tab || 'rounds';
+            _cdModal.candidateId    = candidateId;
+            _cdModal.tab            = tab;
+            _cdModal.editingRoundId = null;
+            _cdModal.addingRound    = false;
+            _cdModal.requestingDoc  = false;
+            _cdModal.rejectingDocId = null;
+
+            // Show overlay immediately (loading state is already in HTML)
+            document.getElementById('candDetailOverlay').classList.add('open');
+            document.getElementById('cdpRoundsContent').innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div><div class="empty-text">Loading...</div></div>';
+            document.getElementById('cdpDocsContent').innerHTML   = '<div class="empty-state"><div class="empty-icon"><i class="ph-fill ph-hourglass" style="font-size:28px"></i></div><div class="empty-text">Loading...</div></div>';
+
+            // Switch to requested tab
+            _switchCandTabUI(tab);
+
+            try {
+                const detail = await db.getCandidateDetail(candidateId);
+                if (!detail) { showToast('Candidate not found.', 'error'); return; }
+                _cdModal.candidate = detail;
+                _cdModal.rounds    = detail.hiringRounds && detail.hiringRounds.length
+                    ? detail.hiringRounds
+                    : [{ roundId: 'r1', name: 'Job Application', stageName: 'Job Application', status: 'completed', subtitle: 'Application submitted', order: 1, locked: true, date: 'Applied' }];
+                _cdModal.docs      = detail.requestedDocuments || [];
+
+                // Populate header
+                const fullName    = detail.fullName || detail.candidateName || 'Candidate';
+                const designation = detail.designation || detail.role || 'Position';
+                const department  = detail.department || detail.dept || 'Department';
+                const appliedOn   = detail.appliedOn || 'Applied';
+
+                document.getElementById('cdpAvatar').textContent = getInitials(fullName);
+                document.getElementById('cdpName').textContent   = fullName;
+                document.getElementById('cdpMeta').textContent   = designation + ' · ' + department + ' · ' + appliedOn;
+
+                renderCdpRounds();
+                renderCdpDocs();
+            } catch (err) {
+                console.error('Failed to load candidate detail:', err);
+                showToast('Failed to load candidate data.', 'error');
+            }
+        }
+
+        function closeCandDetailModal() {
+            document.getElementById('candDetailOverlay').classList.remove('open');
+        }
+
+        function handleCandDetailOverlayClick(e) {
+            if (e.target === document.getElementById('candDetailOverlay')) closeCandDetailModal();
+        }
+
+        // ── Tab switching ────────────────────────────────────────────
+        function switchCandTab(tab) {
+            _cdModal.tab = tab;
+            _switchCandTabUI(tab);
+        }
+
+        function _switchCandTabUI(tab) {
+            document.getElementById('cdpRoundsPane').classList.toggle('active',    tab === 'rounds');
+            document.getElementById('cdpDocumentsPane').classList.toggle('active', tab === 'documents');
+            document.getElementById('cdpTabRounds').classList.toggle('active',    tab === 'rounds');
+            document.getElementById('cdpTabDocuments').classList.toggle('active', tab === 'documents');
+        }
+
+        // ── ROUNDS TAB ───────────────────────────────────────────────
+        function renderCdpRounds() {
+            const rounds = _cdModal.rounds;
+            const wrap   = document.getElementById('cdpRoundsContent');
+
+            if (rounds.length === 0) {
+                wrap.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="ph-fill ph-list-bullets" style="font-size:28px"></i></div>
+                        <div class="empty-text">No rounds added yet</div>
+                        <div class="empty-sub">Add the first interview round below</div>
+                    </div>
+                `;
+            } else {
+                const tlHtml = rounds.map((r, idx) => {
+                    const isLast      = idx === rounds.length - 1;
+                    const statusClass = r.status; // 'completed' | 'pending' | 'rejected'
+                    const statusLabel = { completed: 'Completed', pending: 'Pending', rejected: 'Rejected' }[r.status] || r.status;
+                    const isEditing   = _cdModal.editingRoundId === r.roundId;
+
+                    const editFormHtml = isEditing ? `
+                        <div class="round-form" id="editRoundForm_${r.roundId}">
+                            <div class="round-form-title">Edit Round</div>
+                            <div class="round-form-row">
+                                <input class="rfi" id="editRoundName_${r.roundId}"   type="text"  value="${escapeHtml(r.stageName)}" placeholder="Round name" />
+                                <select class="rfi rfi-select" id="editRoundStatus_${r.roundId}">
+                                    <option value="pending"   ${r.status==='pending'   ? 'selected' : ''}>Pending</option>
+                                    <option value="completed" ${r.status==='completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="rejected"  ${r.status==='rejected'  ? 'selected' : ''}>Rejected</option>
+                                </select>
+                            </div>
+                            <textarea class="round-form-notes" id="editRoundNotes_${r.roundId}" placeholder="Internal notes (optional — not visible to candidate)">${escapeHtml(r.notes || '')}</textarea>
+                            <div class="round-form-actions">
+                                <button class="rfa-cancel" onclick="cancelEditRound()">Cancel</button>
+                                <button class="rfa-save"   id="saveEditRoundBtn_${r.roundId}" onclick="saveEditRound('${r.roundId}')">
+                                    <i class="ph-fill ph-floppy-disk" style="font-size:12px;margin-right:4px;"></i>Save
+                                </button>
+                            </div>
+                        </div>
+                    ` : (r.notes ? `<div class="mtl-notes">${escapeHtml(r.notes)}</div>` : '');
+
+                    return `
+                        <div class="mtl-item">
+                            <div class="mtl-left">
+                                <div class="mtl-dot ${statusClass}"></div>
+                                ${!isLast ? '<div class="mtl-connector"></div>' : ''}
+                            </div>
+                            <div class="mtl-content">
+                                <div class="mtl-row">
+                                    <div class="mtl-name">${escapeHtml(r.stageName)}</div>
+                                    <span class="mtl-badge ${statusClass}">${statusLabel}</span>
+                                    ${r.locked
+                                        ? `<span class="mtl-lock-badge"><i class="ph ph-lock-simple" style="font-size:10px;"></i> Locked</span>`
+                                        : `<button class="mtl-edit-btn" onclick="openEditRound('${r.roundId}')" title="Edit round">
+                                               <i class="ph ph-pencil-simple" style="font-size:13px;"></i>
+                                           </button>`
+                                    }
+                                </div>
+                                ${r.date ? `<div class="mtl-date"><i class="ph ph-calendar-blank" style="font-size:10px;margin-right:3px;"></i>${escapeHtml(r.date)}</div>` : ''}
+                                ${editFormHtml}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                wrap.innerHTML = `<div class="modal-timeline">${tlHtml}</div>`;
+            }
+
+            // Add Round button / form
+            if (_cdModal.addingRound) {
+                wrap.innerHTML += `
+                    <div class="round-form" id="addRoundForm" style="margin-top:10px;">
+                        <div class="round-form-title">New Round</div>
+                        <div class="round-form-row">
+                            <input class="rfi" id="addRoundName"   type="text"  placeholder="Round name (e.g. HR Interview)" autocomplete="off" />
+                            <select class="rfi rfi-select" id="addRoundStatus">
+                                <option value="pending">Pending</option>
+                                <option value="completed">Completed</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <textarea class="round-form-notes" id="addRoundNotes" placeholder="Internal notes (optional — not visible to candidate)"></textarea>
+                        <div class="round-form-actions">
+                            <button class="rfa-cancel" onclick="cancelAddRound()">Cancel</button>
+                            <button class="rfa-save"   id="saveAddRoundBtn" onclick="saveAddRound()">
+                                <i class="ph-fill ph-plus" style="font-size:12px;margin-right:4px;"></i>Add Round
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                wrap.innerHTML += `
+                    <button class="add-round-btn" onclick="openAddRound()">
+                        <i class="ph-fill ph-plus" style="font-size:14px;"></i>
+                        Add Round
+                    </button>
+                `;
+            }
+        }
+
+        function openEditRound(roundId) {
+            _cdModal.editingRoundId = roundId;
+            _cdModal.addingRound    = false;
+            renderCdpRounds();
+        }
+
+        function cancelEditRound() {
+            _cdModal.editingRoundId = null;
+            renderCdpRounds();
+        }
+
+        async function saveEditRound(roundId) {
+            const nameEl   = document.getElementById('editRoundName_' + roundId);
+            const statusEl = document.getElementById('editRoundStatus_' + roundId);
+            const notesEl  = document.getElementById('editRoundNotes_' + roundId);
+            const saveBtn  = document.getElementById('saveEditRoundBtn_' + roundId);
+
+            const name   = nameEl.value.trim();
+            const status = statusEl.value;
+            const notes  = notesEl.value.trim();
+
+            if (!name) { nameEl.style.borderColor = 'var(--danger)'; nameEl.focus(); return; }
+
+            saveBtn.disabled    = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                await db.updateHiringRound(_cdModal.candidateId, roundId, { stageName: name, status, notes: notes || null });
+                const idx = _cdModal.rounds.findIndex(r => r.roundId === roundId);
+                if (idx !== -1) {
+                    _cdModal.rounds[idx] = { ..._cdModal.rounds[idx], stageName: name, status, notes: notes || null };
+                }
+                _cdModal.editingRoundId = null;
+                renderCdpRounds();
+                showToast('Round updated.', 'success');
+            } catch (err) {
+                console.error('updateHiringRound error:', err);
+                showToast('Failed to update round.', 'error');
+                saveBtn.disabled    = false;
+                saveBtn.textContent = 'Save';
+            }
+        }
+
+        function openAddRound() {
+            _cdModal.addingRound    = true;
+            _cdModal.editingRoundId = null;
+            renderCdpRounds();
+            setTimeout(() => document.getElementById('addRoundName')?.focus(), 50);
+        }
+
+        function cancelAddRound() {
+            _cdModal.addingRound = false;
+            renderCdpRounds();
+        }
+
+        async function saveAddRound() {
+            const nameEl   = document.getElementById('addRoundName');
+            const statusEl = document.getElementById('addRoundStatus');
+            const notesEl  = document.getElementById('addRoundNotes');
+            const saveBtn  = document.getElementById('saveAddRoundBtn');
+
+            const name   = nameEl.value.trim();
+            const status = statusEl.value;
+            const notes  = notesEl.value.trim();
+
+            if (!name) { nameEl.style.borderColor = 'var(--danger)'; nameEl.focus(); return; }
+
+            saveBtn.disabled    = true;
+            saveBtn.textContent = 'Adding...';
+
+            try {
+                const newRound = await db.addHiringRound(_cdModal.candidateId, {
+                    stageName: name,
+                    status,
+                    notes:     notes || null,
+                    order:     _cdModal.rounds.length + 1,
+                });
+                _cdModal.rounds.push(newRound);
+                _cdModal.addingRound = false;
+                renderCdpRounds();
+                showToast('Round added.', 'success');
+            } catch (err) {
+                console.error('addHiringRound error:', err);
+                showToast('Failed to add round.', 'error');
+                saveBtn.disabled    = false;
+                saveBtn.textContent = 'Add Round';
+            }
+        }
+
+        // ── DOCUMENTS TAB ────────────────────────────────────────────
+        function renderCdpDocs() {
+            const docs = _cdModal.docs;
+            const wrap = document.getElementById('cdpDocsContent');
+
+            const statusText = {
+                pending:          'Uploaded — Pending Review',
+                not_uploaded:     'Not Uploaded',
+                manager_verified: 'Manager Verified',
+                fully_verified:   'Fully Verified',
+                rejected:         'Rejected',
+            };
+            const statusIcon = {
+                pending:          '<i class="ph-fill ph-clock" style="font-size:11px;"></i>',
+                not_uploaded:     '<i class="ph ph-minus-circle" style="font-size:11px;"></i>',
+                manager_verified: '<i class="ph-bold ph-check" style="font-size:11px;"></i>',
+                fully_verified:   '<i class="ph-fill ph-check-circle" style="font-size:11px;"></i>',
+                rejected:         '<i class="ph-fill ph-x-circle" style="font-size:11px;"></i>',
+            };
+
+            const docHtml = docs.length === 0 ? `
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="ph-fill ph-files" style="font-size:28px"></i></div>
+                    <div class="empty-text">No documents requested yet</div>
+                </div>
+            ` : docs.map(d => {
+                const effectiveStatus = d.uploadedFileName ? d.finalStatus : 'not_uploaded';
+                const canAct  = effectiveStatus === 'pending';
+                const isRejecting = _cdModal.rejectingDocId === d.docId;
+
+                const rejectFormHtml = isRejecting ? `
+                    <div class="mdi-reject-form">
+                        <input class="mdi-reject-input" id="rejectReasonInput_${d.docId}" placeholder="State rejection reason..." autocomplete="off" />
+                        <button class="mdi-reject-confirm-btn" id="rejectConfirmBtn_${d.docId}" onclick="confirmRejectDoc('${d.docId}')">
+                            <i class="ph-bold ph-check" style="font-size:12px;margin-right:3px;"></i>Confirm
+                        </button>
+                        <button class="rfa-cancel" onclick="cancelRejectDoc()">Cancel</button>
+                    </div>
+                ` : '';
+
+                const rejectionNote = (d.finalStatus === 'rejected' && d.rejectionReason) ? `
+                    <div class="mdi-rejection-reason">
+                        <i class="ph-fill ph-warning" style="font-size:12px;margin-right:4px;"></i>
+                        <strong>Rejection reason:</strong> ${escapeHtml(d.rejectionReason)}
+                    </div>
+                ` : '';
+
+                return `
+                    <div class="modal-doc-item">
+                        <div class="mdi-top">
+                            <div class="mdi-icon"><i class="ph-fill ph-file-text"></i></div>
+                            <div class="mdi-info">
+                                <div class="mdi-label">${escapeHtml(d.label)}</div>
+                                ${d.description ? `<div class="mdi-desc">${escapeHtml(d.description)}</div>` : ''}
+                                <div class="mdi-status-row">
+                                    <span class="mdi-status-badge ${effectiveStatus}">
+                                        ${statusIcon[effectiveStatus] || ''} ${statusText[effectiveStatus] || effectiveStatus}
+                                    </span>
+                                    ${d.uploadedFileName
+                                        ? (() => {
+                                            const mockUrl = d.uploadedFileUrl && d.uploadedFileUrl.startsWith('mock://') ? 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' : d.uploadedFileUrl;
+                                            return `<button class="mdi-file" style="border:none;background:none;cursor:pointer;padding:0;font:inherit;text-align:left;color:var(--accent)" onclick="window.showDocumentPreview('${escapeHtml(mockUrl)}', '${escapeHtml(d.uploadedFileName)}')"><i class="ph ph-paperclip" style="font-size:10px;"></i>${escapeHtml(d.uploadedFileName)}</button>`;
+                                        })()
+                                        : ''
+                                    }
+                                </div>
+                                ${d.uploadedAt ? `<div class="mdi-date" style="font-size:11px;color:var(--text-faint);margin-top:4px;"><i class="ph ph-calendar-blank" style="font-size:10px;margin-right:3px;"></i>Uploaded ${escapeHtml(d.uploadedAt)}</div>` : ''}
+                            </div>
+                        </div>
+                        ${(canAct && !isRejecting) ? `
+                            <div class="mdi-actions">
+                                <button class="mdi-verify-btn" onclick="verifyDoc('${d.docId}')">
+                                    <i class="ph-bold ph-check" style="font-size:12px;margin-right:4px;"></i>Verify
+                                </button>
+                                <button class="mdi-reject-btn" onclick="openRejectDoc('${d.docId}')">
+                                    <i class="ph-bold ph-x" style="font-size:12px;margin-right:4px;"></i>Reject
+                                </button>
+                            </div>
+                        ` : ''}
+                        ${isRejecting ? rejectFormHtml : ''}
+                        ${rejectionNote}
+                    </div>
+                `;
+            }).join('');
+
+            // Request new doc button / form
+            const reqFormHtml = _cdModal.requestingDoc ? `
+                <div class="req-doc-form" id="reqDocFormWrap">
+                    <div class="req-doc-form-title">Request New Document</div>
+                    <input class="rdf-input" id="reqDocLabel"       type="text"  placeholder="Document name (e.g. Bank Statement)" autocomplete="off" />
+                    <input class="rdf-input" id="reqDocDescription" type="text"  placeholder="Instructions for candidate (optional)" autocomplete="off" />
+                    <div class="round-form-actions">
+                        <button class="rfa-cancel" onclick="cancelReqDoc()">Cancel</button>
+                        <button class="rfa-save"   id="saveReqDocBtn" onclick="saveReqDoc()">
+                            <i class="ph-fill ph-paper-plane-right" style="font-size:12px;margin-right:4px;"></i>Send Request
+                        </button>
+                    </div>
+                </div>
+            ` : `
+                <button class="add-doc-req-btn" onclick="openReqDoc()">
+                    <i class="ph-fill ph-file-plus" style="font-size:14px;"></i>
+                    Request New Document
+                </button>
+            `;
+
+            wrap.innerHTML = docHtml + reqFormHtml;
+        }
+
+        function verifyDoc(docId) {
+            const btn = document.querySelector(`.mdi-verify-btn[onclick*="${docId}"]`);
+            if (btn) { btn.disabled = true; btn.textContent = 'Verifying...'; }
+
+            db.verifyManagerDocument(_cdModal.candidateId, docId)
+                .then(() => {
+                    const idx = _cdModal.docs.findIndex(d => d.docId === docId);
+                    if (idx !== -1) _cdModal.docs[idx].finalStatus = 'manager_verified';
+                    renderCdpDocs();
+                    showToast('Document marked as verified.', 'success');
+                })
+                .catch(err => {
+                    console.error('verifyManagerDocument error:', err);
+                    showToast('Failed to verify. Try again.', 'error');
+                });
+        }
+
+        function openRejectDoc(docId) {
+            _cdModal.rejectingDocId = docId;
+            renderCdpDocs();
+            setTimeout(() => document.getElementById('rejectReasonInput_' + docId)?.focus(), 50);
+        }
+
+        function cancelRejectDoc() {
+            _cdModal.rejectingDocId = null;
+            renderCdpDocs();
+        }
+
+        function confirmRejectDoc(docId) {
+            const input = document.getElementById('rejectReasonInput_' + docId);
+            const btn   = document.getElementById('rejectConfirmBtn_' + docId);
+            const reason = input.value.trim();
+            if (!reason) { input.style.borderColor = 'var(--danger)'; input.focus(); return; }
+
+            btn.disabled    = true;
+            btn.textContent = 'Rejecting...';
+
+            db.rejectManagerDocument(_cdModal.candidateId, docId, reason)
+                .then(() => {
+                    const idx = _cdModal.docs.findIndex(d => d.docId === docId);
+                    if (idx !== -1) {
+                        _cdModal.docs[idx].finalStatus      = 'rejected';
+                        _cdModal.docs[idx].rejectionReason  = reason;
+                    }
+                    _cdModal.rejectingDocId = null;
+                    renderCdpDocs();
+                    showToast('Document rejected.', 'info');
+                })
+                .catch(err => {
+                    console.error('rejectManagerDocument error:', err);
+                    showToast('Failed to reject. Try again.', 'error');
+                    btn.disabled    = false;
+                    btn.textContent = 'Confirm';
+                });
+        }
+
+        function openReqDoc() {
+            _cdModal.requestingDoc = true;
+            renderCdpDocs();
+            setTimeout(() => document.getElementById('reqDocLabel')?.focus(), 50);
+        }
+
+        function cancelReqDoc() {
+            _cdModal.requestingDoc = false;
+            renderCdpDocs();
+        }
+
+        async function saveReqDoc() {
+            const labelEl = document.getElementById('reqDocLabel');
+            const descEl  = document.getElementById('reqDocDescription');
+            const saveBtn = document.getElementById('saveReqDocBtn');
+            const label   = labelEl.value.trim();
+            const desc    = descEl.value.trim();
+
+            if (!label) { labelEl.style.borderColor = 'var(--danger)'; labelEl.focus(); return; }
+
+            saveBtn.disabled    = true;
+            saveBtn.textContent = 'Sending...';
+
+            try {
+                const newDoc = await db.requestCandidateDocument(_cdModal.candidateId, label, desc || null);
+                _cdModal.docs.push(newDoc);
+                _cdModal.requestingDoc = false;
+                renderCdpDocs();
+                showToast('Document request sent to candidate.', 'success');
+            } catch (err) {
+                console.error('requestCandidateDocument error:', err);
+                showToast('Failed to send request. Try again.', 'error');
+                saveBtn.disabled    = false;
+                saveBtn.textContent = 'Send Request';
+            }
+        }
+
+        // Close on Escape (extend existing keydown listener)
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeCandDetailModal();
+                closeRemoveModal();
+            }
+        });
+
+        // ───────────────────────────────────────────────────────────────
+        // HELPERS
+        // ───────────────────────────────────────────────────────────────
+        function statusLabel(s) {
+            return { pending: 'Pending', approved: 'Approved', rejected: 'Rejected' }[s] || s;
+        }
+
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.trim().split(' ');
+            return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+        }
+
+        function formatRelative(ts) {
+            if (!ts) return '';
+            const diff = Date.now() - new Date(ts).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1)  return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24)  return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function showToast(message, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className   = `toast ${type}`;
+            t.textContent = message;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // MANAGER INFO
+        // ───────────────────────────────────────────────────────────────
+        async function renderManagerInfo() {
+            try {
+                const m = await db.getManagerProfile();
+                const avatar = document.getElementById('managerAvatar');
+                if (avatar) {
+                    avatar.classList.remove('skeleton');
+                    avatar.textContent = m.fullName.charAt(0).toUpperCase();
+                }
+            } catch (err) { /* non-critical */ }
+        }
+
+        // ───────────────────────────────────────────────────────────────
+        // HOLD REMINDER CHECK
+        // ───────────────────────────────────────────────────────────────
+        function checkHoldReminders() {
+            const now = new Date();
+            const due = (_candidatePipeline || []).filter(c => {
+                if (!c.holdDetails?.isOnHold) return false;
+                if (localStorage.getItem('dismissed_hold_' + c.id) === 'true') return false;
+                const remStr = c.holdDetails.reminderAt || c.holdDetails.holdReminder;
+                if (!remStr) return false;
+                const remDate = new Date(remStr);
+                return remDate <= now;
+            });
+            if (due.length === 0) return;
+            const list = document.getElementById('holdReminderList');
+            list.innerHTML = due.map(c => {
+                const setByDisplay = c.holdDetails.setByText 
+                    || (c.holdDetails.setByRole === 'super_admin' || c.holdDetails.setByRole === 'admin' ? 'Admin' : (c.holdDetails.setByName ? 'Manager \u2022 ' + c.holdDetails.setByName : 'Admin'));
+                return `
+                <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:10px;padding:12px 14px;">
+                    <div style="font-weight:600;font-size:13px;color:var(--text);">${escapeHtml(c.fullName)}</div>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:3px;">${escapeHtml(c.designation)} &bull; ${escapeHtml(c.department)}</div>
+                    <div style="font-size:11px;color:var(--warning);margin-top:5px;"><i class="ph ph-info"></i> ${escapeHtml(c.holdDetails.reason || 'No reason specified')}</div>
+                    <div style="font-size:11px;color:var(--text-faint);margin-top:3px;">Set by: ${escapeHtml(setByDisplay)}</div>
+                    <div style="display:flex;gap:8px;margin-top:10px;">
+                        <button class="cand-action-btn unhold-btn" style="font-size:11px;padding:5px 10px;" onclick="submitRemoveHold('${escapeHtml(c.id)}');dismissHoldReminder('${escapeHtml(c.id)}');">Remove Hold</button>
+                        <button class="cand-action-btn view-btn" style="font-size:11px;padding:5px 10px;" onclick="openCandDetailModal('${escapeHtml(c.id)}','rounds');dismissHoldReminder('${escapeHtml(c.id)}');">View Detail</button>
+                    </div>
+                </div>`;
+            }).join('');
+            document.getElementById('holdReminderOverlay').classList.add('open');
+        }
+
+        window.dismissHoldReminder = function(candidateId) {
+            if (candidateId) localStorage.setItem('dismissed_hold_' + candidateId, 'true');
+            closeHoldReminderPopup();
+        };
+
+        window.closeHoldReminderPopup = function() {
+            const now = new Date();
+            (_candidatePipeline || []).forEach(c => {
+                if (c.holdDetails?.isOnHold) {
+                    const remStr = c.holdDetails.reminderAt || c.holdDetails.holdReminder;
+                    if (remStr && new Date(remStr) <= now) {
+                        localStorage.setItem('dismissed_hold_' + c.id, 'true');
+                    }
+                }
+            });
+            document.getElementById('holdReminderOverlay').classList.remove('open');
+        };
+
+        // ───────────────────────────────────────────────────────────────
+        // INIT
+        // ───────────────────────────────────────────────────────────────
+        window.addEventListener('DOMContentLoaded', async () => {
+            _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+            updateTopbarDate();
+            setInterval(checkHoldReminders, 10000);
+            await Promise.all([
+                renderManagerInfo(),
+                renderNotifications(),
+                loadAll(),
+            ]);
+
+            checkHoldReminders();
+            if (db && db.subscribeToNotifications) {
+                db.subscribeToNotifications(() => {
+                    renderNotifications();
+                    checkHoldReminders();
+                });
+            }
+            db.getManagerProfile().then(p2 => {
+                const incomplete = !p2.address || !p2.emergencyContact?.name || !p2.emergencyContact?.phone || !p2.emergencyContact?.relation;
+                const badge = document.getElementById('profileNavBadge');
+                if (badge) badge.style.display = incomplete ? 'flex' : 'none';
+            }).catch(() => {});
+            db.startIdleWatcher(logout);
+
+            // Close any open kebab menus when clicking outside a card
+            document.addEventListener('click', function() { closeAllKebabs(); });
+        });
+    </script>
+
+    <!-- ── Negotiation Modal ────────────────────────────────────────── -->
+                <div class="modal-overlay" id="negotiationOverlay" onclick="if(event.target===this) closeNegoModal()">
+        <div class="confirm-modal-panel" style="max-width: 600px; text-align:left; padding: 24px; position:relative;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                <div class="modal-title" style="font-size:18px; font-weight:700;">Offer Negotiations</div>
+                <button onclick="closeNegoModal()" style="background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:6px; color:var(--text-faint); cursor:pointer; width:28px; height:28px; display:flex; align-items:center; justify-content:center; transition:background 0.2s;"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-sub" style="font-size:13.5px; color:var(--text-muted); margin-bottom:20px;">Candidate: <strong id="negoCandName"></strong></div>
+            
+            <div id="negoThreadContent" style="display:flex; flex-direction:column; gap:12px; max-height:350px; overflow-y:auto; padding-right:8px; margin-bottom:16px;">
+                <!-- thread here -->
+            </div>
+            
+            <div id="negoReplyArea" style="display:flex; gap:10px; margin-bottom:20px;">
+                <textarea id="mgrNegoInput" placeholder="Type a reply to the candidate..." style="flex:1; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:10px; padding:10px; color:var(--text); font-family:inherit; resize:none; min-height:42px; outline:none;"></textarea>
+                <button class="cand-primary-btn btn-blue" onclick="mgrSendNego()" style="padding:0 20px; border-radius:10px; display:flex; align-items:center;"><i class="ph ph-paper-plane-right" style="margin-right:6px;"></i>Reply</button>
+            </div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--glass-border); padding-top:16px;">
+                <button class="cand-primary-btn btn-muted" onclick="closeNegoModal()">Close</button>
+                <div id="negoReviseArea">
+                    <!-- Revise button inserted here dynamically depending on manager vs admin -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

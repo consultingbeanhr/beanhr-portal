@@ -1,0 +1,15 @@
+_COPILOT_CONTEXT.md
+_mockup_cred.md
+.env
+*.json
+!firebase.json
+!firestore.indexes.json
+__pycache__/
+*.pyc
+env/
+venv/
+db_backup_safe.js
+backend/seed_accounts.py
+beanHR_Feature_Requirements_Document.docx
+_AGENT_HANDOFF.md
+_DEVELOPER_RULES.md

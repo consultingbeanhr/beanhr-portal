@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Approvals</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-light:  #c8854a;
+            --brown-glow:   rgba(168,106,62,0.25);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.2);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --icon-muted:   rgba(241,241,245,0.65);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --sidebar-w:    240px;
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --warning-bg:   rgba(251,191,36,0.12);
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        /* ── Light Theme ──────────────────────────────────────── */
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.35);
+            --icon-faint:   rgba(26,32,16,0.32);
+            --icon-muted:   rgba(26,32,16,0.65);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(50,140,70,0.1);
+            --warning-bg:   rgba(180,130,0,0.09);
+            --danger-bg:    rgba(200,50,50,0.08);
+            --blue-bg:      rgba(50,100,200,0.08);
+        }
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb     { opacity: 0.18; }
+        [data-theme="light"] .orb-1   { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2   { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+        [data-theme="light"] .sidebar { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar  { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card    { box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05) inset; }
+        [data-theme="light"] .notif-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .nav-item:hover { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .notif-btn,
+        [data-theme="light"] .theme-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .mark-read-link { color: #4a7000; }
+        [data-theme="light"] .notif-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .req-card { border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .req-card:hover { border-color: rgba(0,0,0,0.16); }
+        [data-theme="light"] .req-reason { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .req-mgr-comment { border-top-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .req-action-bar { border-top-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .tab-bar { border-bottom-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+        [data-theme="light"] .expand-textarea { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--text); }
+        [data-theme="light"] .expand-textarea:focus { background: #fff; border-color: var(--accent); }
+        [data-theme="light"] .approve-area .expand-textarea:focus { border-color: #16a34a; }
+        [data-theme="light"] .reject-area .expand-textarea:focus { border-color: #dc2626; }
+        [data-theme="light"] .btn-approve { background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.25); color: #16a34a; }
+        [data-theme="light"] .btn-approve:hover { background: rgba(22,163,74,0.14); border-color: rgba(22,163,74,0.4); }
+        [data-theme="light"] .btn-reject { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.2); color: #dc2626; }
+        [data-theme="light"] .btn-reject:hover { background: rgba(220,38,38,0.12); border-color: rgba(220,38,38,0.35); }
+        [data-theme="light"] .btn-confirm-approve { background: rgba(22,163,74,0.12); border-color: rgba(22,163,74,0.3); color: #16a34a; }
+        [data-theme="light"] .btn-confirm-approve:hover { background: rgba(22,163,74,0.2); }
+        [data-theme="light"] .btn-confirm-reject { background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.25); color: #dc2626; }
+        [data-theme="light"] .btn-confirm-reject:hover { background: rgba(220,38,38,0.16); }
+        [data-theme="light"] .hire-role-chip { color: var(--accent); border-color: rgba(90,153,0,0.22); }
+
+        /* ── Request-Doc button ──────────────────────────────── */
+        .btn-req-doc { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: 1px solid rgba(168,106,62,0.3); background: rgba(168,106,62,0.08); color: var(--brown-light); transition: background 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-req-doc:hover { background: rgba(168,106,62,0.16); border-color: rgba(168,106,62,0.45); }
+        .btn-req-doc:disabled { opacity: 0.5; cursor: not-allowed; }
+        [data-theme="light"] .btn-req-doc { background: rgba(168,106,62,0.07); border-color: rgba(168,106,62,0.22); }
+        [data-theme="light"] .btn-req-doc:hover { background: rgba(168,106,62,0.15); }
+        /* Request-doc expand area */
+        .req-doc-area { display: none; padding: 14px 16px; background: rgba(168,106,62,0.06); border-top: 1px solid rgba(168,106,62,0.16); border-radius: 0 0 14px 14px; }
+        .req-doc-area .expand-label { font-size: 12px; font-weight: 600; color: var(--brown-light); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .req-doc-area.open { display: block; }
+        [data-theme="light"] .req-doc-area { background: rgba(168,106,62,0.05); border-top-color: rgba(168,106,62,0.14); }
+
+        /* ── Backdated badge ─────────────────────────────────── */
+        .badge-backdated { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; background: rgba(251,191,36,0.1); color: var(--warning); border: 1px solid rgba(251,191,36,0.22); }
+
+        /* ── Leave doc attachment chip ───────────────────────── */
+        .leave-doc-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; background: rgba(168,106,62,0.09); color: var(--brown-light); border: 1px solid rgba(168,106,62,0.22); text-decoration: none; cursor: pointer; transition: background 0.15s; font-family: 'Inter', sans-serif; }
+        .leave-doc-chip:hover { background: rgba(168,106,62,0.18); border-color: rgba(168,106,62,0.38); }
+        .leave-doc-chip.linked { cursor: pointer; }
+        .leave-doc-chip.linked:hover { background: rgba(168,106,62,0.18); border-color: rgba(168,106,62,0.38); }
+
+
+        /* ── JD Attachment Chip ──────────────────────────────── */
+        .jd-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.18); color: var(--blue); font-size: 12px; font-weight: 500; cursor: pointer; max-width: 100%; overflow: hidden; text-decoration: none; transition: background 0.15s, border-color 0.15s; }
+        .jd-chip:hover { background: rgba(96,165,250,0.16); border-color: rgba(96,165,250,0.35); }
+        .jd-chip i { font-size: 14px; flex-shrink: 0; }
+        .jd-chip-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+        .jd-row { margin: 2px 0 0; }
+        [data-theme="light"] .jd-chip { background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.25); }
+        [data-theme="light"] .jd-chip:hover { background: rgba(96,165,250,0.2); border-color: rgba(96,165,250,0.45); }
+        [data-theme="light"] .stage-tag.mgr-approved { color: var(--accent); }
+        [data-theme="light"] .removal-target { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.14); }
+
+        /* ── Phosphor dual-icon ───────────────────────────────── */
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── Animated Background ──────────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App Shell ────────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ──────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w); height: 100vh; flex-shrink: 0;
+            display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 14px; overflow: hidden; overflow-y: auto;
+            transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        .sidebar.collapsed { width: 64px; }
+
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        [data-theme="light"] .nav-item.active { color: var(--accent); }
+        [data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item  { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+        .nav-item[data-tip] { position: relative; }
+        .sidebar.collapsed .nav-item[data-tip]:hover::after {
+            content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+            background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border); border-radius: 8px;
+            padding: 5px 10px; font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap;
+            pointer-events: none; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .nav-badge { min-width: 18px; height: 18px; background: var(--warning); border-radius: 9px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 5px; margin-left: auto; flex-shrink: 0; }
+        .sidebar.collapsed .nav-badge { position: absolute; top: 4px; right: 4px; min-width: 14px; height: 14px; font-size: 9px; padding: 0 3px; margin-left: 0; border: 1.5px solid var(--bg); }
+
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+        /* ── Main Area ────────────────────────────────────────── */
+        .main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; scrollbar-width: none; -ms-overflow-style: none; }
+        .main-area::-webkit-scrollbar { display: none; }
+
+        /* ── Topbar ───────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; background: rgba(7,7,15,0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .topbar-left  { display: flex; align-items: center; gap: 14px; }
+        .topbar-greeting { font-size: 16px; font-weight: 600; line-height: 1.3; }
+        .topbar-sub      { font-size: 12px; color: var(--text-muted); }
+        .topbar-right    { display: flex; align-items: center; gap: 12px; }
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+
+        /* ── Page Content ─────────────────────────────────────── */
+        .page-content { padding: 24px; flex: 1; }
+
+        /* ── Page Header ──────────────────────────────────────── */
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 22px; gap: 16px; flex-wrap: wrap; }
+        .page-title  { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+        .page-sub    { font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+
+        /* ── Notification Dropdown ────────────────────────────── */
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset; z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+        .notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 14px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+        .mark-read-link:hover { color: var(--accent-light); }
+        .notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
+        .notif-dropdown-body::-webkit-scrollbar { display: none; }
+        .notif-empty { text-align: center; padding: 28px; font-size: 13px; color: var(--text-faint); }
+        .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+
+        /* ── Toast ────────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 14px 16px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 12px; font-size: 13px; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s cubic-bezier(0.22,1,0.36,1); pointer-events: auto; }
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error   { border-left: 3px solid var(--danger); }
+        .toast.info    { border-left: 3px solid var(--blue); }
+        [data-theme="light"] .toast         { background: #ffffff; color: #1a2010; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .toast.success { border-left-color: rgba(50,140,70,0.6); }
+        [data-theme="light"] .toast.error   { border-left-color: rgba(200,50,50,0.5); }
+        [data-theme="light"] .toast.info    { border-left-color: rgba(50,100,200,0.5); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ════════════════════════════════════════════════════════
+           APPROVALS PAGE — SPECIFIC STYLES
+        ════════════════════════════════════════════════════════ */
+
+        /* ── Tab Bar ──────────────────────────────────────────── */
+        .tab-bar { display: flex; gap: 0; border-bottom: 1px solid var(--glass-border); margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab-btn { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: color 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--accent-light); border-bottom-color: var(--accent); font-weight: 600; }
+        .tab-count { min-width: 18px; height: 18px; background: var(--warning); border-radius: 9px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+
+        /* ── Request Card ─────────────────────────────────────── */
+        .req-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px 20px; transition: border-color 0.15s, opacity 0.25s, transform 0.25s; }
+        .req-card:hover { border-color: rgba(255,255,255,0.13); }
+        .req-list { display: flex; flex-direction: column; gap: 12px; }
+
+        /* ── Request Top Row ──────────────────────────────────── */
+        .req-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+        .req-av { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .req-info { flex: 1; min-width: 0; }
+        .req-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .req-desg { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .req-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+
+        /* ── Request Detail Grid ──────────────────────────────── */
+        .req-detail-row { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; margin-bottom: 12px; }
+        .req-detail-item { display: flex; flex-direction: column; gap: 3px; }
+        .req-detail-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-faint); }
+        .req-detail-value { font-size: 13px; font-weight: 500; color: var(--text); }
+        .req-detail-value.money { font-size: 22px; font-weight: 700; letter-spacing: -0.6px; color: var(--success); line-height: 1.1; }
+
+        /* ── Request Reason ───────────────────────────────────── */
+        .req-reason { padding: 10px 14px; background: rgba(255,255,255,0.022); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 14px; }
+        .req-reason-text { font-size: 13px; color: var(--text-muted); font-style: italic; line-height: 1.6; }
+        .req-mgr-comment { font-size: 11.5px; color: var(--text-faint); margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* ── Removal Target Block ─────────────────────────────── */
+        .removal-target { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.14); border-radius: 12px; margin-bottom: 12px; }
+        .removal-target-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .removal-target-info { flex: 1; min-width: 0; }
+        .removal-target-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(248,113,113,0.7); margin-bottom: 2px; }
+        .removal-target-name { font-size: 14px; font-weight: 700; color: var(--danger); }
+        .removal-target-desg { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+
+        /* ── Action Bar ───────────────────────────────────────── */
+        .req-action-bar { display: flex; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--glass-border); }
+        .req-submitted { font-size: 11.5px; color: var(--text-faint); flex: 1; }
+        .btn-approve { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: 1px solid rgba(74,222,128,0.28); background: rgba(74,222,128,0.08); color: var(--success); transition: background 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-approve:hover { background: rgba(74,222,128,0.16); border-color: rgba(74,222,128,0.45); }
+        .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-reject  { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; border: 1px solid rgba(248,113,113,0.22); background: rgba(248,113,113,0.06); color: var(--danger); transition: background 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-reject:hover { background: rgba(248,113,113,0.13); border-color: rgba(248,113,113,0.38); }
+        .btn-reject:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── Action Expand Areas ──────────────────────────────── */
+        .action-expand { display: none; flex-direction: column; gap: 10px; padding-top: 14px; }
+        .action-expand.open { display: flex; }
+        .expand-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-faint); }
+        .expand-label .optional { font-weight: 400; text-transform: none; letter-spacing: 0; }
+        .expand-label .required { color: var(--danger); }
+        .expand-textarea { width: 100%; min-height: 76px; padding: 10px 12px; background: rgba(255,255,255,0.035); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; resize: vertical; transition: border-color 0.15s, background 0.15s; }
+        .expand-textarea::placeholder { color: var(--text-faint); }
+        .expand-textarea:focus { background: rgba(255,255,255,0.055); border-color: rgba(119,202,0,0.4); }
+        .approve-area .expand-textarea:focus { border-color: rgba(74,222,128,0.4); }
+        .reject-area  .expand-textarea:focus { border-color: rgba(248,113,113,0.35); }
+        .expand-confirm-msg { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.5; }
+        .expand-confirm-msg.approve { background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.18); color: var(--text-muted); }
+        .expand-confirm-msg.approve i { color: var(--success); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+        .expand-confirm-msg.danger  { background: rgba(248,113,113,0.06); border: 1px solid rgba(248,113,113,0.18); color: var(--text-muted); }
+        .expand-confirm-msg.danger  i { color: var(--danger); font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+        .expand-footer { display: flex; align-items: center; gap: 10px; }
+        .btn-confirm-approve { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 16px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: rgba(74,222,128,0.14); border: 1px solid rgba(74,222,128,0.3); color: var(--success); transition: background 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-confirm-approve:hover { background: rgba(74,222,128,0.22); }
+        .btn-confirm-approve:disabled { opacity: 0.55; cursor: not-allowed; }
+        .btn-confirm-reject  { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 16px; border-radius: 9px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.28); color: var(--danger); transition: background 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-confirm-reject:hover { background: rgba(248,113,113,0.18); }
+        .btn-confirm-reject:disabled { opacity: 0.55; cursor: not-allowed; }
+        .btn-expand-cancel { font-size: 12.5px; color: var(--text-faint); cursor: pointer; background: none; border: none; padding: 0 4px; height: 32px; transition: color 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-expand-cancel:hover { color: var(--text-muted); }
+
+        /* ── Leave Type Badges ────────────────────────────────── */
+        .leave-badge { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+        .leave-badge.sick   { background: rgba(248,113,113,0.12); color: var(--danger); }
+        .leave-badge.casual { background: rgba(96,165,250,0.12);  color: var(--blue); }
+        .leave-badge.paid   { background: rgba(74,222,128,0.12);  color: var(--success); }
+
+        /* ── Leave Balance Pills ──────────────────────────────── */
+        .leave-bal-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
+        .bal-pill { display: flex; flex-direction: column; align-items: center; padding: 7px 16px; border-radius: 9px; border: 1px solid transparent; min-width: 76px; }
+        .bal-pill-type { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.6; margin-bottom: 3px; }
+        .bal-pill-count { font-size: 17px; font-weight: 800; line-height: 1; }
+        .bal-pill-total { font-size: 10px; opacity: 0.5; margin-top: 2px; }
+        .bal-pill-note  { font-size: 10px; font-weight: 600; margin-top: 4px; }
+        .bal-pill.ok    { background: rgba(74,222,128,0.07);  border-color: rgba(74,222,128,0.18); }
+        .bal-pill.low   { background: rgba(251,191,36,0.07);  border-color: rgba(251,191,36,0.18); }
+        .bal-pill.empty { background: rgba(248,113,113,0.07); border-color: rgba(248,113,113,0.18); }
+        .bal-pill.ok    .bal-pill-count { color: var(--success); }
+        .bal-pill.low   .bal-pill-count { color: var(--warning); }
+        .bal-pill.empty .bal-pill-count { color: var(--danger); }
+        .bal-pill.low   .bal-pill-note  { color: var(--warning); }
+        .bal-pill.empty .bal-pill-note  { color: var(--danger); }
+        .bal-pill.active.ok    { background: rgba(74,222,128,0.14);  border-color: rgba(74,222,128,0.38); border-width: 1.5px; }
+        .bal-pill.active.low   { background: rgba(251,191,36,0.14);  border-color: rgba(251,191,36,0.38); border-width: 1.5px; }
+        .bal-pill.active.empty { background: rgba(248,113,113,0.14); border-color: rgba(248,113,113,0.38); border-width: 1.5px; }
+        [data-theme="light"] .bal-pill.ok    { background: rgba(74,222,128,0.12); }
+        [data-theme="light"] .bal-pill.low   { background: rgba(251,191,36,0.12); }
+        [data-theme="light"] .bal-pill.empty { background: rgba(248,113,113,0.12); }
+
+        /* ── Stage Tags ───────────────────────────────────────── */
+        .stage-tag { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .stage-tag.mgr-approved { background: rgba(119,202,0,0.1); color: var(--accent-light); }
+        .stage-tag.direct       { background: rgba(251,191,36,0.1); color: var(--warning); }
+
+        /* ── Hire Role Chip ───────────────────────────────────── */
+        .hire-role-chip { display: inline-flex; align-items: center; height: 28px; padding: 0 13px; border-radius: 8px; font-size: 13px; font-weight: 600; background: rgba(119,202,0,0.1); color: var(--accent-light); border: 1px solid rgba(119,202,0,0.2); }
+
+        /* ── Empty State ──────────────────────────────────────── */
+        .req-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 20px; gap: 10px; text-align: center; }
+        .req-empty-icon  { font-size: 38px; color: var(--text-faint); margin-bottom: 4px; }
+        .req-empty-title { font-size: 14px; font-weight: 500; color: var(--text-muted); }
+        .req-empty-sub   { font-size: 12.5px; color: var(--text-faint); }
+
+        /* ── F&F Settlement Breakdown Rows ─────────────────────── */
+        .fnf-row   { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+        .fnf-label { font-size: 12.5px; color: var(--text-muted); }
+        .fnf-val   { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; }
+
+        /* ── Loading State ───────────────────────────────────── */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .tab-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 20px; gap: 10px; }
+        .tab-loading i { font-size: 26px; color: var(--text-faint); animation: spin 1s linear infinite; }
+        .tab-loading-text { font-size: 13px; color: var(--text-faint); }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+    <div class="bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-shell">
+
+        <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <button class="brand-toggle" onclick="toggleSidebar()">
+                    <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                    <div class="brand-hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </button>
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-name">BeanHR</div>
+                    <div class="sidebar-brand-tag">Super Admin</div>
+                </div>
+            </div>
+
+            <span class="sidebar-section-label">ADMIN</span>
+
+            <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+                <span class="nav-icon"><i class="ph-fill ph-house ph-icon-fill"></i><i class="ph ph-house ph-icon-outline"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="employees.html" class="nav-item" data-tip="Employees">
+                <span class="nav-icon"><i class="ph-fill ph-users ph-icon-fill"></i><i class="ph ph-users ph-icon-outline"></i></span>
+                <span class="nav-label">Employees</span>
+            </a>
+            <a href="approvals.html" class="nav-item active" data-tip="Approvals">
+                <span class="nav-icon"><i class="ph-fill ph-check-circle ph-icon-fill"></i><i class="ph ph-check-circle ph-icon-outline"></i></span>
+                <span class="nav-label">Approvals</span>
+                <span class="nav-badge" id="sidebarBadge" style="display:none"></span>
+            </a>
+            <a href="leave-quotas.html" class="nav-item" data-tip="Leave Quotas">
+                <span class="nav-icon"><i class="ph-fill ph-calendar-blank ph-icon-fill"></i><i class="ph ph-calendar-blank ph-icon-outline"></i></span>
+                <span class="nav-label">Leave Quotas</span>
+            </a>
+            <a href="hiring.html" class="nav-item" data-tip="Hiring">
+                <span class="nav-icon"><i class="ph-fill ph-user-plus ph-icon-fill"></i><i class="ph ph-user-plus ph-icon-outline"></i></span>
+                <span class="nav-label">Hiring</span>
+            </a>
+            <a href="payroll.html" class="nav-item" data-tip="Payroll">
+                <span class="nav-icon"><i class="ph-fill ph-money ph-icon-fill"></i><i class="ph ph-money ph-icon-outline"></i></span>
+                <span class="nav-label">Payroll</span>
+            </a>
+            <a href="attendance.html" class="nav-item" data-tip="Attendance">
+                <span class="nav-icon"><i class="ph-fill ph-calendar-check ph-icon-fill"></i><i class="ph ph-calendar-check ph-icon-outline"></i></span>
+                <span class="nav-label">Attendance</span>
+            </a>
+            <a href="audit-logs.html" class="nav-item" data-tip="Audit Logs">
+                <span class="nav-icon"><i class="ph-fill ph-scroll ph-icon-fill"></i><i class="ph ph-scroll ph-icon-outline"></i></span>
+                <span class="nav-label">Audit Logs</span>
+            </a>
+            <a href="ai-search.html" class="nav-item" data-tip="AI Search">
+                <span class="nav-icon"><i class="ph-fill ph-magnifying-glass ph-icon-fill"></i><i class="ph ph-magnifying-glass ph-icon-outline"></i></span>
+                <span class="nav-label">AI Search</span>
+            </a>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <span class="nav-icon"><i class="ph-fill ph-sign-out ph-icon-fill"></i><i class="ph ph-sign-out ph-icon-outline"></i></span>
+                    <span class="logout-label">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── MAIN AREA ────────────────────────────────────────── -->
+        <div class="main-area">
+
+            <!-- ── TOPBAR ──────────────────────────────────────── -->
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-greeting">Approvals</div>
+                        <div class="topbar-sub" id="todayDate"></div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" onclick="toggleTheme()">
+                        <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                    </button>
+                    <div style="position: relative;">
+                        <button class="notif-btn" onclick="toggleNotifDropdown(event)">
+                            <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                            <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                            <span class="notif-badge" id="notifBadge" style="display:none;"></span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-dropdown-head">
+                                <div class="notif-dropdown-title">Notifications</div>
+                                <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                            </div>
+                            <div class="notif-dropdown-body" id="notifDropdownBody">
+                                <div class="notif-empty">No notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="avatar" id="adminAvatar">A</div>
+                    <script>
+                        (function(){
+                            const email = sessionStorage.getItem('bhr_email') || 'A';
+                            const av = document.getElementById('adminAvatar');
+                            if(av) av.textContent = email.charAt(0).toUpperCase();
+                        })();
+                    </script>
+                </div>
+            </div>
+
+            <!-- ── PAGE CONTENT ────────────────────────────────── -->
+            <div class="page-content">
+
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <div class="page-title">Approvals</div>
+                        <div class="page-sub" id="pendingSubtitle">Loading&hellip;</div>
+                    </div>
+                </div>
+
+                <!-- Tab Bar -->
+                <div class="tab-bar">
+                    <button class="tab-btn active" data-tab="leave" onclick="switchTab('leave')">
+                        Leave
+                        <span class="tab-count" id="tabCount-leave" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="resignations" onclick="switchTab('resignations')">
+                        Resignations
+                        <span class="tab-count" id="tabCount-resignations" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="advances" onclick="switchTab('advances')">
+                        Salary Advances
+                        <span class="tab-count" id="tabCount-advances" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="hire" onclick="switchTab('hire')">
+                        Hire Proposals
+                        <span class="tab-count" id="tabCount-hire" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="removal" onclick="switchTab('removal')">
+                        Removal Proposals
+                        <span class="tab-count" id="tabCount-removal" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="bonuses" onclick="switchTab('bonuses')">
+                        Bonus Proposals
+                        <span class="tab-count" id="tabCount-bonuses" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="hikes" onclick="switchTab('hikes')">
+                        Salary Hikes
+                        <span class="tab-count" id="tabCount-hikes" style="display:none">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="settlements" onclick="switchTab('settlements')">
+                        F&amp;F Settlements
+                        <span class="tab-count" id="tabCount-settlements" style="display:none">0</span>
+                    </button>
+                </div>
+
+                <!-- Tab Panels -->
+                <div id="panel-leave"><div id="leaveList" class="req-list"><div class="tab-loading"><i class="ph ph-spinner"></i><span class="tab-loading-text">Loading requests…</span></div></div></div>
+                <div id="panel-resignations" style="display:none"><div id="resignationList" class="req-list"></div></div>
+                <div id="panel-advances"     style="display:none"><div id="advanceList"     class="req-list"></div></div>
+                <div id="panel-hire"         style="display:none"><div id="hireList"         class="req-list"></div></div>
+                <div id="panel-removal"      style="display:none"><div id="removalList"      class="req-list"></div></div>
+                <div id="panel-bonuses"      style="display:none"><div id="bonusList"        class="req-list"></div></div>
+                <div id="panel-hikes"        style="display:none"><div id="hikeList"         class="req-list"></div></div>
+                <div id="panel-settlements"  style="display:none"><div id="settlementList"   class="req-list"></div></div>
+
+            </div><!-- /page-content -->
+        </div><!-- /main-area -->
+    </div><!-- /app-shell -->
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../../js/db.js"></script>
+    <script src="../../js/notifications.js"></script>
+    <script>
+        // ── Auth Guard ──────────────────────────────────────────
+        (function () {
+            if (sessionStorage.getItem('bhr_role') !== 'super_admin') {
+                window.location.replace('../login.html');
+            }
+        })();
+
+        // ── State ───────────────────────────────────────────────
+        const _data = { leave: [], resignations: [], advances: [], hire: [], removal: [], bonuses: [], settlements: [] };
+        let _activeTab = 'leave';
+
+        const _TAB_PANELS      = { leave: 'leaveList', resignations: 'resignationList', advances: 'advanceList', hire: 'hireList', removal: 'removalList', bonuses: 'bonusList', hikes: 'hikeList', settlements: 'settlementList' };
+        const _TAB_PANELS_WRAP = { leave: 'panel-leave', resignations: 'panel-resignations', advances: 'panel-advances', hire: 'panel-hire', removal: 'panel-removal', bonuses: 'panel-bonuses', hikes: 'panel-hikes', settlements: 'panel-settlements' };
+
+        // ── Avatar Colors ───────────────────────────────────────
+        const _AV_COLORS = ['#7c3aed','#db2777','#0891b2','#d97706','#16a34a','#dc2626','#2563eb','#7c2d12','#0e7490','#4f46e5'];
+        function _renderBalPills(r) {
+            if (!r.leaveBalances) return '';
+            const types = [
+                { key: 'sick',   label: 'Sick' },
+                { key: 'casual', label: 'Casual' },
+                { key: 'paid',   label: 'Paid' },
+            ];
+            const requested = r.leaveType.toLowerCase();
+            const pills = types.map(function(t) {
+                const b = r.leaveBalances[t.key];
+                const isActive = t.key === requested;
+                let state = 'ok';
+                if (b.remaining === 0) {
+                    state = 'empty';
+                } else if (isActive && b.remaining < r.days) {
+                    state = 'low';
+                }
+                const lopDays = isActive && state === 'low' ? (r.days - b.remaining) : 0;
+                const note = lopDays > 0
+                    ? lopDays + ' day' + (lopDays > 1 ? 's' : '') + ' unpaid'
+                    : (isActive && state === 'empty' ? 'All days unpaid' : '');
+                return '<div class="bal-pill ' + state + (isActive ? ' active' : '') + '">' +
+                       '<div class="bal-pill-type">' + t.label + '</div>' +
+                       '<div class="bal-pill-count">' + b.remaining + '<span class="bal-pill-total">/' + b.total + '</span></div>' +
+                       (note ? '<div class="bal-pill-note">' + note + '</div>' : '') +
+                       '</div>';
+            }).join('');
+            return '<div class="req-detail-item" style="flex:0 0 100%">' +
+                   '<div class="req-detail-label">Leave Balances</div>' +
+                   '<div class="leave-bal-row">' + pills + '</div>' +
+                   '</div>';
+        }
+
+        function _avColor(id) {
+            let h = 0;
+            for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) & 0xffffffff;
+            return _AV_COLORS[Math.abs(h) % _AV_COLORS.length];
+        }
+        function _initials(name) {
+            if (!name || typeof name !== 'string') return '??';
+            const p = name.trim().split(/\s+/);
+            return p.length >= 2 ? (p[0][0] + p[p.length - 1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+        }
+
+        // ── View JD ─────────────────────────────────────────────
+        // Called when jdFileName is present but jdFileUrl is null (mock / no Storage yet).
+        // Once Firebase Storage is wired, jdFileUrl will be a real download URL and this
+        // function will never be called — the chip becomes a direct <a> link instead.
+        function _viewJD(requestId) {
+            const url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+            if (window.showDocumentPreview) {
+                window.showDocumentPreview(url, 'Job Description (Demo)');
+            } else {
+                showToast('JD file preview is unavailable in demo mode.', 'info');
+            }
+        }
+
+        // ── Escape HTML ─────────────────────────────────────────
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+
+        // ── Date Helpers ────────────────────────────────────────
+        function fmtDate(str) {
+            if (!str) return '—';
+            const d = new Date(str);
+            const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return mo[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+        }
+        function relTime(str) {
+            const diff = (Date.now() - new Date(str).getTime()) / 1000;
+            if (diff < 60)     return 'just now';
+            if (diff < 3600)   return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400)  return Math.floor(diff / 3600) + 'h ago';
+            if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+            return fmtDate(str);
+        }
+        function fmtAmount(n) { return '₹' + Number(n).toLocaleString('en-IN'); }
+        function setDate() {
+            const d = new Date();
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            document.getElementById('todayDate').textContent = days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+        }
+
+        // ── Init ────────────────────────────────────────────────
+        async function init() {
+            setDate();
+            try {
+                const [leave, resignations, advances, hire, removal, bonuses, hikes, settlements, notifs] = await Promise.all([
+                    db.getPendingLeaveRequests(),
+                    db.getPendingResignations(),
+                    db.getPendingAdvances(),
+                    db.getPendingHireProposals(),
+                    db.getPendingRemovalProposals(),
+                    db.getPendingBonusProposals(),
+                    db.getSalaryHikeRequests(),
+                    db.getPendingSettlements(),
+                    db.getAdminNotifications(),
+                ]);
+                _data.leave        = leave;
+                _data.resignations = resignations;
+                _data.advances     = advances;
+                _data.hire         = hire;
+                _data.removal      = removal;
+                _data.bonuses      = bonuses;
+                _data.hikes        = hikes;
+                _data.settlements  = settlements;
+                updateCounts();
+                renderTab(_activeTab);
+                renderNotifications(notifs);
+            } catch (e) {
+                console.error('[Approvals] init failed:', e);
+            }
+        }
+
+        // ── Count Updates ───────────────────────────────────────
+        function updateCounts() {
+            let total = 0;
+            for (const [key, arr] of Object.entries(_data)) {
+                const n = arr.length;
+                total += n;
+                const el = document.getElementById('tabCount-' + key);
+                if (el) { el.textContent = n; el.style.display = n > 0 ? 'flex' : 'none'; }
+            }
+            const sub = document.getElementById('pendingSubtitle');
+            if (sub) sub.textContent = total === 0 ? 'All caught up — nothing pending' : total + ' item' + (total !== 1 ? 's' : '') + ' pending your review';
+            const badge = document.getElementById('sidebarBadge');
+            if (badge) { badge.textContent = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
+        }
+
+        // ── Tab Switching ───────────────────────────────────────
+        function switchTab(tab) {
+            if (_activeTab === tab) return;
+            _activeTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+            for (const [key, panelId] of Object.entries(_TAB_PANELS_WRAP)) {
+                document.getElementById(panelId).style.display = key === tab ? 'block' : 'none';
+            }
+            const listEl = document.getElementById(_TAB_PANELS[tab]);
+            if (listEl && !listEl.hasChildNodes()) renderTab(tab);
+        }
+
+        function renderTab(tab) {
+            const listEl = document.getElementById(_TAB_PANELS[tab]);
+            if (!listEl) return;
+            const arr = _data[tab];
+            if (!arr.length) { listEl.innerHTML = _emptyState(tab); return; }
+            const map = { leave: renderLeaveCards, resignations: renderResignationCards, advances: renderAdvanceCards, hire: renderHireCards, removal: renderRemovalCards, bonuses: renderBonusProposalCards, hikes: renderHikeCards, settlements: renderSettlementCards };
+            listEl.innerHTML = (map[tab] || (() => ''))(arr);
+        }
+
+        function _emptyState(tab) {
+            const labels = { leave: 'No pending leave requests', resignations: 'No pending resignations', advances: 'No pending salary advances', hire: 'No pending hire proposals', removal: 'No pending removal proposals', bonuses: 'No pending bonus proposals', hikes: 'No pending salary hike requests', settlements: 'No pending F&F settlements' };
+            return `<div class="req-empty">
+                <div class="req-empty-icon"><i class="ph ph-check-circle"></i></div>
+                <div class="req-empty-title">${labels[tab] || 'All caught up'}</div>
+                <div class="req-empty-sub">Nothing requires your attention here right now.</div>
+            </div>`;
+        }
+
+        // ── Render: Leave Cards ─────────────────────────────────
+        function renderLeaveCards(list) {
+            return list.map(r => {
+                const color    = _avColor(r.employeeId);
+                const init     = escapeHtml(_initials(r.employeeName));
+                const submittedTs = r.submittedAt || r.createdAt || r.appliedDate;
+
+                // Stage badge logic: Direct to Admin only for Managers
+                const isManager = r.role === 'manager';
+                const isMgrApproved = r.status === 'manager_approved' || !!r.managerApprovedAt;
+
+                let stageTagClass = 'direct';
+                let stageTagIcon  = 'ph-lightning';
+                let stageTagText  = 'Direct to Admin';
+
+                if (!isManager) {
+                    if (isMgrApproved) {
+                        stageTagClass = 'mgr-approved';
+                        stageTagIcon  = 'ph-check';
+                        stageTagText  = 'Manager Approved';
+                    } else {
+                        stageTagClass = 'direct';
+                        stageTagIcon  = 'ph-clock';
+                        stageTagText  = 'Pending Manager';
+                    }
+                }
+
+                const backdatedBadge = r.backdated
+                    ? `<span class="badge-backdated"><i class="ph ph-clock-counter-clockwise" style="font-size:11px"></i> Back-dated</span>`
+                    : '';
+                const docChip = r.supportingDocUrl
+                    ? `<button class="leave-doc-chip" onclick="openDocPreview('${escapeHtml(r.supportingDocUrl)}','${escapeHtml(r.supportingDocName || 'Document')}')">
+                        <i class="ph ph-paperclip" style="font-size:13px"></i>${escapeHtml(r.supportingDocName || 'Attached doc')}
+                       </button>`
+                    : '';
+                return `<div class="req-card" id="card-${r.requestId}">
+                    <div class="req-top">
+                        <div class="req-av" style="background:${color}">${init}</div>
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.employeeName)}</div>
+                            <div class="req-desg">${escapeHtml(r.designation)} &middot; ${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-right">
+                            <span class="leave-badge ${r.leaveType ? r.leaveType.toLowerCase() : ''}">${escapeHtml(r.leaveType || 'Leave')}</span>
+                            ${backdatedBadge}
+                            <span class="stage-tag ${stageTagClass}">
+                                <i class="ph ${stageTagIcon}" style="font-size:10px"></i>
+                                ${stageTagText}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="req-detail-row">
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Dates</div>
+                            <div class="req-detail-value">${escapeHtml(fmtDate(r.startDate))} &ndash; ${escapeHtml(fmtDate(r.endDate))}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Duration</div>
+                            <div class="req-detail-value">${r.days} day${r.days !== 1 ? 's' : ''}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Submitted</div>
+                            <div class="req-detail-value">${escapeHtml(relTime(submittedTs))}</div>
+                        </div>
+                        ${docChip ? `<div class="req-detail-item">
+                            <div class="req-detail-label">Supporting Document</div>
+                            <div class="req-detail-value">${docChip}</div>
+                        </div>` : ''}
+                        ${r.docRequestedBy === 'manager' ? `<div class="req-detail-item">
+                            <div class="req-detail-label" style="color:var(--warning)"><i class="ph ph-info" style="font-size:11px;margin-right:3px"></i>Manager Requested</div>
+                            <div class="req-detail-value" style="font-size:12px;color:var(--text-muted);font-style:italic">&ldquo;${escapeHtml(r.docRequestMessage || 'Manager had requested a supporting document from employee')}&rdquo;</div>
+                        </div>` : ''}
+                        ${_renderBalPills(r)}
+                    </div>
+                    ${r.reason ? `<div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.reason)}&rdquo;</div>
+                        ${r.managerComment ? `<div class="req-mgr-comment"><strong>Manager note:</strong> ${escapeHtml(r.managerComment)}</div>` : ''}
+                    </div>` : ''}
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Submitted ${escapeHtml(relTime(submittedTs))}</span>
+                        <button class="btn-approve"  onclick="toggleExpand('${r.requestId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"   onclick="toggleExpand('${r.requestId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                        ${r.backdated ? `<button class="btn-req-doc" onclick="toggleExpand('${r.requestId}','req-doc')"><i class="ph ph-paperclip" style="font-size:13px"></i> Request Doc</button>` : ''}
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.requestId}">
+                        <div class="expand-label">Comment for employee <span class="optional">(optional)</span></div>
+                        <textarea class="expand-textarea" id="comment-${r.requestId}" placeholder="Add a note for the employee&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="approveBtn-${r.requestId}" onclick="doApprove('leave','${r.requestId}')">
+                                <i class="ph ph-check-circle" style="font-size:14px"></i> Confirm Approval
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.requestId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.requestId}" placeholder="Explain why this request is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.requestId}" onclick="doReject('leave','${r.requestId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    ${r.backdated ? `<div class="action-expand req-doc-area" id="expand-req-doc-${r.requestId}">
+                        <div class="expand-label"><i class="ph ph-paperclip" style="font-size:13px"></i> Request supporting document</div>
+                        <textarea class="expand-textarea" id="docmsg-${r.requestId}" placeholder="e.g. Please upload your medical certificate or any document supporting this back-dated leave request&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-req-doc" id="reqDocBtn-${r.requestId}" onclick="doRequestDoc('${r.requestId}')">
+                                <i class="ph ph-paper-plane-tilt" style="font-size:14px"></i> Send Request
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: Resignation Cards ───────────────────────────
+        function renderResignationCards(list) {
+            return list.map(r => {
+                const color = _avColor(r.employeeId);
+                const init  = escapeHtml(_initials(r.employeeName));
+                const avHTML = r.avatarUrl
+                    ? `<img src="${escapeHtml(r.avatarUrl)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`
+                    : `<div class="req-av" style="background:${color}">${init}</div>`;
+
+                let badgeHTML = '';
+                if (r.role === 'manager') {
+                    badgeHTML = `<span class="stage-tag direct" style="background:rgba(168,85,247,0.15);color:#a855f7"><i class="ph ph-lightning" style="font-size:10px"></i> Manager Resignation (Direct to Admin)</span>`;
+                } else if (r.status === 'manager_approved') {
+                    badgeHTML = `<span class="stage-tag mgr-approved"><i class="ph ph-check" style="font-size:10px"></i> Manager Approved</span>`;
+                } else if (r.status === 'doc_requested') {
+                    badgeHTML = `<span class="stage-tag doc_requested" style="background:rgba(251,191,36,0.15);color:var(--warning)"><i class="ph ph-file-arrow-up" style="font-size:10px"></i> Document Requested</span>`;
+                } else {
+                    badgeHTML = `<span class="stage-tag pending" style="background:rgba(96,165,250,0.15);color:var(--blue)"><i class="ph ph-clock" style="font-size:10px"></i> Pending Admin Review</span>`;
+                }
+
+                const mgrName = escapeHtml(r.reportingManager || r.managerName || (r.role === 'manager' ? 'Direct to Admin' : 'N/A'));
+
+                const docChip = r.supportingDocUrl
+                    ? `<button class="leave-doc-chip linked" onclick="openDocPreview('${escapeHtml(r.supportingDocUrl)}','${escapeHtml(r.supportingDocName || 'Document')}')"><i class="ph ph-paperclip" style="font-size:12px"></i>${escapeHtml(r.supportingDocName || 'Original Doc')}</button>`
+                    : '';
+
+                let requestedDocsChipHTML = '';
+                if (r.docRequests && r.docRequests.length > 0) {
+                    const items = r.docRequests.filter(req => req.status === 'fulfilled' && req.docUrl).map(req => {
+                        const dLabel = escapeHtml(req.docName || 'Requested Document');
+                        const dUrl = escapeHtml(req.docUrl);
+                        return `<button class="leave-doc-chip linked" style="margin-right:6px;margin-top:4px" onclick="openDocPreview('${dUrl}','${dLabel}')"><i class="ph ph-paperclip" style="font-size:12px"></i>${dLabel}</button>`;
+                    }).join('');
+                    if (items) {
+                        requestedDocsChipHTML = `<div style="margin-top:8px"><div style="font-size:11px;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px">Requested Documents:</div>${items}</div>`;
+                    }
+                }
+
+                return `<div class="req-card" id="card-${r.requestId}">
+                    <div class="req-top">
+                        ${avHTML}
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.employeeName)}</div>
+                            <div class="req-desg">${escapeHtml(r.designation)} &middot; ${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-right">
+                            ${badgeHTML}
+                        </div>
+                    </div>
+                    <div class="req-detail-row">
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Submitted</div>
+                            <div class="req-detail-value">${escapeHtml(fmtDate(r.submittedAt))}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Notice Period</div>
+                            <div class="req-detail-value">${r.noticePeriodDays} days</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Expected Last Day</div>
+                            <div class="req-detail-value">${escapeHtml(fmtDate(r.expectedRelievingDate))}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Reporting Manager</div>
+                            <div class="req-detail-value">${mgrName}</div>
+                        </div>
+                    </div>
+                    ${r.reason ? `<div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.reason)}&rdquo;</div>
+                        ${r.managerComment ? `<div class="req-mgr-comment"><strong>Manager note:</strong> ${escapeHtml(r.managerComment)}</div>` : ''}
+                    </div>` : ''}
+                    ${docChip ? `<div style="padding:2px 0 6px">${docChip}</div>` : ''}
+                    ${requestedDocsChipHTML}
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Submitted ${escapeHtml(relTime(r.submittedAt))}</span>
+                        <button class="btn-approve" onclick="toggleExpand('${r.requestId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"  onclick="toggleExpand('${r.requestId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                        <button class="btn-req-doc" id="reqDocResignBtn-${r.requestId}" onclick="toggleExpand('${r.requestId}','req-doc')"><i class="ph ph-file-arrow-up" style="font-size:13px"></i> Request Doc</button>
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.requestId}">
+                        <div class="expand-label">Comment <span class="optional">(optional)</span></div>
+                        <textarea class="expand-textarea" id="comment-${r.requestId}" placeholder="Add a note for the employee&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="approveBtn-${r.requestId}" onclick="doApprove('resignations','${r.requestId}')">
+                                <i class="ph ph-check-circle" style="font-size:14px"></i> Confirm Approval
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.requestId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.requestId}" placeholder="Explain why this resignation is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.requestId}" onclick="doReject('resignations','${r.requestId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand req-doc-area" id="expand-req-doc-${r.requestId}">
+                        <div class="expand-label">Message for employee <span class="optional">(optional)</span></div>
+                        <textarea class="expand-textarea" id="docmsg-resig-${r.requestId}" placeholder="Specify what document is needed&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-req-doc" id="reqDocBtn-resig-${r.requestId}" onclick="doRequestResignDoc('${r.requestId}')">
+                                <i class="ph ph-paper-plane-tilt" style="font-size:14px"></i> Send Request
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: Advance Cards ───────────────────────────────
+        function renderAdvanceCards(list) {
+            return list.map(r => {
+                const color = _avColor(r.employeeId);
+                const init  = escapeHtml(_initials(r.employeeName));
+                return `<div class="req-card" id="card-${r.requestId}">
+                    <div class="req-top">
+                        <div class="req-av" style="background:${color}">${init}</div>
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.employeeName)}</div>
+                            <div class="req-desg">${escapeHtml(r.employeeCode || r.employeeId)} &middot; ${escapeHtml(r.designation)} &middot; ${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-right">
+                            <div style="font-size:20px;font-weight:700;color:var(--success);letter-spacing:-0.5px">${escapeHtml(fmtAmount(r.amount))}</div>
+                            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint)">Requested</div>
+                        </div>
+                    </div>
+                    ${r.reason ? `<div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.reason)}&rdquo;</div>
+                    </div>` : ''}
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Submitted ${escapeHtml(relTime(r.submittedAt))}</span>
+                        <button class="btn-approve" onclick="toggleExpand('${r.requestId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"  onclick="toggleExpand('${r.requestId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.requestId}">
+                        <div class="expand-confirm-msg approve">
+                            <i class="ph ph-check-circle"></i>
+                            Approving this will authorize a salary advance of <strong>${escapeHtml(fmtAmount(r.amount))}</strong> for ${escapeHtml(r.employeeName)}.
+                        </div>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="approveBtn-${r.requestId}" onclick="doApprove('advances','${r.requestId}')">
+                                <i class="ph ph-check-circle" style="font-size:14px"></i> Confirm Approval
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.requestId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.requestId}" placeholder="Explain why this advance is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.requestId}" onclick="doReject('advances','${r.requestId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: Hire Proposal Cards ─────────────────────────
+        function renderHireCards(list) {
+            return list.map(r => {
+                const color = _avColor(r.managerId);
+                const init  = escapeHtml(_initials(r.managerName));
+                return `<div class="req-card" id="card-${r.requestId}">
+                    <div class="req-top">
+                        <div class="req-av" style="background:${color}">${init}</div>
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.managerName)}</div>
+                            <div class="req-desg">${escapeHtml(r.managerDesignation)}</div>
+                        </div>
+                        <div class="req-right">
+                            <span class="hire-role-chip">${escapeHtml(r.designation)}</span>
+                        </div>
+                    </div>
+                    <div class="req-detail-row">
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Department</div>
+                            <div class="req-detail-value">${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Entity</div>
+                            <div class="req-detail-value">${escapeHtml(r.companyTag || '—')}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Submitted</div>
+                            <div class="req-detail-value">${escapeHtml(relTime(r.submittedAt))}</div>
+                        </div>
+                    </div>
+                    ${r.jdFileName ? `<div class="req-detail-row jd-row">
+                        <div class="req-detail-item" style="grid-column:1/-1">
+                            <div class="req-detail-label">Job Description</div>
+                            <div class="req-detail-value">
+                                <button class="jd-chip" onclick="window.showDocumentPreview('${escapeHtml(r.jdFileUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}', '${escapeHtml(r.jdFileName)}')"><i class="ph ph-file-pdf"></i><span class="jd-chip-name">${escapeHtml(r.jdFileName)}</span></button>
+                            </div>
+                        </div>
+                    </div>` : ''}
+                    ${r.reason ? `<div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.reason)}&rdquo;</div>
+                    </div>` : ''}
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Submitted ${escapeHtml(relTime(r.submittedAt))}</span>
+                        <button class="btn-approve" onclick="toggleExpand('${r.requestId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"  onclick="toggleExpand('${r.requestId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.requestId}">
+                        <div class="expand-confirm-msg approve">
+                            <i class="ph ph-rocket-launch"></i>
+                            Approving this will open a hiring pipeline for <strong>${escapeHtml(r.designation)}</strong> in ${escapeHtml(r.department)}.
+                        </div>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="approveBtn-${r.requestId}" onclick="doApprove('hire','${r.requestId}')">
+                                <i class="ph ph-check-circle" style="font-size:14px"></i> Confirm Approval
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.requestId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.requestId}" placeholder="Explain why this hire proposal is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.requestId}" onclick="doReject('hire','${r.requestId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: Removal Proposal Cards ─────────────────────
+        function renderRemovalCards(list) {
+            return list.map(r => {
+                const mgrColor = _avColor(r.managerId);
+                const mgrInit  = escapeHtml(_initials(r.managerName));
+                const empColor = _avColor(r.employeeId);
+                const empInit  = escapeHtml(_initials(r.employeeName));
+                return `<div class="req-card" id="card-${r.requestId}">
+                    <div class="req-top">
+                        <div class="req-av" style="background:${mgrColor}">${mgrInit}</div>
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.managerName)}</div>
+                            <div class="req-desg">${escapeHtml(r.managerDesignation)}</div>
+                        </div>
+                        <div class="req-right">
+                            <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint)">Submitted ${escapeHtml(relTime(r.submittedAt))}</span>
+                        </div>
+                    </div>
+                    <div class="removal-target">
+                        <div class="removal-target-av" style="background:${empColor}">${empInit}</div>
+                        <div class="removal-target-info">
+                            <div class="removal-target-label">Proposed for removal</div>
+                            <div class="removal-target-name">${escapeHtml(r.employeeName)}</div>
+                            <div class="removal-target-desg">${escapeHtml(r.employeeDesignation)} &middot; ${escapeHtml(r.employeeDepartment)}</div>
+                        </div>
+                    </div>
+                    ${r.reason ? `<div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.reason)}&rdquo;</div>
+                    </div>` : ''}
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Submitted ${escapeHtml(relTime(r.submittedAt))}</span>
+                        <button class="btn-approve" onclick="toggleExpand('${r.requestId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"  onclick="toggleExpand('${r.requestId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.requestId}">
+                        <div class="expand-confirm-msg danger">
+                            <i class="ph ph-warning"></i>
+                            Approving this will <strong>terminate ${escapeHtml(r.employeeName)}</strong>. This action cannot be undone.
+                        </div>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" style="background:rgba(248,113,113,0.12);border-color:rgba(248,113,113,0.3);color:var(--danger)" id="approveBtn-${r.requestId}" onclick="doApprove('removal','${r.requestId}')">
+                                <i class="ph ph-trash" style="font-size:14px"></i> Confirm Termination
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.requestId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.requestId}" placeholder="Explain why this removal proposal is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.requestId}" onclick="doReject('removal','${r.requestId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: Bonus Proposal Cards ────────────────────────
+        function renderBonusProposalCards(list) {
+            return list.map(r => {
+                const color = _avColor(r.employeeId);
+                const init  = escapeHtml(_initials(r.employeeName));
+                const d     = new Date(r.month + '-01');
+                const monthLabel = d.toLocaleString('en-IN', { month: 'long', year: 'numeric' });
+                return `<div class="req-card" id="card-${r.bonusId}">
+                    <div class="req-top">
+                        <div class="req-av" style="background:${color}">${init}</div>
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.employeeName)}</div>
+                            <div class="req-desg">${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-right">
+                            <div style="font-size:20px;font-weight:700;color:var(--accent);letter-spacing:-0.5px">&#x20b9;${Number(r.amount).toLocaleString('en-IN')}</div>
+                            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-faint)">Proposed</div>
+                        </div>
+                    </div>
+                    <div class="req-detail-row">
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Payroll Month</div>
+                            <div class="req-detail-value">${escapeHtml(monthLabel)}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Employee Code</div>
+                            <div class="req-detail-value">${escapeHtml(r.employeeCode)}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Submitted</div>
+                            <div class="req-detail-value">${escapeHtml(relTime(r.createdAt))}</div>
+                        </div>
+                    </div>
+                    <div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.reason)}&rdquo;</div>
+                    </div>
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Proposed by Finance</span>
+                        <button class="btn-approve" onclick="toggleExpand('${r.bonusId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"  onclick="toggleExpand('${r.bonusId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.bonusId}">
+                        <div class="expand-confirm-msg approve">
+                            <i class="ph ph-gift"></i>
+                            Approving will add a <strong>&#x20b9;${Number(r.amount).toLocaleString('en-IN')} bonus</strong> to ${escapeHtml(r.employeeName)}'s payslip for ${escapeHtml(monthLabel)}.
+                        </div>
+                        <div class="expand-label" style="margin-top:10px">Note for Finance <span class="optional">(optional)</span></div>
+                        <textarea class="expand-textarea" id="comment-${r.bonusId}" placeholder="Any note for the Finance team&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="approveBtn-${r.bonusId}" onclick="doApprove('bonuses','${r.bonusId}')">
+                                <i class="ph ph-check-circle" style="font-size:14px"></i> Confirm Approval
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.bonusId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.bonusId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.bonusId}" placeholder="Explain why this bonus proposal is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.bonusId}" onclick="doReject('bonuses','${r.bonusId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.bonusId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: Salary Hike Cards ───────────────────────────
+        function renderHikeCards(list) {
+            return list.map(r => {
+                const color    = _avColor(r.employeeId);
+                const init     = escapeHtml(_initials(r.employeeName));
+                const hikePct  = r.currentSalary > 0 ? Math.round(((r.proposedSalary - r.currentSalary) / r.currentSalary) * 100) : 0;
+                return `<div class="req-card" id="card-${r.requestId}">
+                    <div class="req-top">
+                        <div class="req-av" style="background:${color}">${init}</div>
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.employeeName)}</div>
+                            <div class="req-desg">${escapeHtml(r.designation)} &middot; ${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-right" style="text-align:right">
+                            <div style="font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.8px;font-weight:600">Proposed</div>
+                            <div style="font-size:18px;font-weight:700;color:#fbbf24;letter-spacing:-0.5px">&#x20b9;${Number(r.proposedSalary).toLocaleString('en-IN')}</div>
+                            <div style="font-size:11px;color:var(--text-muted)">+${hikePct}% hike</div>
+                        </div>
+                    </div>
+                    <div class="req-detail-row">
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Current Salary</div>
+                            <div class="req-detail-value">&#x20b9;${Number(r.currentSalary).toLocaleString('en-IN')}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Employee Code</div>
+                            <div class="req-detail-value">${escapeHtml(r.employeeCode)}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Requested</div>
+                            <div class="req-detail-value">${escapeHtml(relTime(r.createdAt))}</div>
+                        </div>
+                    </div>
+                    <div class="req-reason">
+                        <div class="req-reason-text">&ldquo;${escapeHtml(r.justification)}&rdquo;</div>
+                    </div>
+                    <div class="req-action-bar">
+                        <span class="req-submitted">By ${escapeHtml(r.managerName)}</span>
+                        <button class="btn-approve" onclick="toggleExpand('${r.requestId}','approve')"><i class="ph ph-check" style="font-size:13px"></i> Approve</button>
+                        <button class="btn-reject"  onclick="toggleExpand('${r.requestId}','reject')"><i class="ph ph-x" style="font-size:13px"></i> Reject</button>
+                    </div>
+                    <div class="action-expand approve-area" id="expand-approve-${r.requestId}">
+                        <div class="expand-confirm-msg approve">
+                            <i class="ph ph-trend-up"></i>
+                            Approving will update ${escapeHtml(r.employeeName)}'s base salary from <strong>&#x20b9;${Number(r.currentSalary).toLocaleString('en-IN')}</strong> to <strong>&#x20b9;${Number(r.proposedSalary).toLocaleString('en-IN')}</strong>.
+                        </div>
+                        <div class="expand-label" style="margin-top:10px">Note <span class="optional">(optional)</span></div>
+                        <textarea class="expand-textarea" id="comment-${r.requestId}" placeholder="Any note for the manager&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="approveBtn-${r.requestId}" onclick="doApprove('hikes','${r.requestId}')">
+                                <i class="ph ph-check-circle" style="font-size:14px"></i> Confirm Approval
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="action-expand reject-area" id="expand-reject-${r.requestId}">
+                        <div class="expand-label">Reason for rejection <span class="required">*</span></div>
+                        <textarea class="expand-textarea" id="reason-${r.requestId}" placeholder="Explain why this hike request is being rejected&hellip;"></textarea>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-reject" id="rejectBtn-${r.requestId}" onclick="doReject('hikes','${r.requestId}')">
+                                <i class="ph ph-x-circle" style="font-size:14px"></i> Confirm Rejection
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeExpand('${r.requestId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Render: F&F Settlement Cards ────────────────────────
+        function renderSettlementCards(list) {
+            return list.map(r => {
+                const color  = _avColor(r.employeeId);
+                const init   = escapeHtml(_initials(r.fullName));
+                const avHtml = r.avatarUrl 
+                    ? `<img class="req-av" src="${escapeHtml(r.avatarUrl)}" style="object-fit:cover" />`
+                    : `<div class="req-av" style="background:${color}">${init}</div>`;
+                return `<div class="req-card" id="card-${r.resignationId}">
+                    <div class="req-top">
+                        ${avHtml}
+                        <div class="req-info">
+                            <div class="req-name">${escapeHtml(r.fullName)}</div>
+                            <div class="req-desg">${escapeHtml(r.designation)} &middot; ${escapeHtml(r.department)}</div>
+                        </div>
+                        <div class="req-right">
+                            <span class="stage-tag mgr-approved"><i class="ph ph-check" style="font-size:10px"></i> Resignation Approved</span>
+                        </div>
+                    </div>
+                    <div class="req-detail-row">
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Employee Code</div>
+                            <div class="req-detail-value">${escapeHtml(r.employeeCode)}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Joining Date</div>
+                            <div class="req-detail-value">${escapeHtml(fmtDate(r.joiningDate))}</div>
+                        </div>
+                        <div class="req-detail-item">
+                            <div class="req-detail-label">Last Working Day</div>
+                            <div class="req-detail-value">${escapeHtml(fmtDate(r.lastWorkingDay))}</div>
+                        </div>
+                    </div>
+                    <div class="req-action-bar">
+                        <span class="req-submitted">Pending F&amp;F release</span>
+                        <button class="btn-approve" onclick="toggleSettlementExpand('${r.resignationId}')">
+                            <i class="ph ph-hand-coins" style="font-size:13px"></i> View &amp; Release
+                        </button>
+                    </div>
+                    <div class="action-expand approve-area" id="settle-expand-${r.resignationId}">
+                        <div id="settle-bd-${r.resignationId}">
+                            <div style="font-size:12.5px;color:var(--text-faint);padding:6px 0;">Loading breakdown&hellip;</div>
+                        </div>
+                        <div class="expand-confirm-msg approve">
+                            <i class="ph ph-hand-coins"></i>
+                            Releasing will trigger the final F&amp;F payment to <strong>${escapeHtml(r.fullName)}</strong>.
+                        </div>
+                        <div class="expand-footer">
+                            <button class="btn-confirm-approve" id="releaseBtn-${r.resignationId}" onclick="doReleaseSettlement('${r.resignationId}')">
+                                <i class="ph ph-paper-plane-tilt" style="font-size:14px"></i> Confirm Release
+                            </button>
+                            <button class="btn-expand-cancel" onclick="closeSettlementExpand('${r.resignationId}')">Cancel</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Expand Toggle ───────────────────────────────────────
+        function toggleExpand(requestId, type) {
+            const approveEl = document.getElementById('expand-approve-'  + requestId);
+            const rejectEl  = document.getElementById('expand-reject-'   + requestId);
+            const reqDocEl  = document.getElementById('expand-req-doc-'  + requestId);
+            const all    = [approveEl, rejectEl, reqDocEl].filter(Boolean);
+            const target = type === 'approve' ? approveEl : type === 'reject' ? rejectEl : reqDocEl;
+            if (!target) return;
+            const isOpen = target.classList.contains('open');
+            all.forEach(el => el.classList.remove('open'));
+            if (!isOpen) target.classList.add('open');
+        }
+        // ── Doc Preview Modal ───────────────────────────────────
+        function openDocPreview(url, name) {
+            if (url.startsWith('mock://')) {
+                url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+            }
+            if (window.showDocumentPreview) {
+                window.showDocumentPreview(url, name);
+            } else {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+        }
+        function closeDocPreview() {
+            if (window.closeDocPreview) window.closeDocPreview();
+            else {
+                const m = document.getElementById('docPreviewModal');
+                if (m) m.classList.remove('open');
+            }
+        }
+
+        function closeExpand(requestId) {
+            ['expand-approve-','expand-reject-','expand-req-doc-'].forEach(pfx => {
+                const el = document.getElementById(pfx + requestId);
+                if (el) el.classList.remove('open');
+            });
+        }
+
+        // ── Request Document ────────────────────────────────────
+        async function doRequestDoc(requestId) {
+            const msgEl = document.getElementById('docmsg-'   + requestId);
+            const btn   = document.getElementById('reqDocBtn-' + requestId);
+            if (!btn) return;
+            const msg = msgEl ? msgEl.value.trim() : '';
+            btn.disabled  = true;
+            btn.innerHTML = '<div style="width:12px;height:12px;border:2px solid rgba(168,106,62,0.4);border-top-color:var(--brown-light);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block"></div> Sending\u2026';
+            try {
+                await db.requestLeaveDocument(requestId, msg);
+                // Keep card actionable — close expand, only hide the Request Doc button
+                closeExpand(requestId);
+                const card = document.getElementById('card-' + requestId);
+                const reqDocBtn = card ? card.querySelector('.btn-req-doc') : null;
+                if (reqDocBtn) reqDocBtn.remove();
+                const reqDocArea = card ? card.querySelector('.req-doc-area') : null;
+                if (reqDocArea) reqDocArea.remove();
+                // Insert a waiting notice after the action bar
+                const actionBar = card ? card.querySelector('.req-action-bar') : null;
+                if (actionBar) {
+                    const notice = document.createElement('div');
+                    notice.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--brown-light);padding:6px 2px 2px;';
+                    notice.innerHTML = '<i class="ph ph-clock" style="font-size:13px"></i> Doc requested &mdash; waiting for employee to upload';
+                    actionBar.insertAdjacentElement('afterend', notice);
+                }
+                showToast('Document request sent to employee.', 'info');
+            } catch(e) {
+                showToast('Failed to send document request.', 'error');
+                btn.disabled  = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt" style="font-size:14px"></i> Send Request';
+            }
+        }
+
+        // ── Request Document — Resignation ──────────────────────
+        async function doRequestResignDoc(requestId) {
+            const msgEl = document.getElementById('docmsg-resig-'   + requestId);
+            const btn   = document.getElementById('reqDocBtn-resig-' + requestId);
+            if (!btn) return;
+            const msg = msgEl ? msgEl.value.trim() : '';
+            btn.disabled  = true;
+            btn.innerHTML = '<div style="width:12px;height:12px;border:2px solid rgba(168,106,62,0.4);border-top-color:var(--brown-light);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block"></div> Sending\u2026';
+            try {
+                await db.requestResignationDoc(requestId, msg);
+                closeExpand(requestId);
+                const card = document.getElementById('card-' + requestId);
+                const reqDocBtn = card ? card.querySelector('#reqDocResignBtn-' + requestId) : null;
+                if (reqDocBtn) reqDocBtn.remove();
+                const reqDocArea = card ? card.querySelector('#expand-req-doc-' + requestId) : null;
+                if (reqDocArea) reqDocArea.remove();
+                const actionBar = card ? card.querySelector('.req-action-bar') : null;
+                if (actionBar) {
+                    const notice = document.createElement('div');
+                    notice.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--brown-light);padding:6px 2px 2px;';
+                    notice.innerHTML = '<i class="ph ph-clock" style="font-size:13px"></i> Doc requested \u2014 waiting for employee to upload';
+                    actionBar.insertAdjacentElement('afterend', notice);
+                }
+                showToast('Document request sent to employee.', 'info');
+            } catch(e) {
+                showToast('Failed to send document request.', 'error');
+                btn.disabled  = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt" style="font-size:14px"></i> Send Request';
+            }
+        }
+
+        // ── Settlement Expand & Release ─────────────────────────
+        async function toggleSettlementExpand(resignationId) {
+            const expand = document.getElementById('settle-expand-' + resignationId);
+            if (!expand) return;
+            if (expand.classList.contains('open')) {
+                expand.classList.remove('open');
+                return;
+            }
+            expand.classList.add('open');
+            const bdEl = document.getElementById('settle-bd-' + resignationId);
+            if (!bdEl || bdEl.dataset.loaded) return;
+            try {
+                const d = await db.getSettlementDetails(resignationId);
+                const drFmt = d.dailyRate
+                    ? '\u20b9' + new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(d.dailyRate)
+                    : '\u2014';
+                bdEl.dataset.loaded = '1';
+                bdEl.innerHTML = `
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;margin-bottom:4px">
+                        <div class="fnf-row"><span class="fnf-label">Base Salary</span><span class="fnf-val">${fmtAmount(d.baseSalary)}</span></div>
+                        <div class="fnf-row"><span class="fnf-label">Daily Rate</span><span class="fnf-val" style="color:var(--text-muted)">${drFmt}</span></div>
+                        <div class="fnf-row"><span class="fnf-label">Notice Month Pro-Rated Salary (${escapeHtml(String(d.daysWorked))}/${escapeHtml(String(d.totalWorkingDays))} days)</span><span class="fnf-val">${fmtAmount(d.proRatedSalary)}</span></div>
+                        <div class="fnf-row"><span class="fnf-label">Unused PL Encashment (${escapeHtml(String(d.unusedPL))} days)</span><span class="fnf-val">${fmtAmount(d.plEncashment)}</span></div>
+                        <div class="fnf-row"><span class="fnf-label">Unpaid Bonuses</span><span class="fnf-val">${fmtAmount(d.unpaidBonusTotal)}</span></div>
+                        <div class="fnf-row" style="border-top:1px solid var(--glass-border);padding-top:8px;margin-top:2px">
+                            <span class="fnf-label" style="font-weight:600;color:var(--text)">Total Payable</span>
+                            <span class="fnf-val" style="font-weight:700;color:var(--accent)">${fmtAmount(d.totalAmount)}</span>
+                        </div>
+                    </div>`;
+            } catch (err) {
+                console.error('[Settlement Breakdown Error]', err);
+                if (bdEl) bdEl.innerHTML = `<div style="font-size:12.5px;color:var(--danger);padding:6px 0;">Failed to load breakdown.</div>`;
+            }
+        }
+        function closeSettlementExpand(resignationId) {
+            const el = document.getElementById('settle-expand-' + resignationId);
+            if (el) el.classList.remove('open');
+        }
+        async function doReleaseSettlement(resignationId) {
+            const btn = document.getElementById('releaseBtn-' + resignationId);
+            if (!btn) return;
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Releasing&hellip;';
+            try {
+                await db.releaseSettlement(resignationId);
+                _removeCard('settlements', resignationId);
+                showToast('F&F settlement released successfully', 'success');
+            } catch (err) {
+                showToast((err && err.message) || 'Failed to release settlement', 'error');
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        // ── Approve Action ──────────────────────────────────────
+        async function doApprove(type, requestId) {
+            const commentEl = document.getElementById('comment-' + requestId);
+            const comment   = commentEl ? commentEl.value.trim() : '';
+            const btn       = document.getElementById('approveBtn-' + requestId);
+            if (!btn) return;
+            const origHtml  = btn.innerHTML;
+            btn.disabled    = true;
+            btn.innerHTML   = 'Approving&hellip;';
+            try {
+                if (type === 'leave')        await db.approveLeave(requestId, comment);
+                else if (type === 'resignations') await db.approveResignation(requestId, comment);
+                else if (type === 'advances')     await db.approveAdvance(requestId, comment);
+                else if (type === 'hire')          await db.approveHireProposal(requestId, comment);
+                else if (type === 'removal')       await db.approveRemovalProposal(requestId, comment);
+                else if (type === 'bonuses')       await db.adminActOnBonusProposal(requestId, 'approve', comment);
+                else if (type === 'hikes')          await db.adminActOnHikeRequest(requestId, 'approve', comment);
+                _removeCard(type, requestId);
+                showToast('Approved successfully', 'success');
+            } catch (e) {
+                console.error('[Approvals] doApprove failed:', e);
+                showToast('Failed to approve. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        // ── Reject Action ───────────────────────────────────────
+        async function doReject(type, requestId) {
+            const reasonEl = document.getElementById('reason-' + requestId);
+            const reason   = reasonEl ? reasonEl.value.trim() : '';
+            if (!reason) { showToast('Please enter a reason for rejection.', 'error'); if (reasonEl) reasonEl.focus(); return; }
+            const btn      = document.getElementById('rejectBtn-' + requestId);
+            if (!btn) return;
+            const origHtml = btn.innerHTML;
+            btn.disabled   = true;
+            btn.innerHTML  = 'Rejecting&hellip;';
+            try {
+                if (type === 'leave')        await db.rejectLeave(requestId, reason);
+                else if (type === 'resignations') await db.rejectResignation(requestId, reason);
+                else if (type === 'advances')     await db.rejectAdvance(requestId, reason);
+                else if (type === 'hire')          await db.rejectHireProposal(requestId, reason);
+                else if (type === 'removal')       await db.rejectRemovalProposal(requestId, reason);
+                else if (type === 'bonuses')       await db.adminActOnBonusProposal(requestId, 'reject', reason);
+                else if (type === 'hikes')          await db.adminActOnHikeRequest(requestId, 'reject', reason);
+                _removeCard(type, requestId);
+                showToast('Rejected and notification sent.', 'info');
+            } catch (e) {
+                console.error('[Approvals] doReject failed:', e);
+                showToast('Failed to reject. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+        }
+
+        // ── Remove Card from DOM ────────────────────────────────
+        function _removeCard(type, requestId) {
+            // bonuses use bonusId, settlements use resignationId, all others use requestId
+            if (type === 'bonuses') {
+                _data[type] = _data[type].filter(r => r.bonusId !== requestId);
+            } else if (type === 'settlements') {
+                _data[type] = _data[type].filter(r => r.resignationId !== requestId);
+            } else {
+                _data[type] = _data[type].filter(r => r.requestId !== requestId);
+            }
+            const card  = document.getElementById('card-' + requestId);
+            if (card) {
+                card.style.opacity   = '0';
+                card.style.transform = 'translateX(16px)';
+                setTimeout(() => {
+                    card.remove();
+                    updateCounts();
+                    const listEl = document.getElementById(_TAB_PANELS[type]);
+                    if (listEl && !listEl.querySelector('.req-card')) {
+                        listEl.innerHTML = _emptyState(type);
+                    }
+                }, 270);
+            }
+        }
+
+        // ── Notifications ───────────────────────────────────────
+        async function renderNotifications(list) {
+            await renderAdminNotifications();
+        }
+
+
+        // ── Toast ────────────────────────────────────────────────
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = 'toast ' + type;
+            el.textContent = msg;
+            container.appendChild(el);
+            setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(24px)'; el.style.transition = 'opacity 0.3s, transform 0.3s'; setTimeout(() => el.remove(), 320); }, 3500);
+        }
+
+        // ── Sidebar & Theme ─────────────────────────────────────
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+        function toggleTheme() {
+            const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('bhr_theme', next);
+        }
+        function logout() {
+            sessionStorage.removeItem('bhr_role');
+            sessionStorage.removeItem('bhr_email');
+            window.location.replace('../login.html');
+        }
+
+        // ── Boot ─────────────────────────────────────────────────
+        init();
+    </script>
+</body>
+</html>
+

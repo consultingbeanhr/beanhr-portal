@@ -1,0 +1,101 @@
+                                <span>${metaDate}</span>
+                            </div>
+                        </div>
+                        <div class="doc-right">
+                            <span class="status-badge ${doc.status}">${statusCap}</span>
+                            <i class="ph ph-caret-right doc-chevron"></i>
+                        </div>
+                    </div>
+                    <div class="doc-detail-panel">
+                        <div class="doc-detail-inner">${detailRows}</div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    // ── Build accordion detail rows (Admin review only — no peer manager review) ──
+    function buildDetailRows(doc) {
+        if (doc.status === 'requested') {
+            const byRow  = doc.requestedBy
+                ? `<div class="doc-detail-row">
+                    <span class="doc-detail-label">Requested by</span>
+                    <span class="doc-detail-value">${escapeHtml(doc.requestedBy.name)} <span style="color:var(--text-faint)">•</span> ${escapeHtml(doc.requestedBy.role)}</span>
+                   </div>`
+                : '';
+            const msgRow = doc.requestMessage
+                ? `<div class="doc-detail-row">
+                    <span class="doc-detail-label">Message</span>
+                    <span class="doc-detail-value">${escapeHtml(doc.requestMessage)}</span>
+                   </div>`
+                : '';
+            return byRow + msgRow + `<div class="doc-detail-row" style="align-items:center">
+                <span class="doc-detail-value" style="color:var(--text-faint);font-style:italic">Use the upload form on the left to respond.</span>
+                <button class="upload-now-btn" onclick="scrollToUpload()"><i class="ph-fill ph-arrow-up" style="font-size:13px"></i> Upload Now</button>
+            </div>`;
+        }
+
+        const admin = doc.adminReview;
+        const adminReviewed = admin && admin.reviewerName;
+
+        if (!adminReviewed) {
+            return `<div class="doc-detail-row">
+                <span class="doc-detail-value" style="color:var(--text-faint)">
+                    Awaiting admin review. You'll be notified once it's processed.
+                </span>
+            </div>`;
+        }
+
+        const isRejection = doc.status === 'rejected';
+        const feedbackRow = admin.feedback
+            ? `<div class="doc-detail-row">
+                <span class="doc-detail-label">Feedback</span>
+                <span class="doc-detail-value ${isRejection ? 'feedback-rejection' : ''}">${escapeHtml(admin.feedback)}</span>
+               </div>`
+            : '';
+
+        const viewRow = doc.fileName
+            ? `<div class="doc-detail-row">
+                <span class="doc-detail-label">File</span>
+                <span class="doc-detail-value">
+                    <button class="upload-now-btn" style="margin-left:0;" onclick="window.showDocumentPreview('${escapeHtml(doc.fileUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')}', '${escapeHtml(doc.fileName)}')">
+                        <i class="ph-fill ph-eye" style="font-size:13px"></i> View Document
+                    </button>
+                </span>
+               </div>`
+            : '';
+
+        return viewRow + `
+            <div class="doc-detail-row">
+                <span class="doc-detail-label">Reviewed By</span>
+                <span class="doc-detail-value">${escapeHtml(admin.reviewerName)} <span style="color:var(--text-faint)">•</span> ${escapeHtml(admin.reviewerRole)}</span>
+            </div>
+            <div class="doc-detail-row">
+                <span class="doc-detail-label">Date</span>
+                <span class="doc-detail-value">${fmtDate(admin.reviewedAt)}</span>
+            </div>
+            ${feedbackRow}`;
+    }
+
+    function toggleDocDetail(idx) {
+        const entries = document.querySelectorAll('.doc-entry');
+        const entry   = entries[idx];
+        if (!entry) return;
+        const panel  = entry.querySelector('.doc-detail-panel');
+        const row    = entry.querySelector('.doc-row');
+        const isOpen = panel.classList.contains('open');
+
+        document.querySelectorAll('.doc-detail-panel.open').forEach(p => p.classList.remove('open'));
+        document.querySelectorAll('.doc-row.expanded').forEach(r => r.classList.remove('expanded'));
+
+        if (!isOpen) {
+            panel.classList.add('open');
+            row.classList.add('expanded');
+        }
+    }
+
+    // ── Escape helper ─────────────────────────────────────────────────
+    function escapeHtml(str) {
+        if (str == null) return '';
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+

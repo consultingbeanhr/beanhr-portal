@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — My Profile</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-light:  #c8854a;
+            --brown-glow:   rgba(168,106,62,0.25);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.2);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --icon-muted:   rgba(241,241,245,0.65);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --sidebar-w:    240px;
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        /* ── Scrollbar Hiding ───────────────────────────────────── */
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
+        /* ── Light Theme ──────────────────────────────────────────── */
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.35);
+            --icon-faint:   rgba(26,32,16,0.32);
+            --icon-muted:   rgba(26,32,16,0.65);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(50,140,70,0.1);
+            --danger-bg:    rgba(200,50,50,0.08);
+            --blue-bg:      rgba(50,100,200,0.08);
+        }
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb   { opacity: 0.18; }
+        [data-theme="light"] .orb-1 { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2 { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+        [data-theme="light"] .sidebar  { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar   { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card     { box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05) inset; }
+        [data-theme="light"] .notif-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .nav-item:hover { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .notif-btn,
+        [data-theme="light"] .theme-btn,
+        [data-theme="light"] .sidebar-toggle { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .mark-read-link { color: #4a7000; }
+        [data-theme="light"] .notif-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .notif-dismiss:hover { background: rgba(248,113,113,0.1); }
+        [data-theme="light"] .readonly-value { color: var(--text); }
+        [data-theme="light"] .skill-tag { background: rgba(90,153,0,0.1); border-color: rgba(90,153,0,0.2); color: #3a6600; }
+        [data-theme="light"] .phone-input { background-color: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        [data-theme="light"] .phone-input:focus { border-color: rgba(90,153,0,0.4); background-color: rgba(255,255,255,0.9); }
+        [data-theme="light"] .hero-card { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .info-divider { border-color: rgba(0,0,0,0.07); }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── Animated Background ──────────────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(119,202,0,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(168,106,62,0.12), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.08), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App Shell ────────────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ──────────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w);
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 14px;
+            overflow: hidden;
+            overflow-y: auto;
+            transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        .sidebar.collapsed { width: 64px; }
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none; }
+        [data-theme="light"] .ph-icon-fill    { display: none; }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label  { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item   { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+
+        .nav-item[data-tip] { position: relative; }
+        .sidebar.collapsed .nav-item[data-tip]:hover::after {
+            content: attr(data-tip);
+            position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+            background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border);
+            border-radius: 8px; padding: 5px 10px; font-size: 12.5px; font-weight: 500;
+            color: var(--text); white-space: nowrap; pointer-events: none; z-index: 200;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+        /* ── Main Area ────────────────────────────────────────────── */
+        .main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; scrollbar-width: none; -ms-overflow-style: none; }
+        .main-area::-webkit-scrollbar { display: none; }
+
+        /* ── Topbar ───────────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(7,7,15,0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .topbar-left  { display: flex; align-items: center; gap: 14px; }
+        .topbar-greeting { font-size: 16px; font-weight: 600; line-height: 1.3; }
+        .topbar-date     { font-size: 12px; color: var(--text-muted); }
+        .topbar-right    { display: flex; align-items: center; gap: 12px; }
+
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+        @keyframes avatarPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .topbar-avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; box-shadow: 0 2px 12px var(--accent-glow); flex-shrink: 0; transition: transform 0.15s; overflow: hidden; }
+        .topbar-avatar:hover { transform: scale(1.05); }
+        .topbar-avatar.skeleton { animation: avatarPulse 1.5s ease-in-out infinite; background: var(--glass-bg); border: 1px solid var(--glass-border); box-shadow: none; color: transparent; }
+        .topbar-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        /* ── Page Content ─────────────────────────────────────────── */
+        .page-content { padding: 24px; flex: 1; }
+
+        /* ── Page Header ──────────────────────────────────────────── */
+        .page-header   { margin-bottom: 24px; }
+        .page-title    { font-size: 22px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 3px; }
+        .page-subtitle { font-size: 13px; color: var(--text-muted); }
+
+        /* ── Glass Card ───────────────────────────────────────────── */
+        .card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 18px; padding: 22px; box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.02) inset; }
+
+        /* ── Profile Hero Card ────────────────────────────────────── */
+        .hero-card {
+            display: flex; align-items: center; gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .hero-avatar-wrap { position: relative; flex-shrink: 0; }
+        .hero-avatar {
+            width: 88px; height: 88px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 800; color: #fff;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            overflow: hidden; flex-shrink: 0;
+        }
+        .hero-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .photo-upload-btn {
+            position: absolute; bottom: 0; right: 0;
+            width: 28px; height: 28px;
+            background: var(--bg); border: 2px solid var(--glass-border);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--text-muted); font-size: 13px;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .photo-upload-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+        #photoFileInput { display: none; }
+
+        .hero-info { flex: 1; min-width: 200px; }
+        .hero-name        { font-size: 21px; font-weight: 700; letter-spacing: -0.3px; margin-bottom: 4px; }
+        .hero-designation { font-size: 13.5px; color: var(--text-muted); margin-bottom: 8px; }
+        .hero-tags        { display: flex; flex-wrap: wrap; gap: 8px; }
+        .hero-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .hero-tag.dept    { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+        .hero-tag.active  { background: var(--success-bg); color: var(--success); border: 1px solid rgba(74,222,128,0.2); }
+        .hero-tag.company { background: rgba(168,106,62,0.12); color: var(--brown-light); border: 1px solid rgba(168,106,62,0.2); }
+        .hero-tag.manager { background: rgba(119,202,0,0.1); color: var(--accent-light); border: 1px solid rgba(119,202,0,0.2); }
+
+        /* ── Below-hero Layout ────────────────────────────────────── */
+        .profile-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+
+        /* ── Info Section (left) ──────────────────────────────────── */
+        .section-title { font-size: 11px; font-weight: 700; color: var(--brown); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 18px; }
+
+        .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+        .field-row { padding: 13px 0; border-bottom: 1px solid var(--glass-border); }
+        .field-row:nth-child(odd)  { padding-right: 20px; }
+        .field-row:nth-child(even) { padding-left: 20px; border-left: 1px solid var(--glass-border); }
+        .fields-grid .field-row:nth-last-child(-n+2) { border-bottom: none; }
+        .field-label  { font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 4px; }
+        .readonly-value { font-size: 13.5px; font-weight: 500; color: var(--text); }
+
+        /* ── Right column: Settings card ──────────────────────────── */
+        .settings-stack { display: flex; flex-direction: column; gap: 16px; }
+
+        /* ── Phone Edit Row ───────────────────────────────────────── */
+        .phone-display-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .phone-display-val { font-size: 13.5px; font-weight: 500; }
+        .icon-btn { width: 32px; height: 32px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-size: 15px; transition: background 0.15s, color 0.15s; flex-shrink: 0; }
+        .icon-btn:hover { background: rgba(119,202,0,0.1); color: var(--accent-light); border-color: rgba(119,202,0,0.2); }
+
+        .phone-edit-row { display: flex; gap: 8px; align-items: center; }
+        .phone-input {
+            flex: 1; padding: 9px 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 9px; font-size: 13px; color: var(--text);
+            font-family: 'Inter', sans-serif; outline: none;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .phone-input:focus { border-color: rgba(119,202,0,0.45); background: rgba(255,255,255,0.07); }
+        .save-phone-btn {
+            padding: 9px 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none; border-radius: 9px; font-size: 13px; font-weight: 700; color: #fff;
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 2px 10px var(--accent-glow);
+            transition: opacity 0.15s, transform 0.15s; white-space: nowrap;
+        }
+        .save-phone-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+        .save-phone-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-spinner { width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Change Password ──────────────────────────────────────── */
+        .change-pwd-btn {
+            width: 100%; padding: 10px 14px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .change-pwd-btn:hover { background: rgba(96,165,250,0.08); color: var(--blue); border-color: rgba(96,165,250,0.2); }
+        .change-pwd-btn.open { background: rgba(96,165,250,0.08); color: var(--blue); border-color: rgba(96,165,250,0.2); }
+        .pwd-form {
+            display: none; flex-direction: column; gap: 13px;
+            margin-top: 10px; padding: 16px;
+            background: rgba(255,255,255,0.025); border: 1px solid var(--glass-border);
+            border-radius: 12px;
+        }
+        .pwd-form.open { display: flex; }
+        .pwd-field-group { display: flex; flex-direction: column; gap: 5px; }
+        .pwd-input-wrap { position: relative; }
+        .pwd-input-wrap .profile-input { padding-right: 40px; width: 100%; box-sizing: border-box; }
+        .pwd-eye {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            background: transparent; border: none; cursor: pointer;
+            color: var(--text-faint); padding: 0; font-size: 16px; line-height: 1;
+            transition: color 0.15s;
+        }
+        .pwd-eye:hover { color: var(--text-muted); }
+        .pwd-form-actions { display: flex; align-items: center; gap: 12px; margin-top: 2px; }
+        .pwd-cancel-link { font-size: 13px; color: var(--text-faint); cursor: pointer; background: none; border: none; padding: 0; transition: color 0.15s; }
+        .pwd-cancel-link:hover { color: var(--text-muted); }
+
+        /* ── Skills Tags ──────────────────────────────────────────── */
+        .skills-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+        .skill-tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 13px; border-radius: 20px; font-size: 12.5px; font-weight: 600; background: rgba(119,202,0,0.1); border: 1px solid rgba(119,202,0,0.2); color: var(--accent-light); transition: background 0.12s; }
+        .skill-tag:hover { background: rgba(119,202,0,0.18); }
+        .skills-empty { font-size: 13px; color: var(--text-faint); line-height: 1.55; }
+
+        /* ── Notification Dropdown ────────────────────────────────── */
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset; z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+        .notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 14px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+        .mark-read-link:hover { color: var(--accent-light); }
+        .notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
+        .notif-dropdown-body::-webkit-scrollbar { display: none; }
+        .notif-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; padding-right: 38px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 12px; margin-bottom: 8px; position: relative; transition: background 0.15s; }
+        .notif-item:last-child { margin-bottom: 0; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-dismiss { position: absolute; top: 9px; right: 9px; width: 20px; height: 20px; background: transparent; border: none; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-faint); font-size: 12px; transition: background 0.15s, color 0.15s; padding: 0; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+        .notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .notif-empty { text-align: center; padding: 28px; font-size: 13px; color: var(--text-faint); }
+
+        /* ── Toast ────────────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 12px 18px; background: #16161f; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; font-size: 13.5px; font-weight: 500; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: toastIn 0.3s cubic-bezier(0.22,1,0.36,1) forwards; pointer-events: auto; display: flex; align-items: center; gap: 10px; }
+        .toast.out { animation: toastOut 0.25s ease forwards; }
+        @keyframes toastIn  { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes toastOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(16px); } }
+
+        /* ── Sidebar/Theme ────────────────────────────────────────── */
+        .sidebar-toggle { width: 36px; height: 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 9px; display: none; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; transition: background 0.15s; }
+        .sidebar-toggle:hover { background: rgba(119,202,0,0.08); }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); }
+
+        /* ── Responsive ───────────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: 0; top: 0; z-index: 50; width: var(--sidebar-w) !important; transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.22,1,0.36,1); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-toggle { display: flex; }
+            .sidebar.mobile-open .nav-label,
+            .sidebar.mobile-open .logout-label { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-brand-text { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-section-label { opacity: 1; max-height: 30px; margin: 8px 0 6px; }
+            .sidebar.mobile-open .nav-item   { justify-content: flex-start; padding: 10px 9px; }
+            .sidebar.mobile-open .logout-btn { justify-content: flex-start; padding: 10px 9px; }
+            .sidebar-overlay.open { display: block; }
+            .page-content { padding: 16px; }
+            .hero-card { gap: 18px; }
+            .hero-avatar { width: 72px; height: 72px; font-size: 22px; }
+            .fields-grid { grid-template-columns: 1fr; }
+            .field-row:nth-child(odd)  { padding-right: 0; }
+            .field-row:nth-child(even) { padding-left: 0; border-left: none; }
+            .fields-grid .field-row:last-child { border-bottom: none; }
+            .fields-grid .field-row:nth-last-child(2) { border-bottom: 1px solid var(--glass-border); }
+        }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+
+<div class="bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<input type="file" id="photoFileInput" accept="image/*" onchange="handlePhotoSelected(this)" />
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="app-shell">
+
+    <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <button class="brand-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                <span class="brand-hamburger" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </span>
+            </button>
+            <div class="sidebar-brand-text">
+                <div class="sidebar-brand-name">BeanHR</div>
+                <div class="sidebar-brand-tag">Manager Portal</div>
+            </div>
+        </div>
+
+        <span class="sidebar-section-label">MENU</span>
+        <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+            <span class="nav-icon">
+                <i class="ph-fill ph-house ph-icon-fill"></i>
+                <i class="ph ph-house ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <a href="team.html" class="nav-item" data-tip="Team">
+            <span class="nav-icon">
+                <i class="ph-fill ph-users-three ph-icon-fill"></i>
+                <i class="ph ph-users-three ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Team</span>
+        </a>
+        <a href="approvals.html" class="nav-item" data-tip="Approvals">
+            <span class="nav-icon">
+                <i class="ph-fill ph-check-circle ph-icon-fill"></i>
+                <i class="ph ph-check-circle ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Approvals</span>
+        </a>
+        <a href="hiring.html" class="nav-item" data-tip="Hiring">
+            <span class="nav-icon">
+                <i class="ph-fill ph-user-plus ph-icon-fill"></i>
+                <i class="ph ph-user-plus ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Hiring</span>
+        </a>
+
+        <span class="sidebar-section-label">PERSONAL</span>
+        <a href="leave.html" class="nav-item" data-tip="Leave">
+            <span class="nav-icon">
+                <i class="ph-fill ph-calendar ph-icon-fill"></i>
+                <i class="ph ph-calendar ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Leave</span>
+        </a>
+        <a href="payslips.html" class="nav-item" data-tip="Payslips">
+            <span class="nav-icon">
+                <i class="ph-fill ph-money ph-icon-fill"></i>
+                <i class="ph ph-money ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Payslips</span>
+        </a>
+        <a href="documents.html" class="nav-item" data-tip="Documents">
+            <span class="nav-icon">
+                <i class="ph-fill ph-files ph-icon-fill"></i>
+                <i class="ph ph-files ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Documents</span>
+        </a>
+        <a href="resignation.html" class="nav-item" data-tip="Exit">
+            <span class="nav-icon">
+                <i class="ph-fill ph-door-open ph-icon-fill"></i>
+                <i class="ph ph-door-open ph-icon-outline"></i>
+            </span>
+            <span class="nav-label">Exit</span>
+        </a>
+        <a href="profile.html" class="nav-item active" data-tip="Profile">
+            <span class="nav-icon" style="position:relative">
+                <i class="ph-fill ph-user-circle ph-icon-fill"></i>
+                <i class="ph ph-user-circle ph-icon-outline"></i>
+                <span id="profileNavBadge" style="display:none;position:absolute;top:-3px;right:-5px;width:14px;height:14px;background:var(--warning);border-radius:50%;font-size:9px;font-weight:800;color:#1a1a1a;align-items:center;justify-content:center;pointer-events:none;z-index:1;">!</span>
+            </span>
+            <span class="nav-label">Profile</span>
+        </a>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" onclick="logout()" data-tip="Logout">
+                <span class="nav-icon">
+                    <i class="ph-fill ph-sign-out ph-icon-fill"></i>
+                    <i class="ph ph-sign-out ph-icon-outline"></i>
+                </span>
+                <span class="logout-label">Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ── Main Area ─────────────────────────────────────────────────── -->
+    <div class="main-area">
+
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                    <i class="ph ph-list" style="font-size:18px;display:flex"></i>
+                </button>
+                <div>
+                    <div class="topbar-greeting" id="topbarGreeting">Hello</div>
+                    <div class="topbar-date" id="topbarDate"></div>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                    <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                </button>
+                <div style="position: relative;">
+                    <button class="notif-btn" id="notifBtn" onclick="toggleNotifDropdown(event)" aria-label="Notifications">
+                        <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                        <span class="notif-badge" id="notifBadge" style="display:none"></span>
+                    </button>
+                    <div class="notif-dropdown" id="notifDropdown" onclick="event.stopPropagation()">
+                        <div class="notif-dropdown-head">
+                            <span class="notif-dropdown-title">Notifications</span>
+                            <a class="mark-read-link" onclick="markAllRead()">Mark all read</a>
+                        </div>
+                        <div class="notif-dropdown-body" id="notifDropdownList"></div>
+                    </div>
+                </div>
+                <div class="topbar-avatar skeleton" id="userAvatar" onclick="window.location.href='profile.html'" title="View Profile"></div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="page-content">
+
+            <div class="page-header">
+                <h1 class="page-title">My Profile</h1>
+                <p class="page-subtitle">View your details and manage your account settings.</p>
+            </div>
+
+            <!-- Profile Hero -->
+            <div class="card hero-card" id="heroCard">
+                <div class="hero-avatar-wrap">
+                    <div class="hero-avatar" id="heroAvatar">?</div>
+                    <button class="photo-upload-btn" onclick="document.getElementById('photoFileInput').click()" title="Upload photo">
+                        <i class="ph-bold ph-camera"></i>
+                    </button>
+                </div>
+                <div class="hero-info">
+                    <div class="hero-name" id="heroName">—</div>
+                    <div class="hero-designation" id="heroDesignation">—</div>
+                    <div class="hero-tags" id="heroTags"></div>
+                </div>
+            </div>
+
+            <!-- Below-hero grid -->
+            <div class="profile-grid">
+
+                <!-- Left: Manager Information (read-only) -->
+                <div class="card" style="padding: 24px;">
+                    <div class="section-title">Manager Information</div>
+                    <div class="fields-grid" id="infoFieldsGrid">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Right: Settings + Skills -->
+                <div class="settings-stack">
+
+                    <!-- Account Settings -->
+                    <div class="card" style="padding: 22px;">
+                        <div class="section-title">Account Settings</div>
+
+                        <!-- Phone field -->
+                        <div style="margin-bottom: 18px;">
+                            <div class="field-label" style="margin-bottom: 8px;">Phone Number</div>
+                            <div id="phoneDisplayRow" class="phone-display-row">
+                                <span class="phone-display-val" id="phoneDisplayVal">—</span>
+                                <button class="icon-btn" onclick="startPhoneEdit()" title="Edit phone">
+                                    <i class="ph-bold ph-pencil-simple"></i>
+                                </button>
+                            </div>
+                            <div id="phoneEditRow" class="phone-edit-row" style="display:none">
+                                <input class="phone-input" id="phoneInput" type="tel" placeholder="+91 98765 43210" />
+                                <button class="save-phone-btn" id="savePhoneBtn" onclick="savePhone()">
+                                    <i class="ph-bold ph-check" style="font-size:13px"></i>
+                                    Save
+                                </button>
+                                <button class="icon-btn" onclick="cancelPhoneEdit()" title="Cancel">
+                                    <i class="ph-bold ph-x" style="font-size:13px"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <hr style="border: none; border-top: 1px solid var(--glass-border); margin-bottom: 18px;" />
+
+                        <!-- Change Password -->
+                        <div class="field-label" style="margin-bottom: 8px;">Security</div>
+                        <button class="change-pwd-btn" id="changePwdToggle" onclick="togglePwdForm()">
+                            <i class="ph-bold ph-lock-key" style="font-size:15px"></i>
+                            Change Password
+                        </button>
+                        <div class="pwd-form" id="pwdForm">
+                            <div class="pwd-field-group">
+                                <label class="field-label">Current Password</label>
+                                <div class="pwd-input-wrap">
+                                    <input type="password" id="pwdCurrent" class="profile-input" placeholder="Enter current password" autocomplete="current-password">
+                                    <button type="button" class="pwd-eye" onclick="togglePwdVis('pwdCurrent', this)" tabindex="-1"><i class="ph ph-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="pwd-field-group">
+                                <label class="field-label">New Password</label>
+                                <div class="pwd-input-wrap">
+                                    <input type="password" id="pwdNew" class="profile-input" placeholder="Minimum 8 characters" autocomplete="new-password">
+                                    <button type="button" class="pwd-eye" onclick="togglePwdVis('pwdNew', this)" tabindex="-1"><i class="ph ph-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="pwd-field-group">
+                                <label class="field-label">Confirm New Password</label>
+                                <div class="pwd-input-wrap">
+                                    <input type="password" id="pwdConfirm" class="profile-input" placeholder="Repeat new password" autocomplete="new-password">
+                                    <button type="button" class="pwd-eye" onclick="togglePwdVis('pwdConfirm', this)" tabindex="-1"><i class="ph ph-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="pwd-form-actions">
+                                <button class="save-phone-btn" id="pwdSubmitBtn" onclick="handleChangePassword()">
+                                    <i class="ph-bold ph-check" style="font-size:13px"></i>
+                                    Update Password
+                                </button>
+                                <button class="pwd-cancel-link" onclick="togglePwdForm()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills & Tags -->
+                    <div class="card" style="padding: 22px;">
+                        <div class="section-title" style="margin-bottom: 14px;">Skills &amp; Tags</div>
+                        <div id="skillsContent">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                </div><!-- end .settings-stack -->
+            </div><!-- end .profile-grid -->
+
+            <!-- Contact & Emergency Info — full width -->
+            <div class="card" style="padding:22px;margin-top:20px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <div class="section-title" style="margin-bottom:0;">Contact &amp; Emergency Info</div>
+                    <button class="icon-btn" id="contactEditBtn" onclick="startContactEdit()" title="Edit">
+                        <i class="ph-bold ph-pencil-simple"></i>
+                    </button>
+                </div>
+                <!-- Display mode: 2 cols -->
+                <div id="contactDisplayArea" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+                    <div>
+                        <div class="field-label" style="margin-bottom:6px;">Address</div>
+                        <div id="addressDisplayVal" style="font-size:13px;color:var(--text);line-height:1.6;">—</div>
+                    </div>
+                    <div style="padding-left:20px;border-left:1px solid var(--glass-border);">
+                        <div class="field-label" style="margin-bottom:8px;">Emergency Contact</div>
+                        <div id="emcDisplayVal"><span style="font-size:13px;color:var(--text-faint);font-style:italic;">Not provided</span></div>
+                    </div>
+                </div>
+                <!-- Edit mode: 2-col form -->
+                <div id="contactEditArea" style="display:none;flex-direction:column;gap:16px;">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+                        <div>
+                            <div class="field-label" style="margin-bottom:6px;">Address</div>
+                            <textarea class="phone-input" id="addressInput" rows="3" placeholder="Enter your residential address" style="width:100%;resize:vertical;min-height:72px;box-sizing:border-box;"></textarea>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <div style="grid-column:1/-1;">
+                                <div class="field-label" style="margin-bottom:6px;">Emergency Contact Name</div>
+                                <input class="phone-input" id="emcNameInput" type="text" placeholder="Contact person's name" style="width:100%;box-sizing:border-box;" />
+                            </div>
+                            <div>
+                                <div class="field-label" style="margin-bottom:6px;">Phone</div>
+                                <input class="phone-input" id="emcPhoneInput" type="tel" placeholder="+91 98765 43210" style="width:100%;box-sizing:border-box;" />
+                            </div>
+                            <div>
+                                <div class="field-label" style="margin-bottom:6px;">Relation</div>
+                                <input class="phone-input" id="emcRelationInput" type="text" placeholder="e.g. Father, Spouse" style="width:100%;box-sizing:border-box;" />
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <button class="save-phone-btn" id="saveContactBtn" onclick="saveContactInfo()">
+                            <i class="ph-bold ph-check" style="font-size:13px"></i>
+                            Save
+                        </button>
+                        <button class="icon-btn" onclick="cancelContactEdit()" title="Cancel">
+                            <i class="ph-bold ph-x" style="font-size:13px"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div><!-- end .main-area -->
+</div><!-- end .app-shell -->
+
+<script src="../../js/db.js"></script>
+<script src="../../js/notifications.js"></script>
+<script>
+
+    // ── AUTH GUARD ────────────────────────────────────────────────────
+    (function() {
+        const role = sessionStorage.getItem('bhr_role');
+        if (!role || role !== 'manager') {
+            window.location.replace('../login.html');
+        }
+    })();
+
+    // ── State ─────────────────────────────────────────────────────────
+    let _profile = null;
+
+    // ── Topbar helpers ────────────────────────────────────────────────
+    function setGreeting(firstName) {
+        const h = new Date().getHours();
+        const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+        document.getElementById('topbarGreeting').textContent = `${g}, ${firstName}`;
+    }
+    function setDate() {
+        document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-IN', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        });
+    }
+
+    function _initials(fullName) {
+        return fullName.trim().split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+    }
+
+    function setAvatar(fullName, photoUrl) {
+        const initials = _initials(fullName);
+        const topbarAv = document.getElementById('userAvatar') || document.getElementById('managerAvatar');
+        if (topbarAv) {
+            topbarAv.classList.remove('skeleton');
+            if (photoUrl) {
+                topbarAv.innerHTML = `<img src="${photoUrl}" alt="${escapeHtml(fullName)}" />`;
+            } else {
+                topbarAv.textContent = initials;
+            }
+        }
+        const heroAv = document.getElementById('heroAvatar');
+        if (photoUrl) {
+            heroAv.innerHTML = `<img src="${photoUrl}" alt="${escapeHtml(fullName)}" />`;
+        } else {
+            heroAv.textContent = initials;
+        }
+    }
+
+    // ── Escape HTML ────────────────────────────────────────────────────
+    function escapeHtml(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    // ── Render profile ────────────────────────────────────────────────
+    function renderProfile(p) {
+        _profile = p;
+
+        document.getElementById('heroName').textContent        = p.fullName;
+        document.getElementById('heroDesignation').textContent = `${p.designation} · ${p.department}`;
+        setAvatar(p.fullName, p.profilePhotoUrl);
+
+        const tagsEl = document.getElementById('heroTags');
+        tagsEl.innerHTML = [
+            `<span class="hero-tag dept"><i class="ph-fill ph-buildings" style="font-size:13px"></i>${escapeHtml(p.department)}</span>`,
+            p.companyTag ? `<span class="hero-tag company"><i class="ph-fill ph-tag" style="font-size:12px"></i>${escapeHtml(p.companyTag)}</span>` : '',
+            `<span class="hero-tag manager"><i class="ph-fill ph-shield-star" style="font-size:12px"></i>Manager</span>`,
+            `<span class="hero-tag active"><i class="ph-fill ph-circle" style="font-size:10px"></i>Active</span>`,
+        ].join('');
+
+        const fields = [
+            { label: 'Employee Code',  value: escapeHtml(p.employeeCode) },
+            { label: 'Full Name',      value: escapeHtml(p.fullName) },
+            { label: 'Email Address',  value: escapeHtml(p.email) },
+            { label: 'Designation',    value: escapeHtml(p.designation) },
+            { label: 'Department',     value: escapeHtml(p.department) },
+            { label: 'Company Tag',    value: escapeHtml(p.companyTag) || '—' },
+            { label: 'Reports To',     value: escapeHtml(p.managerName) || '—' },
+            { label: 'Joining Date',   value: fmtDate(p.joiningDate) },
+        ];
+        document.getElementById('infoFieldsGrid').innerHTML = fields.map(f => `
+            <div class="field-row">
+                <div class="field-label">${f.label}</div>
+                <div class="readonly-value">${f.value}</div>
+            </div>`).join('');
+
+        document.getElementById('phoneDisplayVal').textContent = p.phone || '—';
+
+        // Contact info
+        renderContactDisplayArea(p);
+
+        const skillsEl = document.getElementById('skillsContent');
+        if (p.extractedResumeTags && p.extractedResumeTags.length) {
+            skillsEl.innerHTML =
+                `<div class="skills-wrap">` +
+                p.extractedResumeTags.map(tag =>
+                    `<span class="skill-tag"><i class="ph-fill ph-hash" style="font-size:11px"></i>${escapeHtml(tag)}</span>`
+                ).join('') +
+                `</div>
+                <div style="font-size:11.5px;color:var(--text-faint);margin-top:12px">Auto-extracted from your uploaded resume.</div>`;
+        } else {
+            skillsEl.innerHTML = `<div class="skills-empty">No skills extracted yet. Skills will appear here once a resume is uploaded against your profile.</div>`;
+        }
+    }
+
+    // ── Contact info edit ─────────────────────────────────────────────
+    function renderContactDisplayArea(p) {
+        document.getElementById('addressDisplayVal').textContent = p.address || '—';
+        const emc   = p.emergencyContact;
+        const emcEl = document.getElementById('emcDisplayVal');
+        if (emc && emc.name) {
+            emcEl.innerHTML =
+                `<div style="font-size:13.5px;font-weight:500;margin-bottom:4px;">${escapeHtml(emc.name)}</div>` +
+                `<div style="font-size:12.5px;color:var(--text-muted);margin-bottom:6px;">${escapeHtml(emc.phone) || '\u2014'}</div>` +
+                `<span style="display:inline-flex;align-items:center;padding:3px 10px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.25);border-radius:20px;font-size:11.5px;font-weight:600;color:var(--warning);">${escapeHtml(emc.relation) || '\u2014'}</span>`;
+        } else {
+            emcEl.innerHTML = '<span style="font-size:13px;color:var(--text-faint);font-style:italic;">Not provided</span>';
+        }
+    }
+    function startContactEdit() {
+        document.getElementById('addressInput').value      = _profile.address || '';
+        document.getElementById('emcNameInput').value      = _profile.emergencyContact?.name     || '';
+        document.getElementById('emcPhoneInput').value     = _profile.emergencyContact?.phone    || '';
+        document.getElementById('emcRelationInput').value  = _profile.emergencyContact?.relation || '';
+        document.getElementById('contactDisplayArea').style.display = 'none';
+        document.getElementById('contactEditBtn').style.display     = 'none';
+        document.getElementById('contactEditArea').style.display    = 'flex';
+    }
+    function cancelContactEdit() {
+        document.getElementById('contactDisplayArea').style.display = 'grid';
+        document.getElementById('contactEditBtn').style.display     = 'flex';
+        document.getElementById('contactEditArea').style.display    = 'none';
+    }
+    async function saveContactInfo() {
+        const address  = document.getElementById('addressInput').value.trim();
+        const name     = document.getElementById('emcNameInput').value.trim();
+        const phone    = document.getElementById('emcPhoneInput').value.trim();
+        const relation = document.getElementById('emcRelationInput').value.trim();
+        const emergencyContact = (name || phone || relation)
+            ? { name, phone, relation }
+            : null;
+        const btn = document.getElementById('saveContactBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-spinner"></span> Saving…';
+        try {
+            await db.updateEmployeeContactInfo({ address: address || null, emergencyContact });
+            _profile.address          = address || null;
+            _profile.emergencyContact = emergencyContact;
+            renderContactDisplayArea(_profile);
+            cancelContactEdit();
+            checkProfileCompleteness();
+            showToast('success', 'Contact info updated successfully.');
+        } catch {
+            showToast('error', 'Failed to save. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ph-bold ph-check" style="font-size:13px"></i> Save';
+        }
+    }
+    function checkProfileCompleteness() {
+        const p = _profile;
+        const incomplete = !p || !p.address ||
+                           !p.emergencyContact?.name ||
+                           !p.emergencyContact?.phone ||
+                           !p.emergencyContact?.relation;
+        const badge = document.getElementById('profileNavBadge');
+        if (badge) badge.style.display = incomplete ? 'flex' : 'none';
+    }
+
+    // ── Phone edit ────────────────────────────────────────────────────
+    function startPhoneEdit() {
+        const val = document.getElementById('phoneDisplayVal').textContent;
+        document.getElementById('phoneInput').value = val === '—' ? '' : val;
+        document.getElementById('phoneDisplayRow').style.display = 'none';
+        document.getElementById('phoneEditRow').style.display    = 'flex';
+        document.getElementById('phoneInput').focus();
+    }
+    function cancelPhoneEdit() {
+        document.getElementById('phoneDisplayRow').style.display = 'flex';
+        document.getElementById('phoneEditRow').style.display    = 'none';
+    }
+    async function savePhone() {
+        const val = document.getElementById('phoneInput').value.trim();
+        if (!val) { showToast('warning', 'Please enter a phone number.'); return; }
+
+        const btn = document.getElementById('savePhoneBtn');
+        btn.disabled = true;
+        btn.innerHTML = `<span class="btn-spinner"></span> Saving\u2026`;
+
+        try {
+            await db.updateEmployeePhone(val);
+            document.getElementById('phoneDisplayVal').textContent = val;
+            cancelPhoneEdit();
+            showToast('success', 'Phone number updated successfully.');
+        } catch {
+            showToast('error', 'Failed to save. Please try again.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="ph-bold ph-check" style="font-size:13px"></i> Save`;
+        }
+    }
+
+    // ── Photo upload ──────────────────────────────────────────────────
+    async function handlePhotoSelected(input) {
+        const file = input.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) { showToast('error', 'Please select an image file.'); return; }
+        if (file.size > 5 * 1024 * 1024)    { showToast('error', 'Image must be under 5 MB.'); return; }
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const dataUrl = e.target.result;
+            setAvatar(_profile.fullName, dataUrl);
+            showToast('info', 'Uploading photo\u2026');
+            try {
+                const result = await db.updateProfilePhoto(dataUrl, file);
+                _profile.profilePhotoUrl = result.profilePhotoUrl;
+                showToast('success', 'Profile photo updated.');
+            } catch {
+                setAvatar(_profile.fullName, _profile.profilePhotoUrl);
+                showToast('error', 'Upload failed. Please try again.');
+            }
+        };
+        reader.readAsDataURL(file);
+        input.value = '';
+    }
+
+    // ── Change Password ───────────────────────────────────────────────
+    function togglePwdForm() {
+        const form   = document.getElementById('pwdForm');
+        const toggle = document.getElementById('changePwdToggle');
+        const isOpen = form.classList.toggle('open');
+        toggle.classList.toggle('open', isOpen);
+        if (!isOpen) _resetPwdForm();
+    }
+    function _resetPwdForm() {
+        ['pwdCurrent', 'pwdNew', 'pwdConfirm'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.value = ''; el.type = 'password'; }
+        });
+        document.querySelectorAll('.pwd-eye i').forEach(i => { i.className = 'ph ph-eye'; });
+        const btn = document.getElementById('pwdSubmitBtn');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph-bold ph-check" style="font-size:13px"></i> Update Password'; }
+    }
+    function togglePwdVis(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.querySelector('i').className = 'ph ph-eye-slash';
+        } else {
+            input.type = 'password';
+            btn.querySelector('i').className = 'ph ph-eye';
+        }
+    }
+    async function handleChangePassword() {
+        const current = document.getElementById('pwdCurrent').value;
+        const newPwd  = document.getElementById('pwdNew').value;
+        const confirm = document.getElementById('pwdConfirm').value;
+        if (!current)            { showToast('error', 'Please enter your current password.'); return; }
+        if (newPwd.length < 8)   { showToast('error', 'New password must be at least 8 characters.'); return; }
+        if (newPwd !== confirm)  { showToast('error', 'Passwords do not match.'); return; }
+        const btn = document.getElementById('pwdSubmitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-spinner"></span> Updating...';
+        try {
+            // ── Firebase stub ──────────────────────────────────────
+            // const cred = firebase.auth.EmailAuthProvider.credential(_profile.email, current);
+            // await firebase.auth().currentUser.reauthenticateWithCredential(cred);
+            // await firebase.auth().currentUser.updatePassword(newPwd);
+            await new Promise(r => setTimeout(r, 800));
+            showToast('success', 'Password updated successfully.');
+            togglePwdForm();
+        } catch {
+            showToast('error', 'Incorrect current password. Please try again.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ph-bold ph-check" style="font-size:13px"></i> Update Password';
+        }
+    }
+
+    // ── Formatting ────────────────────────────────────────────────────
+    function fmtDate(dateStr) {
+        if (!dateStr) return '—';
+        return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────
+    async function init() {
+        _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+        setDate();
+        try {
+            const profile = await db.getManagerProfile();
+            setGreeting(profile.fullName.split(' ')[0]);
+            renderProfile(profile);
+            checkProfileCompleteness();
+            await renderManagerNotifications();
+        } catch (err) {
+            console.error("Profile Load Error:", err);
+            showToast('error', `Failed to load profile: ${err.message}. Please refresh.`);
+        }
+        db.startIdleWatcher(logout);
+    }
+
+    function logout() {
+        db.endSession('manual');
+        sessionStorage.removeItem('bhr_role');
+        sessionStorage.removeItem('bhr_email');
+        window.location.replace('../login.html');
+    }
+
+    function _applyTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('bhr_theme', t);
+    }
+    function toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        _applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    init();
+</script>
+</body>
+</html>
+

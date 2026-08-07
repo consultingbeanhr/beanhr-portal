@@ -1,0 +1,330 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==========================================
+    // 1. REUSABLE FUNCTIONS
+    // ==========================================
+
+    // Authentication Checks
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return isAuthenticated() && (get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'admin' || get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'super_admin');
+    }
+    function isFinance() {
+      return isAuthenticated() && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'finance';
+    }
+    function isManager() {
+      return isAuthenticated() && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'manager';
+    }
+    function isEmployee() {
+      return isAuthenticated() && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'employee';
+    }
+    function isCandidate() {
+      return isAuthenticated() && get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'candidate';
+    }
+
+    // Role Groupings
+    function isStaff() {
+      return isEmployee() || isManager() || isAdmin() || isFinance();
+    }
+    function isManagementOrAdmin() {
+      return isManager() || isAdmin();
+    }
+
+    // Account Status Check
+    function isAccountActive() {
+      return get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.status == 'active' ||
+             get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'super_admin' ||
+             get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Ownership Checks
+    function isOwner(userId) {
+      return isAuthenticated() && (
+        request.auth.uid == userId ||
+        get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.employeeId == userId
+      );
+    }
+    
+    // Team Checks
+    function isMyTeamMember(employeeId) {
+      return isManager() && (
+        get(/databases/$(database)/documents/employees/$(employeeId)).data.managerId == request.auth.uid ||
+        get(/databases/$(database)/documents/employees/$(employeeId)).data.managerId == get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.employeeId
+      );
+    }
+
+    // Candidate Checks
+    function isAssignedManagerToCandidate(candidateId) {
+      return isManager() && (
+        (request.auth.uid in get(/databases/$(database)/documents/candidateProfiles/$(candidateId)).data.assignedManagerIds) ||
+        (get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.employeeId in get(/databases/$(database)/documents/candidateProfiles/$(candidateId)).data.assignedManagerIds)
+      );
+    }
+    
+    // Global lock for writes - only Active accounts can write anywhere
+    function canWrite() {
+      return isAuthenticated() && isAccountActive();
+    }
+
+    // ==========================================
+    // 2. ACCOUNTS & PROFILES
+    // ==========================================
+
+    // ACCOUNTS: Highly restricted
+    match /accounts/{accountId} {
+      // Admins can do everything
+      // Users can only read their own account data
+      allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == accountId);
+      // Only Admins (or backend) can create/delete accounts
+      allow create, delete: if isAdmin();
+      // Users can only update their own password status, etc.
+      allow update: if isAdmin() || (canWrite() && request.auth.uid == accountId);
+    }
+
+    // EMPLOYEES: The master record for all staff
+    match /employees/{employeeId} {
+      // Admins and Finance can read all
+      // Managers can read all (to see company directory)
+      // Employees can read all (to see company directory)
+      allow read: if isStaff();
+      
+      // Only Admins can create/delete
+      allow create, delete: if isAdmin();
+      
+      // Employees can only update specific profile fields (address, emergency contact, photo)
+      // Managers can update their team members (but not salary/designation)
+      allow update: if isAdmin() || 
+                    (canWrite() && request.auth.uid == employeeId) || 
+                    (canWrite() && isMyTeamMember(employeeId));
+    }
+
+    // CANDIDATE PROFILES
+    match /candidateProfiles/{candidateId} {
+      // Admin and Finance see all
+      allow read: if isAdmin() || isFinance();
+      // Managers only see candidates assigned to them
+      allow read: if isManager() && (request.auth.uid in resource.data.assignedManagerIds);
+      // Candidates can only see their own profile, IF they are still active
+      allow read: if isOwner(candidateId) && isAccountActive();
+      
+      allow create: if isAdmin() || isManager();
+      allow update: if isAdmin() || isFinance() ||
+                    (canWrite() && isManager() && (request.auth.uid in resource.data.assignedManagerIds)) ||
+                    (canWrite() && isOwner(candidateId));
+      allow delete: if isAdmin();
+
+      // Candidate Subcollections (e.g. requestedDocuments, hiringRounds)
+      match /{subcollection}/{docId} {
+        allow read: if isAdmin() || 
+                    (isManager() && isAssignedManagerToCandidate(candidateId)) ||
+                    (isOwner(candidateId) && isAccountActive());
+        
+        // Candidates can only upload/update their own documents
+        allow write: if isAdmin() || 
+                     (canWrite() && isManager() && isAssignedManagerToCandidate(candidateId)) ||
+                     (canWrite() && isOwner(candidateId) && isAccountActive());
+      }
+    }
+    
+    // CANDIDATES (the active pipeline collection)
+    match /candidates/{candidateId} {
+      allow read: if isAdmin() || isManager();
+      allow write: if isAdmin() || isManager();
+    }
+
+    // ==========================================
+    // 3. CORE HR MODULES
+    // ==========================================
+
+    // LEAVE BALANCES
+    match /leaveBalances/{employeeId} {
+      allow read: if isAdmin() || isOwner(employeeId) || isMyTeamMember(employeeId);
+      // Only admins or backend scripts should manipulate balances directly
+      allow write: if isAdmin();
+    }
+
+    // LEAVE REQUESTS
+    match /leaveRequests/{requestId} {
+      // Admins and Finance see all
+      allow read: if isAdmin() || isFinance();
+      // Employee sees their own
+      allow read: if isOwner(resource.data.employeeId);
+      // Manager sees their team's requests
+      allow read: if isManager() && isMyTeamMember(resource.data.employeeId);
+
+      // Employees create their own requests
+      allow create: if canWrite() && isOwner(request.resource.data.employeeId);
+      // Managers can update (approve/reject) their team's requests
+      allow update: if isAdmin() || 
+                    (canWrite() && isOwner(resource.data.employeeId)) ||
+                    (canWrite() && isManager() && isMyTeamMember(resource.data.employeeId));
+      allow delete: if isAdmin() || (canWrite() && isOwner(resource.data.employeeId) && resource.data.status == 'pending');
+    }
+
+    // ATTENDANCE LOGS
+    match /attendanceLogs/{logId} {
+      allow read: if isAdmin() || isFinance() || isOwner(resource.data.employeeId) || (isManager() && isMyTeamMember(resource.data.employeeId));
+      
+      // Employees can create/update their own attendance (check in/out)
+      allow create, update: if isAdmin() || (canWrite() && isOwner(request.resource.data.employeeId));
+      allow delete: if isAdmin();
+    }
+
+    // ATTENDANCE SETTINGS & STATS
+    match /attendanceSettings/{docId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+    match /attendanceStats/{docId} {
+      allow read: if isAdmin() || isOwner(docId) || isMyTeamMember(docId);
+      allow create, update: if isAdmin() || (canWrite() && isOwner(docId));
+    }
+    
+    // WORKING CALENDAR / HOLIDAYS
+    match /workingCalendar/{monthId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+    match /holidays/{holidayId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // 4. PAYROLL & FINANCE
+    // ==========================================
+
+    // PAYROLL RECORDS
+    match /payrollRecords/{recordId} {
+      allow read: if isAdmin() || isFinance() || isOwner(resource.data.employeeId);
+      allow write: if isAdmin() || isFinance();
+    }
+
+    // PAYSLIPS
+    match /payslips/{payslipId} {
+      // Admins and Finance see all
+      allow read: if isAdmin() || isFinance();
+      // Employees only see their own payslips
+      allow read: if isOwner(resource.data.employeeId);
+      
+      allow write: if isAdmin() || isFinance();
+    }
+
+    // SALARY ADVANCES
+    match /salaryAdvanceRequests/{advanceId} {
+      allow read: if isAdmin() || isFinance() || isOwner(resource.data.employeeId);
+      allow create: if canWrite() && isOwner(request.resource.data.employeeId);
+      allow update: if isAdmin() || isFinance() || (canWrite() && isOwner(resource.data.employeeId) && resource.data.status == 'pending');
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================
+    // 5. RESIGNATIONS & TERMINATIONS
+    // ==========================================
+
+    match /resignationRequests/{requestId} {
+      allow read: if isAdmin() || isFinance() || isOwner(resource.data.employeeId) || isMyTeamMember(resource.data.employeeId);
+      allow create: if canWrite() && isOwner(request.resource.data.employeeId);
+      allow update: if isAdmin() || isFinance() ||
+                    (canWrite() && isOwner(resource.data.employeeId)) || 
+                    (canWrite() && isManager() && isMyTeamMember(resource.data.employeeId));
+      allow delete: if isAdmin();
+    }
+    
+    match /removalProposals/{requestId} {
+      allow read, write: if isAdmin() || (isManager() && isMyTeamMember(resource.data.employeeId));
+    }
+
+    // ==========================================
+    // 6. MANAGEMENT & ADMIN
+    // ==========================================
+
+    match /hiringProposals/{requestId} {
+      allow read, write: if isAdmin() || isManager();
+    }
+    
+    match /salaryHikeRequests/{requestId} {
+      allow read, write: if isAdmin() || isManager();
+    }
+    
+    match /bonusProposals/{requestId} {
+      allow read, write: if isAdmin() || isFinance() || isManager();
+    }
+    
+    match /leaveQuotaSettings/{docId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+    
+    match /portalSettings/{docId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+    
+    match /employeeDirectory/{docId} {
+      allow read: if isStaff();
+      allow write: if isAdmin();
+    }
+    
+    match /employeeDocuments/{docId} {
+      allow read: if isAdmin() || isOwner(resource.data.employeeId) || isManager();
+      allow create, update: if isAdmin() || isOwner(request.resource.data.employeeId) || isManager();
+    }
+
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.recipientAccountId);
+      allow create: if canWrite(); // Anyone can trigger a notification to someone else
+      allow update, delete: if canWrite() && isOwner(resource.data.recipientAccountId);
+    }
+
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if canWrite();
+      allow update, delete: if false; // Immutable
+    }
+    
+    match /aiSearchLogs/{logId} {
+      allow read, write: if isAdmin();
+    }
+    
+    match /resumeParsingLogs/{logId} {
+      allow read, write: if isAdmin() || isManager();
+    }
+    
+    match /sessionLogs/{logId} {
+      allow read: if isAdmin() || isOwner(resource.data.accountId);
+      allow create: if canWrite();
+      allow update: if canWrite() && isOwner(resource.data.accountId); // allow updating logoutTime
+    }
+    
+    match /analyticsSnapshots/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    // REMINDERS & REMINDER DELIVERIES
+    match /reminders/{reminderId} {
+      allow read: if isStaff();
+      allow create: if isAdmin() || isManager();
+      allow update, delete: if isAdmin();
+    }
+
+    match /reminderDeliveries/{deliveryId} {
+      allow read: if isOwner(resource.data.recipientAccountId) || isAdmin() || isManager();
+      allow create: if isAdmin() || isManager();
+      allow update: if canWrite() && isOwner(resource.data.recipientAccountId);
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ==========================================
+    // DEFAULT DENY
+    // ==========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

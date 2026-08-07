@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Attendance</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-light:  #c8854a;
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.2);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --icon-muted:   rgba(241,241,245,0.65);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --sidebar-w:    240px;
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --warning-bg:   rgba(251,191,36,0.12);
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.35);
+            --icon-faint:   rgba(26,32,16,0.32);
+            --icon-muted:   rgba(26,32,16,0.65);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(50,140,70,0.1);
+            --warning-bg:   rgba(180,130,0,0.09);
+            --danger-bg:    rgba(200,50,50,0.08);
+            --blue-bg:      rgba(50,100,200,0.08);
+        }
+
+        /* ── Light-mode surface overrides ─────────────────────── */
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb       { opacity: 0.18; }
+        [data-theme="light"] .orb-1     { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2     { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+        [data-theme="light"] .sidebar   { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar    { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card      { box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05) inset; }
+        [data-theme="light"] .nav-item:hover  { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .nav-item.active { color: var(--accent); }
+        [data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+        [data-theme="light"] .theme-btn,
+        [data-theme="light"] .notif-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .mark-read-link  { color: #4a7000; }
+        [data-theme="light"] .notif-dropdown  { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .notif-item      { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+        /* Attendance-specific light mode */
+        [data-theme="light"] .month-nav         { background: rgba(255,255,255,0.7); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .month-nav-btn     { color: var(--text-muted); }
+        [data-theme="light"] .month-nav-btn:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .filter-bar        { border-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .search-wrap input { background-color: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text); }
+        [data-theme="light"] .search-wrap input::placeholder { color: rgba(26,32,16,0.35); }
+        [data-theme="light"] .search-wrap input:focus { border-color: var(--accent); background-color: #fff; }
+        [data-theme="light"] .filter-select     { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text); }
+        [data-theme="light"] .filter-select option { background: #fff; color: var(--text); }
+        [data-theme="light"] .status-chip       { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text-muted); }
+        [data-theme="light"] .status-chip.active { background: rgba(90,153,0,0.12); border-color: rgba(90,153,0,0.3); color: var(--accent); }
+        [data-theme="light"] .att-table thead th { background: rgba(0,0,0,0.03); border-bottom-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .att-table tbody tr:hover { background: rgba(0,0,0,0.025); }
+        [data-theme="light"] .att-table td      { border-bottom-color: rgba(0,0,0,0.05); }
+        [data-theme="light"] .act-btn           { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--text-muted); }
+        [data-theme="light"] .act-btn:hover     { background: rgba(0,0,0,0.07); color: var(--text); }
+        [data-theme="light"] .act-btn.override  { background: rgba(90,153,0,0.08); border-color: rgba(90,153,0,0.2);  color: var(--accent); }
+        [data-theme="light"] .settings-section  { border-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .time-input        { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        [data-theme="light"] .time-input:focus  { border-color: var(--accent); background: #fff; }
+        [data-theme="light"] .cal-day.working   { background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.3); }
+        [data-theme="light"] .cal-day.non-working { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .cal-day.today     { border-color: var(--accent); }
+        [data-theme="light"] .cal-day.sunday    { background: rgba(0,0,0,0.03); }
+        [data-theme="light"] .override-chip     { background: rgba(96,165,250,0.1); border-color: rgba(96,165,250,0.25); color: #2563eb; }
+        [data-theme="light"] .settings-card     { background: rgba(255,255,255,0.92); }
+        /* Modal light mode */
+        [data-theme="light"] .modal-box    { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+        [data-theme="light"] .modal-header { border-bottom-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .modal-footer { border-top-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .modal-close  { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .modal-btn.secondary { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text-muted); }
+        [data-theme="light"] .form-input, [data-theme="light"] .form-select { background-color: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        [data-theme="light"] .form-input:focus, [data-theme="light"] .form-select:focus { border-color: var(--accent); background-color: #fff; }
+        [data-theme="light"] .form-select option { background-color: #fff; color: var(--text); }
+        [data-theme="light"] .info-row     { background: rgba(90,153,0,0.06); border-color: rgba(90,153,0,0.15); }
+
+        /* ── Phosphor dual-icon ───────────────────────────────── */
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── Animated Background ──────────────────────────────── */
+        .bg {
+            position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App Shell ────────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ──────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w); height: 100vh; flex-shrink: 0;
+            display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 14px; overflow: hidden; overflow-y: auto;
+            transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        .sidebar.collapsed { width: 64px; }
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        [data-theme="light"] .nav-item.active { color: var(--accent); }
+        [data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label   { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item    { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .logout-btn  { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+        .nav-item[data-tip] { position: relative; }
+        .sidebar.collapsed .nav-item[data-tip]:hover::after {
+            content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+            background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border); border-radius: 8px;
+            padding: 5px 10px; font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap;
+            pointer-events: none; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .nav-badge { min-width: 18px; height: 18px; background: var(--warning); border-radius: 9px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 5px; margin-left: auto; flex-shrink: 0; }
+        .sidebar.collapsed .nav-badge { position: absolute; top: 4px; right: 4px; min-width: 14px; height: 14px; font-size: 9px; padding: 0 3px; margin-left: 0; border: 1.5px solid var(--bg); }
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+
+        /* ── Main Area ────────────────────────────────────────── */
+        .main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; scrollbar-width: none; -ms-overflow-style: none; }
+        .main-area::-webkit-scrollbar { display: none; }
+
+        /* ── Topbar ───────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(7,7,15,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .topbar-left     { display: flex; align-items: center; gap: 14px; }
+        .topbar-greeting { font-size: 16px; font-weight: 600; line-height: 1.3; }
+        .topbar-sub      { font-size: 12px; color: var(--text-muted); }
+        .topbar-right    { display: flex; align-items: center; gap: 12px; }
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+
+        /* ── Page Content ─────────────────────────────────────── */
+        .page-content { padding: 24px; flex: 1; }
+
+        /* ── Glass Card ───────────────────────────────────────── */
+        .card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 18px; padding: 22px; box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.02) inset; }
+
+        /* ── Stats Grid ───────────────────────────────────────── */
+        .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { position: relative; overflow: hidden; }
+        .stat-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; border-radius: 0 0 18px 18px; opacity: 0; transition: opacity 0.2s; }
+        .stat-card.blue::after    { background: linear-gradient(90deg, #60a5fa, #93c5fd); }
+        .stat-card.green::after   { background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+        .stat-card.warn::after    { background: linear-gradient(90deg, #fbbf24, #fcd34d); }
+        .stat-card.success::after { background: linear-gradient(90deg, #4ade80, #86efac); }
+        .stat-card.danger::after  { background: linear-gradient(90deg, #f87171, #fca5a5); }
+        .stat-card:hover::after   { opacity: 1; }
+        .stat-card-content { display: flex; align-items: flex-start; justify-content: space-between; }
+        .stat-info   { display: flex; flex-direction: column; gap: 8px; }
+        .stat-label  { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); }
+        .stat-number { font-size: 36px; font-weight: 700; letter-spacing: -1.5px; line-height: 1; }
+        .stat-number.money { font-size: 22px; letter-spacing: -0.5px; }
+        .stat-number.blue    { color: var(--blue); }
+        .stat-number.green   { background: linear-gradient(135deg, var(--accent), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .stat-number.warn    { color: var(--warning); }
+        .stat-number.success { color: var(--success); }
+        .stat-number.danger  { color: var(--danger); }
+        .stat-icon { width: 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .stat-icon.blue    { background: var(--blue-bg);              color: var(--blue); }
+        .stat-icon.green   { background: rgba(119,202,0,0.12);        color: var(--accent-light); }
+        .stat-icon.warn    { background: var(--warning-bg);           color: var(--warning); }
+        .stat-icon.success { background: var(--success-bg);           color: var(--success); }
+        .stat-icon.danger  { background: var(--danger-bg);            color: var(--danger); }
+        .stat-sub { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+
+        /* ── Page Tabs ────────────────────────────────────────── */
+        .page-tabs { display: flex; align-items: center; gap: 4px; margin-bottom: 24px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px; width: fit-content; }
+        .tab-btn { height: 34px; padding: 0 16px; border-radius: 8px; border: none; background: transparent; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 7px; white-space: nowrap; }
+        .tab-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .tab-btn.active { background: rgba(119,202,0,0.15); color: var(--accent-light); font-weight: 600; }
+        [data-theme="light"] .tab-btn.active { color: var(--accent); background: rgba(90,153,0,0.12); }
+        [data-theme="light"] .page-tabs { background: rgba(255,255,255,0.7); border-color: rgba(0,0,0,0.1); }
+
+        /* ── Month Navigator ──────────────────────────────────── */
+        .att-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .month-nav { display: flex; align-items: center; gap: 4px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px; }
+        .month-nav-btn { width: 32px; height: 32px; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+        .month-nav-btn:hover:not(:disabled) { background: rgba(255,255,255,0.07); border-color: var(--glass-border); color: var(--text); }
+        .month-nav-btn:disabled { opacity: 0.28; cursor: not-allowed; }
+        .month-label { font-size: 14px; font-weight: 600; min-width: 134px; text-align: center; color: var(--text); }
+
+        /* ── Filter Bar ───────────────────────────────────────── */
+        .filter-bar { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; }
+        .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 280px; }
+        .search-wrap i { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 15px; color: var(--icon-faint); pointer-events: none; }
+        .search-wrap input { width: 100%; height: 36px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; padding: 0 12px 0 34px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s; }
+        .search-wrap input::placeholder { color: var(--text-faint); }
+        .search-wrap input:focus { border-color: var(--accent); background: rgba(255,255,255,0.07); }
+        .filter-select { height: 36px; padding: 0 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; cursor: pointer; transition: border-color 0.15s; }
+        .filter-select:focus { border-color: var(--accent); }
+        .filter-select option { background: #16161f; }
+        .status-chips { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .status-chip { height: 30px; padding: 0 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; white-space: nowrap; font-family: 'Inter', sans-serif; }
+        .status-chip:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+        .status-chip.active { background: rgba(119,202,0,0.14); border-color: rgba(119,202,0,0.35); color: var(--accent-light); }
+        [data-theme="light"] .status-chip.active { color: var(--accent); }
+        .filter-count { margin-left: auto; font-size: 12px; color: var(--text-faint); white-space: nowrap; }
+
+        /* ── Attendance Table ─────────────────────────────────── */
+        .table-wrap { overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--glass-border) transparent; }
+        .att-table { width: 100%; border-collapse: collapse; min-width: 920px; }
+        .att-table thead th { padding: 11px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.7px; color: var(--text-faint); background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--glass-border); white-space: nowrap; text-align: left; }
+        .att-table thead th.right { text-align: right; }
+        .att-table tbody tr { transition: background 0.12s; }
+        .att-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .att-table td { padding: 13px 14px; font-size: 13px; border-bottom: 1px solid var(--glass-border); vertical-align: middle; }
+        .att-table tbody tr:last-child td { border-bottom: none; }
+        .att-table td.right { text-align: right; }
+        /* Employee cell */
+        .emp-cell { display: flex; align-items: center; gap: 10px; }
+        .emp-av   { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .emp-name { font-size: 13.5px; font-weight: 500; white-space: nowrap; }
+        .emp-code { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+        .emp-type-badge { display: inline-flex; align-items: center; height: 17px; padding: 0 7px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; margin-top: 3px; }
+        .emp-type-badge.contractual { background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.25); color: #fbbf24; }
+        .emp-type-badge.regular     { background: rgba(119,202,0,0.10);  border: 1px solid rgba(119,202,0,0.22);  color: var(--accent); }
+        .emp-dept { font-size: 12px; color: var(--text-muted); }
+        /* Time value */
+        .time-val  { font-size: 12.5px; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .time-val.muted { color: var(--text-faint); font-weight: 400; }
+        /* Daily rate */
+        .rate-val  { font-size: 12.5px; font-weight: 500; white-space: nowrap; color: var(--text-muted); }
+        .rate-val.deduct { color: var(--danger); }
+        /* Override badge */
+        .override-chip { display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 7px; border-radius: 5px; font-size: 10px; font-weight: 600; background: rgba(96,165,250,0.12); border: 1px solid rgba(96,165,250,0.22); color: var(--blue); margin-left: 6px; }
+        /* Status pill */
+        .status-pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .status-pill.present { background: var(--success-bg); color: var(--success); }
+        .status-pill.late    { background: var(--warning-bg); color: var(--warning); }
+        .status-pill.absent  { background: var(--danger-bg);  color: var(--danger);  }
+        .status-pill.leave   { background: var(--blue-bg);    color: var(--blue);    }
+        /* Action button */
+        .action-cell { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+        .act-btn { height: 28px; padding: 0 11px; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-muted); transition: background 0.15s, color 0.15s, border-color 0.15s; white-space: nowrap; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 5px; }
+        .act-btn:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+        .act-btn.override { background: rgba(119,202,0,0.08); border-color: rgba(119,202,0,0.2); color: var(--accent); }
+        .act-btn.override:hover { background: rgba(119,202,0,0.16); border-color: rgba(119,202,0,0.35); }
+
+        /* ── Empty State ──────────────────────────────────────── */
+        .empty-state { text-align: center; padding: 64px 20px; }
+        .empty-state-icon  { font-size: 52px; color: var(--text-faint); margin-bottom: 16px; display: block; }
+        .empty-state-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+        .empty-state-sub   { font-size: 13px; color: var(--text-muted); }
+
+        /* ── Settings Panel ───────────────────────────────────── */
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .settings-section { border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; margin-bottom: 20px; }
+        .settings-section:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .settings-title { font-size: 13px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .settings-title i { font-size: 16px; color: var(--accent); }
+        .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+        .settings-row:last-child { margin-bottom: 0; }
+        .settings-label { font-size: 13px; color: var(--text-muted); flex: 1; }
+        .settings-label small { display: block; font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+        .time-input { height: 36px; padding: 0 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s; width: 100px; text-align: center; font-variant-numeric: tabular-nums; }
+        .time-input:focus { border-color: rgba(119,202,0,0.4); background: rgba(255,255,255,0.07); }
+        .num-input { height: 36px; padding: 0 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s; width: 80px; text-align: center; }
+        .num-input:focus { border-color: rgba(119,202,0,0.4); }
+        [data-theme="light"] .num-input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }
+        [data-theme="light"] .num-input:focus { border-color: var(--accent); background: #fff; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-track { position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.1); border-radius: 12px; transition: background 0.2s; border: 1px solid var(--glass-border); }
+        .toggle-track::before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; bottom: 3px; background: var(--text-faint); border-radius: 50%; transition: transform 0.2s, background 0.2s; }
+        .toggle-switch input:checked + .toggle-track { background: rgba(119,202,0,0.25); border-color: rgba(119,202,0,0.35); }
+        .toggle-switch input:checked + .toggle-track::before { transform: translateX(20px); background: var(--accent); }
+        [data-theme="light"] .toggle-track { background: rgba(0,0,0,0.08); }
+        .save-settings-btn { height: 38px; padding: 0 20px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border: none; border-radius: 10px; font-size: 13px; font-weight: 600; color: #07070f; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.15s, box-shadow 0.15s; box-shadow: 0 4px 16px var(--accent-glow); font-family: 'Inter', sans-serif; }
+        .save-settings-btn:hover { opacity: 0.9; }
+        .warning-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: var(--warning-bg); border: 1px solid rgba(251,191,36,0.3); border-radius: 7px; font-size: 11.5px; color: var(--warning); font-weight: 500; margin-top: 10px; }
+        .early-chip { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; background: rgba(251,146,60,0.12); border: 1px solid rgba(251,146,60,0.28); border-radius: 20px; font-size: 11px; font-weight: 600; color: #fb923c; white-space: nowrap; }
+
+        /* ── Working Calendar ─────────────────────────────────── */
+        .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .cal-label  { font-size: 15px; font-weight: 700; }
+        .cal-sublabel { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .cal-legend { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .cal-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+        .cal-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+        .cal-legend-dot.working     { background: var(--success-bg); border: 1px solid rgba(74,222,128,0.35); }
+        .cal-legend-dot.non-working { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); }
+        .cal-legend-dot.override    { background: var(--blue-bg); border: 1px solid rgba(96,165,250,0.3); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; }
+        .cal-weekday { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-faint); padding-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .cal-day { border-radius: 10px; border: 1px solid var(--glass-border); padding: 8px 6px; text-align: center; min-height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; transition: border-color 0.15s; }
+        .cal-day.working       { background: rgba(74,222,128,0.07); border-color: rgba(74,222,128,0.2); }
+        .cal-day.non-working   { background: rgba(255,255,255,0.015); }
+        .cal-day.sunday        { background: rgba(255,255,255,0.01); opacity: 0.5; }
+        .cal-day.today         { border-color: var(--accent) !important; }
+        .cal-day.has-override  { border-color: rgba(96,165,250,0.4) !important; background: rgba(96,165,250,0.06) !important; }
+        .cal-day.locked-month  { cursor: not-allowed; opacity: 0.65; }
+        .cal-day:not(.sunday):not(.locked-month) { cursor: pointer; }
+        .cal-day:not(.sunday):not(.locked-month):hover { border-color: rgba(119,202,0,0.4); }
+        .cal-day-num   { font-size: 13px; font-weight: 600; color: var(--text); }
+        .cal-day.sunday .cal-day-num { color: var(--text-faint); }
+        .cal-day-status { font-size: 9.5px; color: var(--text-faint); margin-top: 1px; }
+        .cal-day.working .cal-day-status { color: rgba(74,222,128,0.7); }
+        .cal-day.has-override .cal-day-status { color: var(--blue); }
+        .cal-day-reason { font-size: 9px; color: var(--text-faint); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+        .lock-btn { height: 38px; padding: 0 18px; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--danger); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: background 0.15s; font-family: 'Inter', sans-serif; }
+        .lock-btn:hover { background: rgba(248,113,113,0.2); }
+        .locked-badge { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; background: var(--success-bg); border: 1px solid rgba(74,222,128,0.25); border-radius: 10px; font-size: 12.5px; font-weight: 600; color: var(--success); }
+
+        /* ── Modal ────────────────────────────────────────────── */
+        .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box { background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset; transform: scale(.96); transition: transform .2s cubic-bezier(0.22,1,0.36,1); display: flex; flex-direction: column; }
+        .modal-overlay.open .modal-box { transform: scale(1); }
+        .modal-header { padding: 20px 22px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .modal-title  { font-size: 15px; font-weight: 700; }
+        .modal-sub    { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+        .modal-close  { width: 32px; height: 32px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-size: 16px; transition: background .15s, color .15s; padding: 0; }
+        .modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+        .modal-body   { padding: 20px 22px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 14px 22px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+        .modal-btn { height: 36px; padding: 0 18px; border-radius: 9px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--glass-border); font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; }
+        .modal-btn.secondary { background: var(--glass-bg); color: var(--text-muted); }
+        .modal-btn.secondary:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+        .modal-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-light)); border: none; color: #07070f; font-weight: 600; box-shadow: 0 2px 12px var(--accent-glow); }
+        .modal-btn.primary:hover { opacity: 0.9; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 6px; display: block; }
+        .form-input { height: 36px; padding: 0 12px; background-color: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s; width: 100%; }
+        .form-input:focus { border-color: rgba(119,202,0,0.4); background-color: rgba(255,255,255,0.07); }
+        .form-input::placeholder { color: var(--text-faint); }
+        .form-select { height: 36px; padding: 0 12px; background-color: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s; width: 100%; cursor: pointer; }
+        .form-select:focus { border-color: rgba(119,202,0,0.4); }
+        .form-select option { background: #16161f; }
+        .info-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(119,202,0,0.06); border: 1px solid rgba(119,202,0,0.15); border-radius: 10px; margin-bottom: 16px; font-size: 12.5px; color: var(--text-muted); }
+        .info-row strong { color: var(--accent); }
+
+        /* ── Notification Dropdown ────────────────────────────── */
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset; z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+        .notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 14px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+        .mark-read-link:hover { color: var(--accent-light); }
+        .notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; }
+        .notif-dropdown-body::-webkit-scrollbar { display: none; }
+        .notif-empty { text-align: center; padding: 28px; font-size: 13px; color: var(--text-faint); }
+        .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+
+        /* ── Toast ────────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 14px 16px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 12px; font-size: 13px; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s cubic-bezier(0.22,1,0.36,1); pointer-events: auto; }
+        .toast.success { border-color: rgba(74,222,128,0.3); }
+        .toast.error   { border-color: rgba(248,113,113,0.3); }
+        [data-theme="light"] .toast         { background: #ffffff; color: #1a2010; box-shadow: 0 8px 24px rgba(0,0,0,0.14); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .toast.success { border-color: rgba(50,140,70,0.35); }
+        [data-theme="light"] .toast.error   { border-color: rgba(200,50,50,0.3); }
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* ── Responsive ───────────────────────────────────────── */
+        @media (max-width: 1400px) { .stats-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .settings-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) {
+            .sidebar { width: 64px; }
+            .topbar  { padding: 0 16px; }
+            .page-content { padding: 16px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+
+        <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+    <div class="bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-shell">
+
+        <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <button class="brand-toggle" onclick="toggleSidebar()">
+                    <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                    <div class="brand-hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </button>
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-name">BeanHR</div>
+                    <div class="sidebar-brand-tag">Super Admin</div>
+                </div>
+            </div>
+
+            <span class="sidebar-section-label">ADMIN</span>
+
+            <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+                <span class="nav-icon"><i class="ph-fill ph-house ph-icon-fill"></i><i class="ph ph-house ph-icon-outline"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="employees.html" class="nav-item" data-tip="Employees">
+                <span class="nav-icon"><i class="ph-fill ph-users ph-icon-fill"></i><i class="ph ph-users ph-icon-outline"></i></span>
+                <span class="nav-label">Employees</span>
+            </a>
+            <a href="approvals.html" class="nav-item" data-tip="Approvals">
+                <span class="nav-icon"><i class="ph-fill ph-check-circle ph-icon-fill"></i><i class="ph ph-check-circle ph-icon-outline"></i></span>
+                <span class="nav-label">Approvals</span>
+                <span class="nav-badge" id="sidebarApprovalBadge" style="display:none"></span>
+            </a>
+            <a href="leave-quotas.html" class="nav-item" data-tip="Leave Quotas">
+                <span class="nav-icon"><i class="ph-fill ph-calendar-blank ph-icon-fill"></i><i class="ph ph-calendar-blank ph-icon-outline"></i></span>
+                <span class="nav-label">Leave Quotas</span>
+            </a>
+            <a href="hiring.html" class="nav-item" data-tip="Hiring">
+                <span class="nav-icon"><i class="ph-fill ph-user-plus ph-icon-fill"></i><i class="ph ph-user-plus ph-icon-outline"></i></span>
+                <span class="nav-label">Hiring</span>
+            </a>
+            <a href="payroll.html" class="nav-item" data-tip="Payroll">
+                <span class="nav-icon"><i class="ph-fill ph-money ph-icon-fill"></i><i class="ph ph-money ph-icon-outline"></i></span>
+                <span class="nav-label">Payroll</span>
+            </a>
+            <a href="attendance.html" class="nav-item active" data-tip="Attendance">
+                <span class="nav-icon"><i class="ph-fill ph-calendar-check ph-icon-fill"></i><i class="ph ph-calendar-check ph-icon-outline"></i></span>
+                <span class="nav-label">Attendance</span>
+            </a>
+            <a href="audit-logs.html" class="nav-item" data-tip="Audit Logs">
+                <span class="nav-icon"><i class="ph-fill ph-scroll ph-icon-fill"></i><i class="ph ph-scroll ph-icon-outline"></i></span>
+                <span class="nav-label">Audit Logs</span>
+            </a>
+            <a href="ai-search.html" class="nav-item" data-tip="AI Search">
+                <span class="nav-icon"><i class="ph-fill ph-magnifying-glass ph-icon-fill"></i><i class="ph ph-magnifying-glass ph-icon-outline"></i></span>
+                <span class="nav-label">AI Search</span>
+            </a>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <span class="nav-icon"><i class="ph-fill ph-sign-out ph-icon-fill"></i><i class="ph ph-sign-out ph-icon-outline"></i></span>
+                    <span class="logout-label">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── MAIN AREA ────────────────────────────────────────── -->
+        <div class="main-area">
+
+            <!-- ── TOPBAR ──────────────────────────────────────── -->
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-greeting">Attendance Control</div>
+                        <div class="topbar-sub" id="todayDate"></div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" onclick="toggleTheme()">
+                        <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                    </button>
+                    <div style="position:relative;">
+                        <button class="notif-btn" onclick="toggleNotifDropdown(event)">
+                            <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                            <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                            <span class="notif-badge" id="notifBadge" style="display:none"></span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-dropdown-head">
+                                <div class="notif-dropdown-title">Notifications</div>
+                                <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                            </div>
+                            <div class="notif-dropdown-body" id="notifDropdownBody">
+                                <div class="notif-empty">No notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="avatar" id="adminAvatar">A</div>
+                    <script>
+                        (function(){
+                            const email = sessionStorage.getItem('bhr_email') || 'A';
+                            const av = document.getElementById('adminAvatar');
+                            if(av) av.textContent = email.charAt(0).toUpperCase();
+                        })();
+                    </script>
+                </div>
+            </div>
+
+            <!-- ── PAGE CONTENT ─────────────────────────────────── -->
+            <div class="page-content">
+
+                <!-- TABS -->
+                <div class="page-tabs">
+                    <button class="tab-btn active" id="tabReport" onclick="switchTab('report')">
+                        <i class="ph-fill ph-table" style="font-size:14px"></i>
+                        Attendance Report
+                    </button>
+                    <button class="tab-btn" id="tabCalendar" onclick="switchTab('calendar')">
+                        <i class="ph-fill ph-calendar" style="font-size:14px"></i>
+                        Working Calendar
+                    </button>
+                    <button class="tab-btn" id="tabSettings" onclick="switchTab('settings')">
+                        <i class="ph-fill ph-gear" style="font-size:14px"></i>
+                        Time Window &amp; Rules
+                    </button>
+                </div>
+
+                <!-- ════════════ TAB: REPORT ════════════ -->
+                <div id="panelReport">
+
+                    <!-- STATS GRID -->
+                    <div class="stats-grid">
+                        <div class="card stat-card success">
+                            <div class="stat-card-content">
+                                <div class="stat-info">
+                                    <div class="stat-label">Present</div>
+                                    <div class="stat-number success" id="statPresent">—</div>
+                                    <div class="stat-sub">On-time check-ins</div>
+                                </div>
+                                <div class="stat-icon success"><i class="ph-fill ph-check-circle" style="font-size:24px"></i></div>
+                            </div>
+                        </div>
+                        <div class="card stat-card warn">
+                            <div class="stat-card-content">
+                                <div class="stat-info">
+                                    <div class="stat-label">Late</div>
+                                    <div class="stat-number warn" id="statLate">—</div>
+                                    <div class="stat-sub">After window closes</div>
+                                </div>
+                                <div class="stat-icon warn"><i class="ph-fill ph-clock-countdown" style="font-size:24px"></i></div>
+                            </div>
+                        </div>
+                        <div class="card stat-card danger">
+                            <div class="stat-card-content">
+                                <div class="stat-info">
+                                    <div class="stat-label">Absent</div>
+                                    <div class="stat-number danger" id="statAbsent">—</div>
+                                    <div class="stat-sub">No mark this month</div>
+                                </div>
+                                <div class="stat-icon danger"><i class="ph-fill ph-x-circle" style="font-size:24px"></i></div>
+                            </div>
+                        </div>
+                        <div class="card stat-card blue">
+                            <div class="stat-card-content">
+                                <div class="stat-info">
+                                    <div class="stat-label">On Leave</div>
+                                    <div class="stat-number blue" id="statLeave">—</div>
+                                    <div class="stat-sub">Approved leaves</div>
+                                </div>
+                                <div class="stat-icon blue"><i class="ph-fill ph-umbrella" style="font-size:24px"></i></div>
+                            </div>
+                        </div>
+                        <div class="card stat-card danger">
+                            <div class="stat-card-content">
+                                <div class="stat-info">
+                                    <div class="stat-label">Salary Deductions</div>
+                                    <div class="stat-number money danger" id="statDeductions">—</div>
+                                    <div class="stat-sub">Late + absent penalties</div>
+                                </div>
+                                <div class="stat-icon danger"><i class="ph-fill ph-currency-inr" style="font-size:24px"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REPORT TOP -->
+                    <div class="att-top">
+                        <div class="month-nav">
+                            <button class="month-nav-btn" id="btnPrevMonth" onclick="prevMonth()" title="Previous month">
+                                <i class="ph ph-caret-left" style="font-size:14px"></i>
+                            </button>
+                            <span class="month-label" id="monthLabel">April 2026</span>
+                            <button class="month-nav-btn" id="btnNextMonth" onclick="nextMonth()" title="Next month">
+                                <i class="ph ph-caret-right" style="font-size:14px"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ATTENDANCE TABLE CARD -->
+                    <div class="card" style="padding:0; overflow:hidden;">
+                        <div class="filter-bar">
+                            <div class="search-wrap">
+                                <i class="ph ph-magnifying-glass"></i>
+                                <input type="text" id="searchInput" placeholder="Search employee..." oninput="applyFilters()">
+                            </div>
+                            <select class="filter-select" id="deptFilter" onchange="applyFilters()">
+                                <option value="">All Departments</option>
+                                <option>Engineering</option>
+                                <option>Design</option>
+                                <option>Human Resources</option>
+                                <option>Sales</option>
+                                <option>Operations</option>
+                            </select>
+                            <div class="status-chips">
+                                <button class="status-chip active" data-filter="all"     onclick="setFilter(this)">All</button>
+                                <button class="status-chip"        data-filter="present" onclick="setFilter(this)">Present</button>
+                                <button class="status-chip"        data-filter="late"    onclick="setFilter(this)">Late</button>
+                                <button class="status-chip"        data-filter="absent"  onclick="setFilter(this)">Absent</button>
+                                <button class="status-chip"        data-filter="leave"   onclick="setFilter(this)">Leave</button>
+                            </div>
+                            <div class="filter-count" id="filterCount"></div>
+                        </div>
+                        <div class="table-wrap" id="tableWrap">
+                            <table class="att-table" id="attTable">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Department</th>
+                                        <th>Date</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Early Out</th>
+                                        <th>Daily Rate</th>
+                                        <th>Deduction</th>
+                                        <th>Status</th>
+                                        <th class="right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attTableBody"></tbody>
+                            </table>
+                            <div id="tableEmptyState" style="display:none"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ════════════ TAB: CALENDAR ════════════ -->
+                <div id="panelCalendar" style="display:none">
+                    <div class="card">
+                        <div class="cal-header">
+                            <div>
+                                <div class="cal-label">Working Calendar</div>
+                                <div class="cal-sublabel" id="calMonthLabel">April 2026</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                                <div class="month-nav">
+                                    <button class="month-nav-btn" id="calBtnPrev" onclick="prevCalMonth()">
+                                        <i class="ph ph-caret-left" style="font-size:14px"></i>
+                                    </button>
+                                    <span class="month-label" id="calMonthNav" style="min-width:110px">April 2026</span>
+                                    <button class="month-nav-btn" id="calBtnNext" onclick="nextCalMonth()">
+                                        <i class="ph ph-caret-right" style="font-size:14px"></i>
+                                    </button>
+                                </div>
+                                <div id="lockBtnWrap"></div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:8px;">
+                            <div class="cal-legend">
+                                <div class="cal-legend-item"><div class="cal-legend-dot working"></div>Working day</div>
+                                <div class="cal-legend-item"><div class="cal-legend-dot non-working"></div>Non-working</div>
+                                <div class="cal-legend-item"><div class="cal-legend-dot override"></div>Admin override</div>
+                            </div>
+                            <div id="calWorkingCount" style="font-size:12.5px;color:var(--text-muted)"></div>
+                        </div>
+                        <div class="cal-grid" id="calWeekdays"></div>
+                        <div class="cal-grid" id="calGrid"></div>
+                    </div>
+                </div>
+
+                <!-- ════════════ TAB: SETTINGS ════════════ -->
+                <div id="panelSettings" style="display:none">
+                    <div class="card">
+                        <div class="settings-grid">
+                            <!-- Left column -->
+                            <div>
+                                <div class="settings-section">
+                                    <div class="settings-title"><i class="ph-fill ph-clock"></i> Attendance Window</div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Window Start
+                                            <small>Before this time — button is inactive</small>
+                                        </div>
+                                        <input class="time-input" type="time" id="setWindowStart" value="09:00">
+                                    </div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Window End
+                                            <small>After this time — mark is recorded as Late</small>
+                                        </div>
+                                        <input class="time-input" type="time" id="setWindowEnd" value="09:30">
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <div class="settings-title"><i class="ph-fill ph-door-open"></i> Checkout Window</div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Window Start
+                                            <small>Checkout before this time is marked as early</small>
+                                        </div>
+                                        <input class="time-input" type="time" id="setCheckoutWindowStart" value="18:00">
+                                    </div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Window End
+                                            <small>Expected latest checkout time</small>
+                                        </div>
+                                        <input class="time-input" type="time" id="setCheckoutWindowEnd" value="18:30">
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <div class="settings-title"><i class="ph-fill ph-calendar-plus"></i> Attendance Tomorrow Override</div>
+                                    <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">Set a different window for tomorrow only. The day after, the permanent window automatically resumes.</div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">Override Start</div>
+                                        <input class="time-input" type="time" id="setOverrideStart" placeholder="--:--">
+                                    </div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">Override End</div>
+                                        <input class="time-input" type="time" id="setOverrideEnd" placeholder="--:--">
+                                    </div>
+                                    <div id="tomorrowOverrideStatus" style="margin-top:8px;font-size:12px;color:var(--text-faint)"></div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <div class="settings-title"><i class="ph-fill ph-calendar-plus"></i> Checkout Tomorrow-Only Override</div>
+                                    <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;line-height:1.6">Set a different checkout window for tomorrow only. The day after, the permanent checkout window automatically resumes.</div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">Override Start</div>
+                                        <input class="time-input" type="time" id="setCheckoutOverrideStart" placeholder="--:--">
+                                    </div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">Override End</div>
+                                        <input class="time-input" type="time" id="setCheckoutOverrideEnd" placeholder="--:--">
+                                    </div>
+                                    <div id="tomorrowCheckoutOverrideStatus" style="margin-top:8px;font-size:12px;color:var(--text-faint)"></div>
+                                </div>
+                            </div>
+
+                            <!-- Right column -->
+                            <div>
+                                <div class="settings-section">
+                                    <div class="settings-title"><i class="ph-fill ph-warning"></i> Late Login Penalty</div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Penalty Threshold
+                                            <small>Number of free late logins before penalty triggers</small>
+                                        </div>
+                                        <input class="num-input" type="number" id="setPenaltyThreshold" min="0" step="1" value="3">
+                                    </div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Reset Counter Each Month
+                                            <small>If off, late counter carries over month-to-month</small>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="setResetMonthly" checked>
+                                            <span class="toggle-track"></span>
+                                        </label>
+                                    </div>
+                                    <div id="penaltyWarning" style="display:none">
+                                        <div class="warning-chip">
+                                            <i class="ph ph-warning" style="font-size:13px"></i>
+                                            Threshold meets or exceeds typical working days — penalty may never trigger.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <div class="settings-title"><i class="ph-fill ph-arrow-left"></i> Early Checkout Penalty</div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Penalty Threshold
+                                            <small>Free early checkouts allowed before penalty triggers</small>
+                                        </div>
+                                        <input class="num-input" type="number" id="setEarlyPenaltyThreshold" min="0" step="1" value="3">
+                                    </div>
+                                    <div class="settings-row">
+                                        <div class="settings-label">
+                                            Reset Counter Each Month
+                                            <small>If off, early checkout counter carries over month-to-month</small>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="setResetEarlyMonthly" checked>
+                                            <span class="toggle-track"></span>
+                                        </label>
+                                    </div>
+                                    <div id="earlyPenaltyWarning" style="display:none">
+                                        <div class="warning-chip">
+                                            <i class="ph ph-warning" style="font-size:13px"></i>
+                                            Threshold meets or exceeds typical working days — penalty may never trigger.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="padding-top:4px">
+                                    <div style="font-size:12px;color:var(--text-faint);margin-bottom:14px;line-height:1.6">
+                                        Penalty rule: once late count exceeds threshold, that day's salary is halved (half-day deduction). Counter resets to 0 after penalty fires.
+                                    </div>
+                                    <button class="save-settings-btn" onclick="saveSettings()">
+                                        <i class="ph-fill ph-floppy-disk" style="font-size:14px"></i>
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ── OVERRIDE MODAL ──────────────────────────────────────── -->
+    <div class="modal-overlay" id="overrideModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Override Attendance</div>
+                    <div class="modal-sub" id="overrideModalSub">Correct this employee's attendance record</div>
+                </div>
+                <button class="modal-close" onclick="closeOverrideModal()">&#x2715;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-row">
+                    <i class="ph ph-info" style="font-size:15px;color:var(--accent);flex-shrink:0"></i>
+                    <span>Current status: <strong id="overrideCurrentStatus">—</strong></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="overrideStatus">New Status</label>
+                    <select class="form-select" id="overrideStatus">
+                        <option value="present">Present</option>
+                        <option value="late">Late</option>
+                        <option value="absent">Absent</option>
+                        <option value="leave">On Leave</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="overrideReason">Reason <span style="color:var(--text-faint)">(required)</span></label>
+                    <input class="form-input" type="text" id="overrideReason" placeholder="e.g. Employee attended offsite meeting — marked manually">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeOverrideModal()">Cancel</button>
+                <button class="modal-btn primary" onclick="confirmOverride()">
+                    <i class="ph-fill ph-pencil-simple" style="font-size:13px"></i>
+                    Save Override
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── CALENDAR DAY MODAL ──────────────────────────────────── -->
+    <div class="modal-overlay" id="calDayModal">
+        <div class="modal-box" style="max-width:420px">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title" id="calDayModalTitle">Toggle Working Day</div>
+                    <div class="modal-sub" id="calDayModalSub">Override this date for payroll</div>
+                </div>
+                <button class="modal-close" onclick="closeCalDayModal()">&#x2715;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-row" id="calDayInfo">
+                    <i class="ph ph-info" style="font-size:15px;color:var(--accent);flex-shrink:0"></i>
+                    <span id="calDayInfoText">—</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="calDayReason">Reason</label>
+                    <input class="form-input" type="text" id="calDayReason" placeholder="e.g. National holiday, Client sprint, etc.">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeCalDayModal()">Cancel</button>
+                <button class="modal-btn primary" id="calDayConfirmBtn" onclick="confirmCalDayToggle()">
+                    <i class="ph-bold ph-check" style="font-size:13px"></i>
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/db.js"></script>
+    <script src="../../js/notifications.js"></script>
+    <script>
+        // ─────────────────────────────────────────────────────────
+        // AUTH GUARD
+        // ─────────────────────────────────────────────────────────
+        (function() {
+            const role = sessionStorage.getItem('bhr_role');
+            if (!role || role !== 'super_admin') {
+                window.location.replace('../login.html');
+            }
+        })();
+
+        // ─────────────────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────────────────
+        function _applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
+        function toggleTheme() {
+            const next = (localStorage.getItem('bhr_theme') || 'dark') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('bhr_theme', next);
+            _applyTheme(next);
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // SIDEBAR
+        // ─────────────────────────────────────────────────────────
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // ─────────────────────────────────────────────────────────
+
+
+        // ─────────────────────────────────────────────────────────
+        // TOAST
+        // ─────────────────────────────────────────────────────────
+        function showToast(msg, type = 'success') {
+            const c = document.getElementById('toastContainer');
+            const t = document.createElement('div');
+            t.className = `toast ${type}`;
+            t.textContent = msg;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3200);
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // LOGOUT
+        // ─────────────────────────────────────────────────────────
+        function logout() {
+            db.endSession('manual');
+            sessionStorage.removeItem('bhr_role');
+            sessionStorage.removeItem('bhr_email');
+            window.location.replace('../login.html');
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // TOPBAR DATE
+        // ─────────────────────────────────────────────────────────
+        function updateTopbarDate() {
+            const now    = new Date();
+            const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            document.getElementById('todayDate').textContent =
+                `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // HELPERS
+        // ─────────────────────────────────────────────────────────
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+                .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+        function fmt(n) {
+            return '₹' + (Number(n) || 0).toLocaleString('en-IN');
+        }
+        function fmtShort(n) {
+            n = Number(n) || 0;
+            if (n >= 10000000) return '₹' + (n / 10000000).toFixed(2) + 'Cr';
+            if (n >= 100000)   return '₹' + (n / 100000).toFixed(1) + 'L';
+            if (n >= 1000)     return '₹' + (n / 1000).toFixed(1) + 'K';
+            return '₹' + n;
+        }
+        function fmtMonthLabel(m) {
+            if (!m) return '';
+            const [y, mo] = m.split('-');
+            const names = ['January','February','March','April','May','June',
+                           'July','August','September','October','November','December'];
+            return names[parseInt(mo, 10) - 1] + ' ' + y;
+        }
+        function fmtDate(d) {
+            if (!d) return '';
+            const [y, m, dd] = d.split('-');
+            const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const dt = new Date(d);
+            const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            return `${dayNames[dt.getDay()]}, ${parseInt(dd)} ${names[parseInt(m) - 1]} ${y}`;
+        }
+        function fmtTime(ts) {
+            if (!ts) return null;
+            return ts.substring(0, 5);   // "09:12:34" → "09:12"
+        }
+        const _AV_PALETTE = ['#3b82f6','#77ca00','#c084fc','#fbbf24','#f87171','#c8854a','#2dd4bf','#a78bfa'];
+        function avatarColor(name) {
+            if (!name) return _AV_PALETTE[0];
+            let h = 0;
+            for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+            return _AV_PALETTE[Math.abs(h) % _AV_PALETTE.length];
+        }
+        function getInitials(name) {
+            if (!name) return '?';
+            const parts = name.trim().split(' ').filter(Boolean);
+            if (parts.length === 1) return parts[0][0].toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+        function todayStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+        function currentMonthStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
+        }
+        function isSunday(dateStr) {
+            return new Date(dateStr).getDay() === 0;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────────────────
+        let _currentMonth    = currentMonthStr();
+        let _maxMonth        = currentMonthStr();
+        let _allRecords      = [];
+        let _filtered        = [];
+        let _activeFilter    = 'all';
+        let _activeTab       = 'report';
+
+        // Calendar state
+        let _calMonth        = currentMonthStr();
+        let _calData         = null;   // { month, totalWorkingDays, lockedForPayroll, overrides }
+
+        // Override modal
+        let _overrideLogId   = null;
+
+        // Cal day modal
+        let _calDayDate      = null;
+        let _calDayMakeWorking = false;
+
+        // ─────────────────────────────────────────────────────────
+        // TAB SWITCHING
+        // ─────────────────────────────────────────────────────────
+        function switchTab(tab) {
+            _activeTab = tab;
+            ['report','calendar','settings'].forEach(t => {
+                document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = (t === tab) ? '' : 'none';
+                document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+            });
+            if (tab === 'settings') loadSettings();
+            if (tab === 'calendar') loadCalendar();
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // MONTH NAVIGATION (Report)
+        // ─────────────────────────────────────────────────────────
+        function prevMonth() {
+            const [y, m] = _currentMonth.split('-').map(Number);
+            _currentMonth = m === 1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
+            loadReport();
+        }
+        function nextMonth() {
+            if (_currentMonth >= _maxMonth) return;
+            const [y, m] = _currentMonth.split('-').map(Number);
+            _currentMonth = m === 12 ? `${y+1}-01` : `${y}-${String(m+1).padStart(2,'0')}`;
+            loadReport();
+        }
+        function updateMonthNav() {
+            document.getElementById('monthLabel').textContent = fmtMonthLabel(_currentMonth);
+            document.getElementById('btnNextMonth').disabled  = _currentMonth >= _maxMonth;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // LOAD REPORT
+        // ─────────────────────────────────────────────────────────
+        async function loadReport() {
+            updateMonthNav();
+            try {
+                const { records, stats } = await db.getAdminAttendanceReport(_currentMonth);
+                _allRecords = records;
+                renderStats(stats);
+                _activeFilter = 'all';
+                document.querySelectorAll('.status-chip').forEach(c => {
+                    c.classList.toggle('active', c.dataset.filter === 'all');
+                });
+                document.getElementById('searchInput').value = '';
+                document.getElementById('deptFilter').value  = '';
+                applyFilters();
+            } catch (err) {
+                console.error('Failed to load attendance report:', err);
+                showToast('Failed to load attendance data', 'error');
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // RENDER STATS
+        // ─────────────────────────────────────────────────────────
+        function renderStats(s) {
+            document.getElementById('statPresent').textContent    = s.presentCount;
+            document.getElementById('statLate').textContent       = s.lateCount;
+            document.getElementById('statAbsent').textContent     = s.absentCount;
+            document.getElementById('statLeave').textContent      = s.leaveCount;
+            document.getElementById('statDeductions').textContent = fmtShort(s.deductionTotal);
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // FILTERS
+        // ─────────────────────────────────────────────────────────
+        function setFilter(chip) {
+            _activeFilter = chip.dataset.filter;
+            document.querySelectorAll('.status-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            applyFilters();
+        }
+        function applyFilters() {
+            const q    = document.getElementById('searchInput').value.toLowerCase().trim();
+            const dept = document.getElementById('deptFilter').value;
+            _filtered  = _allRecords.filter(r => {
+                if (_activeFilter !== 'all' && r.status !== _activeFilter) return false;
+                if (dept && r.department !== dept) return false;
+                if (q) {
+                    const hay = (r.fullName + ' ' + r.employeeCode + ' ' + r.department).toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+            renderTable();
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // RENDER TABLE
+        // ─────────────────────────────────────────────────────────
+        function renderTable() {
+            const tbody = document.getElementById('attTableBody');
+            const table = document.getElementById('attTable');
+            const empty = document.getElementById('tableEmptyState');
+            const count = document.getElementById('filterCount');
+
+            if (_allRecords.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                count.textContent   = '';
+                empty.innerHTML = `<div class="empty-state">
+                    <i class="ph ph-calendar-x empty-state-icon"></i>
+                    <div class="empty-state-title">No records for ${escapeHtml(fmtMonthLabel(_currentMonth))}</div>
+                    <div class="empty-state-sub">Attendance logs will appear here once employees start marking.</div>
+                </div>`;
+                return;
+            }
+            table.style.display = '';
+            empty.style.display = 'none';
+            count.textContent   = `${_filtered.length} of ${_allRecords.length}`;
+
+            if (_filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:40px 20px;color:var(--text-faint);font-size:13px">No records match the current filter</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = _filtered.map(r => {
+                const initials  = getInitials(r.fullName);
+                const color     = avatarColor(r.fullName);
+                const checkIn   = fmtTime(r.checkInAt);
+                const checkOut  = fmtTime(r.checkOutAt);
+                const hasOverride = !!r.overriddenByAdminId;
+                const logIdSafe   = escapeHtml(r.logId);
+                const statusSafe  = escapeHtml(r.status);
+
+                return `<tr>
+                    <td>
+                        <div class="emp-cell">
+                            <div class="emp-av" style="background:${escapeHtml(color)}">${escapeHtml(initials)}</div>
+                            <div>
+                                <div class="emp-name">${escapeHtml(r.fullName)}</div>
+                                <div class="emp-code">${escapeHtml(r.employeeCode)}</div>
+                                <span class="emp-type-badge ${r.employmentType === 'contractual' ? 'contractual' : 'regular'}">${r.employmentType === 'contractual' ? 'Contractual' : 'Regular'}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="emp-dept">${escapeHtml(r.department)}</span></td>
+                    <td><span style="font-size:12.5px">${escapeHtml(fmtDate(r.date))}</span></td>
+                    <td>
+                        ${checkIn
+                            ? `<span class="time-val">${escapeHtml(checkIn)}</span>`
+                            : `<span class="time-val muted">—</span>`}
+                    </td>
+                    <td>
+                        ${checkOut
+                            ? `<span class="time-val">${escapeHtml(checkOut)}</span>`
+                            : `<span class="time-val muted">${r.checkInAt ? 'Active' : '—'}</span>`}
+                    </td>
+                    <td>
+                        ${r.earlyCheckout
+                            ? `<span class="early-chip">Early</span>`
+                            : `<span style="color:var(--text-faint)">—</span>`}
+                    </td>
+                    <td>
+                        <span class="rate-val">
+                            ${escapeHtml(fmt(r.dailyRate))}
+                            <span style="font-size:10px;color:var(--text-faint)">/day</span>
+                        </span>
+                    </td>
+                    <td>
+                        ${r.deductionAmount > 0
+                            ? `<span class="rate-val deduct">&minus;${escapeHtml(fmt(r.deductionAmount))}<span style="font-size:10px;display:block;opacity:0.75;margin-top:1px">${
+                                r.deductionReason === 'both'  ? 'Late + Early' :
+                                r.deductionReason === 'early' ? 'Early Out' :
+                                r.deductionReason === 'late'  ? 'Late In' : ''}</span></span>`
+                            : `<span class="rate-val muted" style="color:var(--text-faint)">—</span>`}
+                    </td>
+                    <td>
+                        ${statusPillHtml(r.status)}
+                        ${hasOverride ? `<span class="override-chip" title="${escapeHtml(r.overrideReason || '')}"><i class="ph ph-pencil-simple" style="font-size:9px"></i>Override</span>` : ''}
+                    </td>
+                    <td><div class="action-cell">
+                        <button class="act-btn override" onclick="openOverrideModal('${logIdSafe}','${statusSafe}')">
+                            <i class="ph ph-pencil-simple" style="font-size:12px"></i>Override
+                        </button>
+                    </div></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function statusPillHtml(status) {
+            const map = {
+                present: { cls: 'present', icon: 'ph-check-circle',   label: 'Present' },
+                late:    { cls: 'late',    icon: 'ph-clock-countdown', label: 'Late'    },
+                absent:  { cls: 'absent',  icon: 'ph-x-circle',        label: 'Absent'  },
+                leave:   { cls: 'leave',   icon: 'ph-umbrella',        label: 'Leave'   },
+            };
+            const s = map[status] || map.absent;
+            return `<span class="status-pill ${s.cls}"><i class="ph ${s.icon}" style="font-size:11px"></i>${s.label}</span>`;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // OVERRIDE MODAL
+        // ─────────────────────────────────────────────────────────
+        function openOverrideModal(logId, currentStatus) {
+            _overrideLogId = logId;
+            document.getElementById('overrideModalSub').textContent = `Log ID: ${logId}`;
+            document.getElementById('overrideCurrentStatus').textContent = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+            document.getElementById('overrideStatus').value  = currentStatus;
+            document.getElementById('overrideReason').value  = '';
+            document.getElementById('overrideModal').classList.add('open');
+        }
+        function closeOverrideModal() {
+            document.getElementById('overrideModal').classList.remove('open');
+            _overrideLogId = null;
+        }
+        async function confirmOverride() {
+            const newStatus = document.getElementById('overrideStatus').value;
+            const reason    = document.getElementById('overrideReason').value.trim();
+            if (!reason) {
+                showToast('Please provide a reason for the override', 'error');
+                return;
+            }
+            try {
+                await db.adminOverrideAttendance(_overrideLogId, newStatus, reason);
+                const rec = _allRecords.find(r => r.logId === _overrideLogId);
+                if (rec) {
+                    rec.status              = newStatus;
+                    rec.overriddenByAdminId = 'ADMIN001';
+                    rec.overrideReason      = reason;
+                    if (newStatus === 'absent') rec.deductionAmount = rec.dailyRate;
+                    else if (newStatus === 'present' || newStatus === 'leave') { rec.deductionAmount = 0; rec.salaryDeducted = false; }
+                }
+                closeOverrideModal();
+                applyFilters();
+                showToast('Attendance record overridden', 'success');
+            } catch (err) {
+                showToast('Failed to save override', 'error');
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // CALENDAR TAB
+        // ─────────────────────────────────────────────────────────
+        function prevCalMonth() {
+            const [y, m] = _calMonth.split('-').map(Number);
+            _calMonth = m === 1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,'0')}`;
+            loadCalendar();
+        }
+        function nextCalMonth() {
+            const [y, m] = _calMonth.split('-').map(Number);
+            _calMonth = m === 12 ? `${y+1}-01` : `${y}-${String(m+1).padStart(2,'0')}`;
+            loadCalendar();
+        }
+
+        async function loadCalendar() {
+            document.getElementById('calMonthLabel').textContent = fmtMonthLabel(_calMonth);
+            document.getElementById('calMonthNav').textContent   = fmtMonthLabel(_calMonth);
+            try {
+                _calData = await db.getAdminWorkingCalendar(_calMonth);
+                renderCalendar();
+            } catch (err) {
+                showToast('Failed to load working calendar', 'error');
+            }
+        }
+
+        function renderCalendar() {
+            const data  = _calData;
+            const today = todayStr();
+            const [y, m] = _calMonth.split('-').map(Number);
+
+            // Day-of-week headers
+            const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            document.getElementById('calWeekdays').innerHTML = weekdays.map(d =>
+                `<div class="cal-weekday">${d}</div>`
+            ).join('');
+
+            // Build a set of override dates for quick lookup
+            const overrideMap = {};
+            (data.overrides || []).forEach(o => { overrideMap[o.date] = o; });
+
+            // Calculate first day of month and number of days
+            const firstDay   = new Date(y, m - 1, 1).getDay();  // 0=Sun
+            const daysInMonth = new Date(y, m, 0).getDate();
+
+            // Determine which Saturdays are non-working (2nd and 4th by default)
+            const nonWorkingSaturdays = new Set();
+            let satCount = 0;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const day = new Date(y, m - 1, d).getDay();
+                if (day === 6) {
+                    satCount++;
+                    if (satCount === 2 || satCount === 4) nonWorkingSaturdays.add(d);
+                }
+            }
+
+            // Build cells
+            let cells = '';
+            // Empty spacers for first week
+            for (let i = 0; i < firstDay; i++) {
+                cells += `<div></div>`;
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${_calMonth}-${String(d).padStart(2,'0')}`;
+                const dow     = new Date(y, m - 1, d).getDay();  // 0=Sun
+                const isSun   = dow === 0;
+                const isSat   = dow === 6;
+                const isToday = dateStr === today;
+                const override = overrideMap[dateStr];
+
+                let isWorking = !isSun && !nonWorkingSaturdays.has(d);
+                let statusLabel = isWorking ? 'Working' : 'Off';
+                let classes = ['cal-day'];
+
+                if (isSun) {
+                    classes.push('sunday', 'non-working');
+                    statusLabel = 'Sunday';
+                } else if (override) {
+                    classes.push(override.makeWorking ? 'working' : 'non-working', 'has-override');
+                    isWorking = override.makeWorking;
+                    statusLabel = override.makeWorking ? 'Working' : 'Off';
+                } else if (isWorking) {
+                    classes.push('working');
+                } else {
+                    classes.push('non-working');
+                }
+
+                if (isToday) classes.push('today');
+                if (data.lockedForPayroll) classes.push('locked-month');
+
+                const clickAttr = (!isSun && !data.lockedForPayroll)
+                    ? `onclick="openCalDayModal('${escapeHtml(dateStr)}', ${isWorking})"`
+                    : '';
+
+                cells += `<div class="${classes.join(' ')}" ${clickAttr}>
+                    <div class="cal-day-num">${d}</div>
+                    <div class="cal-day-status">${statusLabel}</div>
+                    ${override ? `<div class="cal-day-reason">${escapeHtml(override.reason || '')}</div>` : ''}
+                </div>`;
+            }
+
+            document.getElementById('calGrid').innerHTML = cells;
+
+            // Working day count
+            document.getElementById('calWorkingCount').textContent =
+                `${data.totalWorkingDays} working days`;
+
+            // Lock button
+            const lockWrap = document.getElementById('lockBtnWrap');
+            if (data.lockedForPayroll) {
+                lockWrap.innerHTML = `<div class="locked-badge"><i class="ph-fill ph-lock" style="font-size:14px"></i> Locked for Payroll</div>`;
+            } else {
+                lockWrap.innerHTML = `<button class="lock-btn" onclick="lockCalendar()">
+                    <i class="ph ph-lock" style="font-size:14px"></i> Lock for Payroll
+                </button>`;
+            }
+        }
+
+        function openCalDayModal(dateStr, isCurrentlyWorking) {
+            _calDayDate       = dateStr;
+            _calDayMakeWorking = !isCurrentlyWorking;  // toggle
+            document.getElementById('calDayModalTitle').textContent = isCurrentlyWorking
+                ? `Mark as Non-Working` : `Mark as Working`;
+            document.getElementById('calDayModalSub').textContent   = fmtDate(dateStr);
+            document.getElementById('calDayInfoText').innerHTML      = isCurrentlyWorking
+                ? `This will mark <strong>${fmtDate(dateStr)}</strong> as a non-working day. Payroll will not count it.`
+                : `This will mark <strong>${fmtDate(dateStr)}</strong> as a working day override.`;
+            document.getElementById('calDayReason').value            = '';
+            document.getElementById('calDayModal').classList.add('open');
+        }
+        function closeCalDayModal() {
+            document.getElementById('calDayModal').classList.remove('open');
+            _calDayDate = null;
+        }
+        async function confirmCalDayToggle() {
+            const reason = document.getElementById('calDayReason').value.trim();
+            try {
+                await db.adminToggleWorkingDay(_calMonth, _calDayDate, _calDayMakeWorking, reason);
+                // Optimistic update
+                if (!_calData.overrides) _calData.overrides = [];
+                const existing = _calData.overrides.findIndex(o => o.date === _calDayDate);
+                if (existing >= 0) {
+                    _calData.overrides[existing].makeWorking = _calDayMakeWorking;
+                    _calData.overrides[existing].reason      = reason;
+                } else {
+                    _calData.overrides.push({ date: _calDayDate, makeWorking: _calDayMakeWorking, reason });
+                }
+                closeCalDayModal();
+                renderCalendar();
+                showToast(`Day updated — working calendar saved`, 'success');
+            } catch (err) {
+                showToast('Failed to update working calendar', 'error');
+            }
+        }
+        async function lockCalendar() {
+            if (!confirm(`Lock the working calendar for ${fmtMonthLabel(_calMonth)}? Once locked, no further changes can be made and payroll can be generated.`)) return;
+            try {
+                await db.adminLockWorkingCalendar(_calMonth);
+                _calData.lockedForPayroll = true;
+                renderCalendar();
+                showToast('Working calendar locked for payroll', 'success');
+            } catch (err) {
+                showToast('Failed to lock calendar', 'error');
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // SETTINGS TAB
+        // ─────────────────────────────────────────────────────────
+        async function loadSettings() {
+            try {
+                const s = await db.getAdminAttendanceSettings();
+                document.getElementById('setWindowStart').value            = s.windowStart   || '09:00';
+                document.getElementById('setWindowEnd').value              = s.windowEnd     || '09:30';
+                document.getElementById('setPenaltyThreshold').value       = s.lateLoginPenaltyThreshold ?? 3;
+                document.getElementById('setResetMonthly').checked         = s.lateLoginResetOnMonthStart !== false;
+                document.getElementById('setCheckoutWindowStart').value    = s.checkoutWindowStart   || '18:00';
+                document.getElementById('setCheckoutWindowEnd').value      = s.checkoutWindowEnd     || '18:30';
+                document.getElementById('setEarlyPenaltyThreshold').value  = s.earlyCheckoutPenaltyThreshold ?? 3;
+                document.getElementById('setResetEarlyMonthly').checked    = s.earlyCheckoutResetOnMonthStart !== false;
+                if (s.tomorrowOverride) {
+                    document.getElementById('setOverrideStart').value = s.tomorrowOverride.windowStart || '';
+                    document.getElementById('setOverrideEnd').value   = s.tomorrowOverride.windowEnd   || '';
+                    document.getElementById('tomorrowOverrideStatus').textContent =
+                        `Active override for ${s.tomorrowOverride.date}: ${s.tomorrowOverride.windowStart} – ${s.tomorrowOverride.windowEnd}`;
+                    document.getElementById('tomorrowOverrideStatus').style.color = 'var(--warning)';
+                }
+                if (s.checkoutTomorrowOverride) {
+                    document.getElementById('setCheckoutOverrideStart').value = s.checkoutTomorrowOverride.windowStart || '';
+                    document.getElementById('setCheckoutOverrideEnd').value   = s.checkoutTomorrowOverride.windowEnd   || '';
+                    document.getElementById('tomorrowCheckoutOverrideStatus').textContent =
+                        `Active checkout override for ${s.checkoutTomorrowOverride.date}: ${s.checkoutTomorrowOverride.windowStart} – ${s.checkoutTomorrowOverride.windowEnd}`;
+                    document.getElementById('tomorrowCheckoutOverrideStatus').style.color = 'var(--warning)';
+                }
+                checkPenaltyWarning();
+                checkEarlyCheckoutWarning();
+            } catch (err) {
+                showToast('Failed to load settings', 'error');
+            }
+        }
+        function checkPenaltyWarning() {
+            const threshold = parseInt(document.getElementById('setPenaltyThreshold').value, 10);
+            document.getElementById('penaltyWarning').style.display = threshold >= 22 ? 'block' : 'none';
+        }
+        function checkEarlyCheckoutWarning() {
+            const threshold = parseInt(document.getElementById('setEarlyPenaltyThreshold').value, 10);
+            document.getElementById('earlyPenaltyWarning').style.display = threshold >= 22 ? 'block' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('setPenaltyThreshold').addEventListener('input', checkPenaltyWarning);
+            document.getElementById('setEarlyPenaltyThreshold').addEventListener('input', checkEarlyCheckoutWarning);
+        });
+
+        async function saveSettings() {
+            const windowStart               = document.getElementById('setWindowStart').value;
+            const windowEnd                 = document.getElementById('setWindowEnd').value;
+            const threshold                 = parseInt(document.getElementById('setPenaltyThreshold').value, 10);
+            const resetMonthly              = document.getElementById('setResetMonthly').checked;
+            const checkoutWindowStart       = document.getElementById('setCheckoutWindowStart').value;
+            const checkoutWindowEnd         = document.getElementById('setCheckoutWindowEnd').value;
+            const earlyThreshold            = parseInt(document.getElementById('setEarlyPenaltyThreshold').value, 10);
+            const earlyResetMonthly         = document.getElementById('setResetEarlyMonthly').checked;
+            const overrideStart             = document.getElementById('setOverrideStart').value;
+            const overrideEnd               = document.getElementById('setOverrideEnd').value;
+            const checkoutOverrideStart     = document.getElementById('setCheckoutOverrideStart').value;
+            const checkoutOverrideEnd       = document.getElementById('setCheckoutOverrideEnd').value;
+
+            if (!windowStart || !windowEnd) {
+                showToast('Window start and end times are required', 'error');
+                return;
+            }
+            if (windowStart >= windowEnd) {
+                showToast('Window end must be after window start', 'error');
+                return;
+            }
+            if (!checkoutWindowStart || !checkoutWindowEnd) {
+                showToast('Checkout window start and end times are required', 'error');
+                return;
+            }
+            if (checkoutWindowStart >= checkoutWindowEnd) {
+                showToast('Checkout window end must be after checkout window start', 'error');
+                return;
+            }
+            if (isNaN(threshold) || threshold < 0) {
+                showToast('Late login penalty threshold must be a non-negative number', 'error');
+                return;
+            }
+            if (isNaN(earlyThreshold) || earlyThreshold < 0) {
+                showToast('Early checkout penalty threshold must be a non-negative number', 'error');
+                return;
+            }
+
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
+
+            const settings = {
+                windowStart,
+                windowEnd,
+                lateLoginPenaltyThreshold:      threshold,
+                lateLoginResetOnMonthStart:      resetMonthly,
+                checkoutWindowStart,
+                checkoutWindowEnd,
+                earlyCheckoutPenaltyThreshold:  earlyThreshold,
+                earlyCheckoutResetOnMonthStart: earlyResetMonthly,
+                tomorrowOverride: (overrideStart && overrideEnd)
+                    ? { date: tomorrowStr, windowStart: overrideStart, windowEnd: overrideEnd }
+                    : null,
+                checkoutTomorrowOverride: (checkoutOverrideStart && checkoutOverrideEnd)
+                    ? { date: tomorrowStr, windowStart: checkoutOverrideStart, windowEnd: checkoutOverrideEnd }
+                    : null,
+            };
+            try {
+                await db.adminUpdateAttendanceSettings(settings);
+                showToast('Attendance settings saved', 'success');
+                document.getElementById('tomorrowOverrideStatus').textContent = (overrideStart && overrideEnd)
+                    ? `Override set for tomorrow (${tomorrowStr}): ${overrideStart} – ${overrideEnd}`
+                    : '';
+                document.getElementById('tomorrowOverrideStatus').style.color = 'var(--warning)';
+                document.getElementById('tomorrowCheckoutOverrideStatus').textContent = (checkoutOverrideStart && checkoutOverrideEnd)
+                    ? `Checkout override set for tomorrow (${tomorrowStr}): ${checkoutOverrideStart} – ${checkoutOverrideEnd}`
+                    : '';
+                document.getElementById('tomorrowCheckoutOverrideStatus').style.color = 'var(--warning)';
+            } catch (err) {
+                showToast('Failed to save settings', 'error');
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // NOTIFICATIONS & AVATAR
+        // ─────────────────────────────────────────────────────────
+        async function loadNotifications() {
+            await renderAdminNotifications();
+        }
+
+        async function loadApprovalBadge() {
+            try {
+                const counts = await db.getPendingApprovalCounts();
+                const total  = Object.values(counts).reduce((a, b) => a + b, 0);
+                const el     = document.getElementById('sidebarApprovalBadge');
+                if (el) {
+                    if (total > 0) { el.textContent = total > 99 ? '99+' : total; el.style.display = 'flex'; }
+                    else           { el.style.display = 'none'; }
+                }
+            } catch (_) {}
+        }
+
+        async function loadAdminAvatar() {
+            const email = sessionStorage.getItem('bhr_email') || 'Admin';
+            document.getElementById('adminAvatar').textContent = email.charAt(0).toUpperCase();
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────────────────
+        async function init() {
+            updateTopbarDate();
+            loadAdminAvatar();
+            loadApprovalBadge();
+            loadNotifications();
+            await loadReport();
+            _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+        }
+
+        init();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,186 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ────────────────────────────────────────────────────
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isRole(role) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.role == role;
+    }
+
+    function isAdmin()    { return isRole('super_admin'); }
+    function isManager()  { return isRole('manager'); }
+    function isEmployee() { return isRole('employee'); }
+
+    // Resolves the employeeId for the current user from the accounts collection
+    function myEmployeeId() {
+      return get(/databases/$(database)/documents/accounts/$(request.auth.uid)).data.employeeId;
+    }
+
+    // Resolves the managerId of a given employee document
+    function managerOf(employeeId) {
+      return get(/databases/$(database)/documents/employees/$(employeeId)).data.managerId;
+    }
+
+    // ── accounts ────────────────────────────────────────────────────────────
+    // Schema: { accountId, employeeId, role: 'employee'|'manager'|'super_admin',
+    //           email, createdAt }
+    match /accounts/{accountId} {
+      allow read:  if isSignedIn() && (request.auth.uid == accountId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    // ── employees ───────────────────────────────────────────────────────────
+    // Schema: {
+    //   accountId, employeeCode, fullName, email, phone, designation,
+    //   department, companyTag, managerId,
+    //   employmentStatus: 'active' | 'on_notice' | 'resigned' | 'terminated',
+    //   NOTE: 'on_leave' is NOT an employmentStatus — it is a daily attendance
+    //         state derived from leaveRequests. Employees on leave remain 'active'.
+    //   joiningDate, resignationDate, noticePeriodDays, noticePeriodEndDate,
+    //   profilePhotoUrl, extractedResumeTags, createdAt, updatedAt
+    // }
+    match /employees/{employeeId} {
+      // Employees can read their own record; managers can read their direct reports
+      allow read: if isSignedIn() && (
+        myEmployeeId() == employeeId ||
+        (isManager() && managerOf(employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+      // Only admins can create/update employment records
+      allow write: if isAdmin();
+    }
+
+    // ── leaveBalances ───────────────────────────────────────────────────────
+    // Schema: { employeeId, year,
+    //   sick: {total, used, remaining},
+    //   casual: {total, used, remaining},
+    //   paid: {total, used, remaining},
+    //   updatedAt }
+    match /leaveBalances/{employeeId} {
+      allow read: if isSignedIn() && (
+        myEmployeeId() == employeeId ||
+        (isManager() && managerOf(employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+      allow write: if isAdmin();
+    }
+
+    // ── leaveRequests ───────────────────────────────────────────────────────
+    // Schema: {
+    //   employeeId, leaveType: 'sick'|'casual'|'paid',
+    //   startDate, endDate, reason,
+    //   status: 'pending'|'manager_approved'|'admin_approved'|'rejected',
+    //   managerDecision: { managerId, decision, comment, decidedAt } | null,
+    //   adminDecision:   { adminId, decision, comment, decidedAt } | null,
+    //   createdAt
+    // }
+    // NOTE: When a leave is admin_approved and covers today's date, the employee's
+    //   onLeaveToday derived field is true — attendance is not expected.
+    match /leaveRequests/{requestId} {
+      allow read: if isSignedIn() && (
+        myEmployeeId() == resource.data.employeeId ||
+        (isManager() && managerOf(resource.data.employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+      // Employees can create their own requests; managers/admins approve/reject
+      allow create: if isEmployee() &&
+        myEmployeeId() == request.resource.data.employeeId &&
+        request.resource.data.status == 'pending';
+      allow update: if (
+        (isManager() && managerOf(resource.data.employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+    }
+
+    // ── resignationRequests ─────────────────────────────────────────────────
+    // Schema: {
+    //   employeeId, reason, lastWorkingDay,
+    //   status: 'pending'|'manager_approved'|'admin_approved'|'rejected',
+    //   managerDecision: { managerId, decision, comment, decidedAt } | null,
+    //   adminDecision:   { adminId, decision, comment, decidedAt } | null,
+    //   createdAt
+    // }
+    // On admin_approved: employee.employmentStatus → 'on_notice'
+    //                    employee.noticePeriodEndDate → lastWorkingDay
+    // After notice period ends: employee.employmentStatus → 'resigned'
+    match /resignationRequests/{requestId} {
+      allow read: if isSignedIn() && (
+        myEmployeeId() == resource.data.employeeId ||
+        (isManager() && managerOf(resource.data.employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+      allow create: if isEmployee() &&
+        myEmployeeId() == request.resource.data.employeeId &&
+        request.resource.data.status == 'pending';
+      allow update: if (
+        (isManager() && managerOf(resource.data.employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+    }
+
+    // ── attendanceRecords ───────────────────────────────────────────────────
+    // Schema: {
+    //   employeeId, date: 'YYYY-MM-DD', loginTime: timestamp,
+    //   status: 'present' | 'late',   ← 'absent' is absence of a record for that date
+    //   lateLoginCount: number,        ← running monthly counter AFTER this login
+    //   halfSalaryDay: boolean,        ← true when this login was the 4th late (counter reset after)
+    //   windowStart: timestamp,        ← admin-configured window used for this day
+    //   windowEnd:   timestamp,
+    //   markedAt: timestamp
+    // }
+    // Document ID convention: {employeeId}_{YYYY-MM-DD}  e.g. emp001_2026-04-20
+    // NOTE: An active employee with no record for a past business date AND no
+    //   approved leave covering that date is considered Absent.
+    // NOTE: lateLoginCount resets to 0 on the 1st of each month AND after every
+    //   4th late login (the day that triggers a half-salary deduction).
+    match /attendanceRecords/{recordId} {
+      allow read: if isSignedIn() && (
+        myEmployeeId() == resource.data.employeeId ||
+        (isManager() && managerOf(resource.data.employeeId) == myEmployeeId()) ||
+        isAdmin()
+      );
+      // Employees write their own attendance within the admin-configured window
+      allow create: if isEmployee() &&
+        myEmployeeId() == request.resource.data.employeeId &&
+        request.resource.data.markedAt == request.time;
+      allow update: if isAdmin();
+    }
+
+    // ── attendanceWindow ────────────────────────────────────────────────────
+    // Schema: { windowStart: string 'HH:MM', windowEnd: string 'HH:MM',
+    //           timezone: string, updatedAt, updatedBy }
+    // Single doc: attendanceWindow/config
+    match /attendanceWindow/{docId} {
+      allow read:  if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // ── payroll ─────────────────────────────────────────────────────────────
+    // Schema: { employeeId, month: 'YYYY-MM', baseSalary, bonus, deductions,
+    //           netSalary, paymentStatus: 'pending'|'paid', paidAt, createdAt }
+    match /payroll/{payrollId} {
+      allow read: if isSignedIn() && (
+        myEmployeeId() == resource.data.employeeId ||
+        isAdmin()
+      );
+      allow write: if isAdmin();
+    }
+
+    // ── notifications ───────────────────────────────────────────────────────
+    // Schema: { recipientAccountId, type, title, message, read, createdAt }
+    match /notifications/{notifId} {
+      allow read: if isSignedIn() &&
+        request.auth.uid == resource.data.recipientAccountId;
+      allow update: if isSignedIn() &&
+        request.auth.uid == resource.data.recipientAccountId &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+      allow write: if isAdmin();
+    }
+
+  }
+}

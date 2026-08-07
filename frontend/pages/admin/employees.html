@@ -1,0 +1,2475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BeanHR — Employees</title>
+    <script>(function(){var t=localStorage.getItem('bhr_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --accent:       #77ca00;
+            --accent-light: #a0e040;
+            --accent-glow:  rgba(119,202,0,0.35);
+            --brown:        #a86a3e;
+            --brown-light:  #c8854a;
+            --brown-glow:   rgba(168,106,62,0.25);
+            --bg:           #07070f;
+            --text:         #f1f1f5;
+            --text-muted:   rgba(241,241,245,0.55);
+            --text-faint:   rgba(241,241,245,0.2);
+            --icon-faint:   rgba(241,241,245,0.3);
+            --icon-muted:   rgba(241,241,245,0.65);
+            --glass-bg:     rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --sidebar-w:    240px;
+            --topbar-h:     64px;
+            --success:      #4ade80;
+            --success-bg:   rgba(74,222,128,0.12);
+            --warning:      #fbbf24;
+            --warning-bg:   rgba(251,191,36,0.12);
+            --danger:       #f87171;
+            --danger-bg:    rgba(248,113,113,0.12);
+            --blue:         #60a5fa;
+            --blue-bg:      rgba(96,165,250,0.12);
+        }
+
+        /* ── Light Theme ──────────────────────────────────────── */
+        [data-theme="light"] {
+            --bg:           #f0f6e8;
+            --accent:       #5a9900;
+            --accent-light: #77ca00;
+            --accent-glow:  rgba(90,153,0,0.2);
+            --text:         #1a2010;
+            --text-muted:   rgba(26,32,16,0.58);
+            --text-faint:   rgba(26,32,16,0.35);
+            --icon-faint:   rgba(26,32,16,0.32);
+            --icon-muted:   rgba(26,32,16,0.65);
+            --glass-bg:     rgba(255,255,255,0.82);
+            --glass-border: rgba(26,32,16,0.1);
+            --success-bg:   rgba(50,140,70,0.1);
+            --warning-bg:   rgba(180,130,0,0.09);
+            --danger-bg:    rgba(200,50,50,0.08);
+            --blue-bg:      rgba(50,100,200,0.08);
+        }
+        [data-theme="light"] .bg {
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(90,153,0,0.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(168,106,62,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(90,153,0,0.07) 0%, transparent 50%),
+                #f0f6e8;
+        }
+        [data-theme="light"] .orb     { opacity: 0.18; }
+        [data-theme="light"] .orb-1   { background: radial-gradient(circle, rgba(90,153,0,0.2), transparent 70%); }
+        [data-theme="light"] .orb-2   { background: radial-gradient(circle, rgba(168,106,62,0.1), transparent 70%); }
+        [data-theme="light"] .sidebar { background: rgba(255,255,255,0.88); }
+        [data-theme="light"] .topbar  { background: rgba(240,246,232,0.94); border-bottom-color: rgba(0,0,0,0.07); }
+        [data-theme="light"] .card    { box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.05) inset; }
+        [data-theme="light"] .notif-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .notif-item.unread { background: rgba(90,153,0,0.07); border-color: rgba(90,153,0,0.2); }
+        [data-theme="light"] .nav-item:hover { background: rgba(0,0,0,0.04); }
+        [data-theme="light"] .notif-btn,
+        [data-theme="light"] .theme-btn,
+        [data-theme="light"] .sidebar-toggle { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .mark-read-link { color: #4a7000; }
+        [data-theme="light"] .notif-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .emp-table thead th { background: rgba(0,0,0,0.03); border-bottom-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .emp-table tbody tr:hover { background: rgba(0,0,0,0.025); }
+        [data-theme="light"] .emp-table td { border-bottom-color: rgba(0,0,0,0.05); }
+        [data-theme="light"] .filter-bar { border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .search-wrap input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text); }
+        [data-theme="light"] .search-wrap input:focus { border-color: var(--accent); background: #fff; }
+        [data-theme="light"] .role-select { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text); }
+        [data-theme="light"] .toggle-chip { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text-muted); }
+        [data-theme="light"] .toggle-chip.active { background: rgba(90,153,0,0.12); border-color: rgba(90,153,0,0.3); color: var(--accent); }
+        [data-theme="light"] .action-btn { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--text-muted); }
+        [data-theme="light"] .action-btn:hover { background: rgba(90,153,0,0.08); border-color: rgba(90,153,0,0.2); color: var(--accent); }
+        [data-theme="light"] .drawer { background: #ffffff; border-left-color: rgba(0,0,0,0.1); box-shadow: -12px 0 48px rgba(0,0,0,0.12); }
+        [data-theme="light"] .drawer-tab { border-color: rgba(0,0,0,0.08); color: var(--text-muted); }
+        [data-theme="light"] .drawer-tab:hover { background: rgba(0,0,0,0.03); }
+        [data-theme="light"] .drawer-tab.active { border-bottom-color: var(--accent); color: var(--accent); }
+        [data-theme="light"] .field-label { color: var(--text-faint); }
+        [data-theme="light"] .drawer-footer { border-top-color: rgba(0,0,0,0.08); background: rgba(255,255,255,0.95); }
+        [data-theme="light"] .form-input, [data-theme="light"] .form-select { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); color: var(--text); }
+        [data-theme="light"] .form-input:focus, [data-theme="light"] .form-select:focus { border-color: var(--accent); background: #fff; }
+        [data-theme="light"] .modal-box { background: #ffffff; border-color: rgba(0,0,0,0.1); box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
+        [data-theme="light"] .modal-header { border-bottom-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .modal-footer { border-top-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .doc-item { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        [data-theme="light"] .mini-stat { border-color: rgba(0,0,0,0.08); }
+
+        /* ── Phosphor dual-icon ───────────────────────────────── */
+        .ph-icon-fill    { display: block; }
+        .ph-icon-outline { display: none;  }
+        [data-theme="light"] .ph-icon-fill    { display: none;  }
+        [data-theme="light"] .ph-icon-outline { display: block; }
+
+        html, body { height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* ── Animated Background ──────────────────────────────── */
+        .bg { position: fixed; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 15% 55%, rgba(119,202,0,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 15%, rgba(160,224,64,0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 65% 85%, rgba(99,179,255,0.06) 0%, transparent 50%),
+                var(--bg);
+        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.4; animation: drift linear infinite; }
+        .orb-1 { width:550px; height:550px; background:radial-gradient(circle, rgba(119,202,0,0.2), transparent 70%); top:-180px; left:-120px; animation-duration:22s; }
+        .orb-2 { width:420px; height:420px; background:radial-gradient(circle, rgba(160,224,64,0.14), transparent 70%); bottom:-110px; right:-90px; animation-duration:28s; animation-direction:reverse; }
+        .orb-3 { width:320px; height:320px; background:radial-gradient(circle, rgba(99,179,255,0.1), transparent 70%); top:38%; right:18%; animation-duration:34s; }
+        @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
+
+        /* ── App Shell ────────────────────────────────────────── */
+        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ──────────────────────────────────────────── */
+        .sidebar {
+            width: var(--sidebar-w); height: 100vh; flex-shrink: 0;
+            display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 14px; overflow: hidden; overflow-y: auto;
+            transition: width 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        .sidebar.collapsed { width: 64px; }
+
+        .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 4px 22px; border-bottom: 1px solid var(--glass-border); margin-bottom: 14px; white-space: nowrap; }
+        .brand-toggle { width: 36px; height: 36px; min-width: 36px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 10px; border: none; cursor: pointer; position: relative; box-shadow: 0 4px 16px var(--accent-glow); transition: box-shadow 0.2s; padding: 0; }
+        .brand-toggle:hover { box-shadow: 0 4px 24px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.4); }
+        .brand-logo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #fff; opacity: 1; transform: rotate(0deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; opacity: 0; transform: rotate(-90deg); transition: opacity 0.25s, transform 0.42s cubic-bezier(0.22,1,0.36,1); pointer-events: none; }
+        .brand-hamburger span { display: block; width: 14px; height: 1.5px; background: #fff; border-radius: 2px; }
+        .sidebar.collapsed .brand-logo      { opacity: 0; transform: rotate(90deg); }
+        .sidebar.collapsed .brand-hamburger { opacity: 1; transform: rotate(0deg); }
+        .sidebar-brand-text { overflow: hidden; max-width: 160px; transition: opacity 0.22s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar-brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; white-space: nowrap; }
+        .sidebar-brand-tag  { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+        .sidebar.collapsed .sidebar-brand-text { opacity: 0; max-width: 0; }
+
+        .sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--brown); text-transform: uppercase; letter-spacing: 1.5px; padding: 0 10px; margin: 8px 0 6px; display: block; white-space: nowrap; overflow: hidden; max-height: 30px; transition: opacity 0.2s, max-height 0.28s, margin 0.28s; }
+        .sidebar.collapsed .sidebar-section-label { opacity: 0; max-height: 0; margin: 0; }
+
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 9px; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: var(--text-muted); text-decoration: none; transition: background 0.15s, color 0.15s; margin-bottom: 2px; position: relative; white-space: nowrap; overflow: hidden; }
+        .nav-item:hover  { background: rgba(255,255,255,0.05); color: var(--text); }
+        .nav-item.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .nav-item.active .nav-icon { color: var(--accent-light); }
+        [data-theme="light"] .nav-item.active { color: var(--accent); }
+        [data-theme="light"] .nav-item.active .nav-icon { color: var(--accent); }
+        .nav-icon { width: 20px; height: 20px; min-width: 20px; font-size: 20px; flex-shrink: 0; color: var(--icon-faint); transition: color 0.15s; display: flex; align-items: center; justify-content: center; }
+        .nav-item:hover .nav-icon { color: var(--icon-muted); }
+        .nav-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .nav-label { opacity: 0; max-width: 0; }
+        .sidebar.collapsed .nav-item  { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .logout-btn { justify-content: center; padding: 10px 0; gap: 0; }
+        .sidebar.collapsed .sidebar-brand { padding-left: 0; gap: 0; }
+        .nav-item[data-tip] { position: relative; }
+        .sidebar.collapsed .nav-item[data-tip]:hover::after {
+            content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+            background: rgba(22,22,38,0.96); border: 1px solid var(--glass-border); border-radius: 8px;
+            padding: 5px 10px; font-size: 12.5px; font-weight: 500; color: var(--text); white-space: nowrap;
+            pointer-events: none; z-index: 200; box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+        .sidebar-footer { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--glass-border); overflow: hidden; }
+        .logout-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 9px; background: none; border: none; border-radius: 10px; font-size: 13.5px; font-weight: 500; color: rgba(248,113,113,0.65); cursor: pointer; transition: background 0.15s, color 0.15s; white-space: nowrap; overflow: hidden; }
+        .logout-btn:hover { background: rgba(248,113,113,0.09); color: var(--danger); }
+        .logout-label { overflow: hidden; max-width: 160px; white-space: nowrap; transition: opacity 0.2s, max-width 0.28s cubic-bezier(0.22,1,0.36,1); }
+        .sidebar.collapsed .logout-label { opacity: 0; max-width: 0; }
+        .nav-badge { min-width: 18px; height: 18px; background: var(--warning); border-radius: 9px; font-size: 10px; font-weight: 700; color: #07070f; display: flex; align-items: center; justify-content: center; padding: 0 5px; margin-left: auto; flex-shrink: 0; }
+        .sidebar.collapsed .nav-badge { position: absolute; top: 4px; right: 4px; min-width: 14px; height: 14px; font-size: 9px; padding: 0 3px; margin-left: 0; border: 1.5px solid var(--bg); }
+
+        /* ── Main Area ────────────────────────────────────────── */
+        .main-area { flex: 1; overflow-y: auto; height: 100vh; display: flex; flex-direction: column; min-width: 0; scrollbar-width: none; -ms-overflow-style: none; }
+        .main-area::-webkit-scrollbar { display: none; }
+
+        /* ── Topbar ───────────────────────────────────────────── */
+        .topbar {
+            height: var(--topbar-h); flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; background: rgba(7,7,15,0.7);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .topbar-left  { display: flex; align-items: center; gap: 14px; }
+        .topbar-greeting { font-size: 16px; font-weight: 600; line-height: 1.3; }
+        .topbar-sub      { font-size: 12px; color: var(--text-muted); }
+        .topbar-right    { display: flex; align-items: center; gap: 12px; }
+        .theme-btn, .notif-btn { position: relative; width: 38px; height: 38px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: background 0.15s, color 0.15s; overflow: visible; padding: 0; font-size: 18px; }
+        .theme-btn:hover, .notif-btn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; background: var(--accent); border-radius: 8px; font-size: 10px; font-weight: 700; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0 4px; border: 2px solid var(--bg); }
+        .avatar { width: 38px; height: 38px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; box-shadow: 0 2px 12px var(--accent-glow); }
+
+        /* ── Page Content ─────────────────────────────────────── */
+        .page-content { padding: 24px; flex: 1; }
+
+        /* ── Glass Card ───────────────────────────────────────── */
+        .card { background: var(--glass-bg); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); border: 1px solid var(--glass-border); border-radius: 18px; padding: 22px; box-shadow: 0 8px 32px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.02) inset; }
+
+        /* ── Page Header ──────────────────────────────────────── */
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; gap: 16px; flex-wrap: wrap; }
+        .page-title  { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; }
+        .page-sub    { font-size: 12.5px; color: var(--text-muted); margin-top: 3px; }
+        .page-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .btn { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 10px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--glass-border); transition: background 0.15s, border-color 0.15s, box-shadow 0.15s; white-space: nowrap; font-family: 'Inter', sans-serif; }
+        .btn-secondary { background: var(--glass-bg); color: var(--text-muted); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.07); color: var(--text); border-color: rgba(255,255,255,0.14); }
+        .btn-primary  { background: linear-gradient(135deg, var(--accent), var(--accent-light)); color: #07070f; border-color: transparent; font-weight: 600; box-shadow: 0 2px 12px var(--accent-glow); }
+        .btn-primary:hover { box-shadow: 0 4px 20px var(--accent-glow), 0 0 0 2px rgba(119,202,0,0.3); }
+
+        /* ── Mini Stats ───────────────────────────────────────── */
+        .mini-stats { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+        .mini-stat { display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; }
+        .mini-stat-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .mini-stat-icon.blue  { background: var(--blue-bg);              color: var(--blue); }
+        .mini-stat-icon.green { background: rgba(119,202,0,0.12);        color: var(--accent-light); }
+        .mini-stat-icon.muted { background: rgba(241,241,245,0.06);      color: var(--text-muted); }
+        .mini-stat-info { display: flex; flex-direction: column; gap: 1px; }
+        .mini-stat-val  { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+        .mini-stat-val.blue  { color: var(--blue); }
+        .mini-stat-val.green { color: var(--accent-light); }
+        .mini-stat-val.muted { color: var(--text-muted); }
+        .mini-stat-lbl  { font-size: 11px; font-weight: 500; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.6px; }
+
+        /* ── Filter Bar ───────────────────────────────────────── */
+        .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 320px; }
+        .search-wrap .ph { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--icon-faint); pointer-events: none; }
+        .search-wrap input { width: 100%; height: 36px; padding: 0 12px 0 34px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s; }
+        .search-wrap input::placeholder { color: var(--text-faint); }
+        .search-wrap input:focus { border-color: rgba(119,202,0,0.4); background: rgba(255,255,255,0.07); }
+        .role-select { height: 36px; padding: 0 30px 0 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 10px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(241,241,245,0.4)' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; transition: border-color 0.15s; }
+        .role-select:focus { border-color: rgba(119,202,0,0.4); }
+        .role-select option { background: #16161f; color: var(--text); }
+        .status-toggle { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid var(--glass-border); flex-shrink: 0; }
+        .toggle-chip { height: 36px; padding: 0 14px; background: transparent; border: none; font-size: 12.5px; font-weight: 500; color: var(--text-faint); cursor: pointer; transition: background 0.15s, color 0.15s; font-family: 'Inter', sans-serif; white-space: nowrap; }
+        .toggle-chip:not(:last-child) { border-right: 1px solid var(--glass-border); }
+        .toggle-chip.active { background: rgba(119,202,0,0.14); color: var(--accent-light); }
+        .filter-spacer { flex: 1; }
+
+        /* ── Table ────────────────────────────────────────────── */
+        .table-wrap { padding: 0; overflow: hidden; }
+        .emp-table { width: 100%; border-collapse: collapse; }
+        .emp-table thead th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--glass-border); white-space: nowrap; }
+        .emp-table thead th:first-child { padding-left: 20px; }
+        .emp-table thead th:last-child  { padding-right: 20px; text-align: right; }
+        .emp-table tbody tr { transition: background 0.12s; cursor: pointer; }
+        .emp-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .emp-table td { padding: 14px 16px; font-size: 13.5px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+        .emp-table td:first-child { padding-left: 20px; }
+        .emp-table td:last-child  { padding-right: 20px; text-align: right; }
+        .emp-table tbody tr:last-child td { border-bottom: none; }
+
+        /* Employee cell */
+        .emp-cell  { display: flex; align-items: center; gap: 12px; }
+        .emp-av    { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .emp-meta  { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+        .emp-name  { font-size: 13.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .emp-email { font-size: 12px; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .emp-type-badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 20px; vertical-align: middle; margin-left: 5px; letter-spacing: 0.02em; border: 1px solid; white-space: nowrap; }
+        .emp-type-badge.contractual { background: rgba(251,191,36,0.12); color: #fbbf24; border-color: rgba(251,191,36,0.25); }
+        .emp-type-badge.regular { background: rgba(119,202,0,0.1); color: var(--accent); border-color: rgba(119,202,0,0.22); }
+        [data-theme="light"] .emp-type-badge.regular { color: #4a7a00; background: rgba(90,153,0,0.1); border-color: rgba(90,153,0,0.25); }
+        .code-text { font-family: 'Menlo', 'Consolas', monospace; font-size: 12px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
+
+        /* Badges */
+        .role-pill { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: capitalize; white-space: nowrap; }
+        .role-pill.employee { background: var(--blue-bg);           color: var(--blue); }
+        .role-pill.manager  { background: rgba(119,202,0,0.12);    color: var(--accent-light); }
+        .status-pill { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 6px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .status-pill.active     { background: var(--success-bg);    color: var(--success); }
+        .status-pill.on_notice  { background: var(--warning-bg);    color: var(--warning); }
+        .status-pill.resigned   { background: rgba(241,241,245,0.07); color: var(--text-muted); }
+        .status-pill.terminated { background: var(--danger-bg);     color: var(--danger); }
+
+        /* Action button */
+        .action-btn { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .action-btn:hover { background: rgba(119,202,0,0.1); border-color: rgba(119,202,0,0.3); color: var(--accent-light); }
+
+        /* Empty state */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; gap: 10px; }
+        .empty-state-icon { font-size: 36px; color: var(--text-faint); }
+        .empty-state-text { font-size: 14px; color: var(--text-muted); }
+        .empty-state-sub  { font-size: 12.5px; color: var(--text-faint); }
+
+        /* ── Backdrop ─────────────────────────────────────────── */
+        .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }
+        .backdrop.show { opacity: 1; pointer-events: auto; }
+
+        /* ── Drawer ───────────────────────────────────────────── */
+        .drawer {
+            position: fixed; top: 0; right: 0; width: 460px; height: 100%;
+            background: rgba(14,14,22,0.97);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-left: 1px solid var(--glass-border);
+            box-shadow: -16px 0 64px rgba(0,0,0,0.5);
+            z-index: 110; display: flex; flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        .drawer.open { transform: translateX(0); }
+
+        .drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 16px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .drawer-header-title { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        .drawer-close { width: 32px; height: 32px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-size: 16px; transition: background 0.15s, color 0.15s; padding: 0; }
+        .drawer-close:hover { background: var(--danger-bg); color: var(--danger); border-color: rgba(248,113,113,0.25); }
+
+        /* Profile header inside drawer */
+        .drawer-profile-hd { display: flex; align-items: center; gap: 16px; padding: 20px 20px 18px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .drawer-av { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .drawer-emp-name { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+        .drawer-emp-desg  { font-size: 12.5px; color: var(--text-muted); margin: 2px 0 6px; }
+
+        /* Drawer tabs */
+        .drawer-tabs { display: flex; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; padding: 0 20px; gap: 0; }
+        .drawer-tab { height: 42px; padding: 0 4px; font-size: 13px; font-weight: 500; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; margin-right: 16px; transition: color 0.15s, border-color 0.15s; font-family: 'Inter', sans-serif; }
+        .drawer-tab:hover { color: var(--text); }
+        .drawer-tab.active { color: var(--accent-light); border-bottom-color: var(--accent); }
+        [data-theme="light"] .drawer-tab.active { color: var(--accent); }
+
+        /* Drawer body */
+        .drawer-body { flex: 1; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .drawer-body::-webkit-scrollbar { display: none; }
+        .tab-panel { padding: 20px; }
+        .tab-panel.hidden { display: none; }
+
+        /* Field grid */
+        .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; margin-bottom: 20px; }
+        .field-item.full { grid-column: 1 / -1; }
+        .field-label { font-size: 10.5px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+        .field-value { font-size: 13.5px; font-weight: 500; color: var(--text); word-break: break-word; }
+        .field-value.muted { color: var(--text-muted); font-weight: 400; }
+
+        /* Edit profile button */
+        .btn-edit-profile { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 12.5px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s; font-family: 'Inter', sans-serif; margin-top: 4px; }
+        .btn-edit-profile:hover { background: rgba(255,255,255,0.07); color: var(--text); }
+
+        /* Edit form */
+        .edit-form-section-title { font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { font-size: 11.5px; font-weight: 500; color: var(--text-muted); }
+        .form-label .req { color: var(--danger); margin-left: 2px; }
+        .form-input, .form-select { height: 36px; padding: 0 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--text); outline: none; transition: border-color 0.15s, background 0.15s; width: 100%; }
+        .form-input::placeholder { color: var(--text-faint); }
+        .form-input:focus, .form-select:focus { border-color: rgba(119,202,0,0.4); background: rgba(255,255,255,0.07); }
+        .form-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(241,241,245,0.4)' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer; }
+        .form-select option { background: #16161f; color: var(--text); }
+        /* Fix: select elements need appearance:none + solid bg or the browser renders them white in dark mode */
+        select.form-input { appearance: none; -webkit-appearance: none; background-color: #13131e; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(241,241,245,0.4)' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px; cursor: pointer; }
+        select.form-input option { background: #16161f; color: var(--text); }
+        [data-theme="light"] select.form-input { background-color: rgba(0,0,0,0.04); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(26,32,16,0.5)' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+        [data-theme="light"] select.form-input option { background: #fff; color: #1a2010; }
+
+        /* Edit form action buttons */
+        .edit-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--glass-border); }
+        .btn-cancel { height: 34px; padding: 0 16px; background: transparent; border: 1px solid var(--glass-border); border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .btn-save { height: 34px; padding: 0 18px; background: linear-gradient(135deg, var(--accent), var(--accent-light)); border: none; border-radius: 9px; font-size: 13px; font-weight: 600; color: #07070f; cursor: pointer; transition: box-shadow 0.15s, opacity 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-save:hover { box-shadow: 0 4px 16px var(--accent-glow); }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Docs list */
+        .doc-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 8px; }
+        .doc-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--blue-bg); color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .doc-meta { flex: 1; min-width: 0; }
+        .doc-label  { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .doc-status { font-size: 11px; color: var(--text-faint); margin-top: 1px; }
+        .doc-status-badge { display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 5px; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+        .doc-status-badge.fully_verified  { background: var(--success-bg); color: var(--success); }
+        .doc-status-badge.manager_verified { background: var(--blue-bg);   color: var(--blue); }
+        .doc-status-badge.pending          { background: var(--warning-bg); color: var(--warning); }
+        .doc-status-badge.requested        { background: rgba(241,241,245,0.07); color: var(--text-muted); }
+        .doc-status-badge.rejected         { background: var(--danger-bg);  color: var(--danger); }
+        .docs-empty { text-align: center; padding: 28px 16px; font-size: 13px; color: var(--text-faint); }
+        .docs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .docs-title  { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+        .btn-req-doc { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--text-muted); cursor: pointer; transition: background 0.15s, color 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-req-doc:hover { background: rgba(119,202,0,0.1); border-color: rgba(119,202,0,0.25); color: var(--accent-light); }
+
+        /* Drawer footer actions */
+        .drawer-footer { padding: 14px 20px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; background: rgba(10,10,18,0.6); }
+        .btn-reset-pwd { flex: 1; height: 36px; display: flex; align-items: center; justify-content: center; gap: 7px; background: var(--blue-bg); border: 1px solid rgba(96,165,250,0.2); border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--blue); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-reset-pwd:hover { background: rgba(96,165,250,0.18); box-shadow: 0 0 0 2px rgba(96,165,250,0.2); }
+        .btn-reset-pwd:disabled { opacity: 0.45; cursor: not-allowed; }
+        .btn-terminate { flex: 1; height: 36px; display: flex; align-items: center; justify-content: center; gap: 7px; background: var(--danger-bg); border: 1px solid rgba(248,113,113,0.2); border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--danger); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; font-family: 'Inter', sans-serif; }
+        .btn-terminate:hover { background: rgba(248,113,113,0.18); box-shadow: 0 0 0 2px rgba(248,113,113,0.2); }
+        .btn-terminate:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* Promote chip next to name in drawer header */
+        .btn-promote-chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); border-radius: 8px; font-size: 12px; font-weight: 600; color: #fbbf24; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0; }
+        .btn-promote-chip:hover { background: rgba(251,191,36,0.18); box-shadow: 0 0 0 2px rgba(251,191,36,0.18); }
+
+        /* Promoted chip in table */
+        .promoted-chip { display: inline-flex; align-items: center; padding: 2px 8px; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.22); border-radius: 20px; font-size: 10.5px; font-weight: 600; color: #fbbf24; margin-left: 6px; vertical-align: middle; }
+
+        /* Promote modal — step bar */
+        .promo-steps { display: flex; align-items: center; margin-bottom: 20px; }
+        .promo-step  { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-faint); font-weight: 500; white-space: nowrap; }
+        .promo-step.active { color: var(--accent); }
+        .promo-step.done   { color: var(--text-muted); }
+        .promo-step-num { width: 24px; height: 24px; border-radius: 50%; border: 1.5px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+        .promo-step.active .promo-step-num { background: var(--accent); border-color: var(--accent); color: #0a0a12; }
+        .promo-step.done   .promo-step-num { background: rgba(119,202,0,0.12); border-color: rgba(119,202,0,0.3); color: var(--accent); }
+        .promo-step-line { flex: 1; height: 1px; background: var(--glass-border); margin: 0 10px; }
+
+        /* Promote modal — employee confirm card */
+        .promo-emp-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 18px; }
+        .promo-emp-av   { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .promo-emp-name { font-size: 14px; font-weight: 600; }
+        .promo-emp-desg { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Promote modal — team list (step 2) */
+        .promo-team-header { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.55; }
+        .promo-team-header strong { color: var(--text-main); }
+        .promo-team-list  { border: 1px solid var(--glass-border); border-radius: 10px; overflow: hidden; max-height: 230px; overflow-y: auto; }
+        .promo-team-item  { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--glass-border); cursor: pointer; transition: background 0.1s; user-select: none; }
+        .promo-team-item:last-child { border-bottom: none; }
+        .promo-team-item:hover { background: rgba(255,255,255,0.03); }
+        .promo-team-item input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; pointer-events: none; }
+        .promo-team-av   { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .promo-team-name { font-size: 13px; font-weight: 500; flex: 1; }
+        .promo-team-dept { font-size: 11.5px; color: var(--text-muted); }
+        .promo-team-empty { padding: 22px; text-align: center; color: var(--text-faint); font-size: 13px; font-style: italic; }
+
+        /* ── Notice Period Tab ────────────────────────────────── */
+        .notice-banner { display: flex; align-items: flex-start; gap: 14px; background: rgba(251,191,36,0.09); border: 1px solid rgba(251,191,36,0.22); border-radius: 12px; padding: 14px 16px; margin-bottom: 18px; }
+        .notice-banner.expired { background: rgba(74,222,128,0.08); border-color: rgba(74,222,128,0.2); }
+        .notice-banner-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--warning-bg); display: flex; align-items: center; justify-content: center; font-size: 19px; color: var(--warning); flex-shrink: 0; }
+        .notice-banner.expired .notice-banner-icon { background: var(--success-bg); color: var(--success); }
+        .notice-day-count { font-size: 26px; font-weight: 800; color: var(--warning); line-height: 1; letter-spacing: -0.5px; }
+        .notice-banner.expired .notice-day-count { color: var(--success); }
+        .notice-day-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+        .notice-end-date { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+        .notice-end-date strong { color: var(--text); }
+        .np-section { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--glass-border); }
+        .np-section-title { font-size: 10.5px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; }
+        .np-docs-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0; }
+        /* Clickable notice doc items */
+        .notice-doc-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 8px; cursor: default; transition: background 0.15s, border-color 0.15s; }
+        .notice-doc-item.has-file { cursor: pointer; border-color: rgba(119,202,0,0.18); }
+        .notice-doc-item.has-file:hover { background: rgba(119,202,0,0.07); border-color: rgba(119,202,0,0.3); }
+        .notice-doc-item.has-file .doc-icon { background: var(--success-bg); color: var(--success); }
+        .att-status-pill { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 5px; font-size: 11px; font-weight: 600; }
+        .att-status-pill.present { background: var(--success-bg); color: var(--success); }
+        .att-status-pill.late    { background: var(--warning-bg); color: var(--warning); }
+        .att-status-pill.absent  { background: var(--danger-bg);  color: var(--danger);  }
+
+        /* ── Document Verification ─────────────────────────────── */
+        .doc-item.has-file { cursor: pointer; border-color: rgba(255,255,255,0.12); }
+        .doc-item.has-file:hover { background: rgba(255,255,255,0.06); }
+        .doc-item .doc-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .doc-verify-btn { height: 24px; padding: 0 9px; background: var(--success-bg); border: 1px solid rgba(74,222,128,0.2); border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--success); cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
+        .doc-verify-btn:hover { background: rgba(74,222,128,0.2); }
+        .doc-reject-btn { height: 24px; padding: 0 9px; background: var(--danger-bg); border: 1px solid rgba(248,113,113,0.2); border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--danger); cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
+        .doc-reject-btn:hover { background: rgba(248,113,113,0.2); }
+        .docs-group-sep { font-size: 10.5px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.7px; padding: 12px 0 6px; border-top: 1px solid var(--glass-border); margin-top: 4px; }
+
+        /* ── Modal ────────────────────────────────────────────── */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+        .modal-box { width: 100%; max-width: 520px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset; display: flex; flex-direction: column; max-height: 90vh; transform: scale(0.96); transition: transform 0.2s cubic-bezier(0.22,1,0.36,1); }
+        .modal-overlay.show .modal-box { transform: scale(1); }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 22px 16px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .modal-title  { font-size: 15px; font-weight: 700; }
+        .modal-sub    { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+        .modal-close  { width: 32px; height: 32px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); font-size: 16px; transition: background 0.15s, color 0.15s; padding: 0; }
+        .modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+        .modal-body   { padding: 20px 22px; overflow-y: auto; scrollbar-width: thin; flex: 1; }
+        .modal-footer { padding: 14px 22px; border-top: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-shrink: 0; }
+        .modal-btn { height: 36px; padding: 0 18px; border-radius: 9px; font-size: 13px; font-weight: 500; cursor: pointer; transition: background 0.15s, box-shadow 0.15s; font-family: 'Inter', sans-serif; border: 1px solid var(--glass-border); }
+        .modal-btn-secondary { background: transparent; color: var(--text-muted); }
+        .modal-btn-secondary:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .modal-btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-light)); border-color: transparent; color: #07070f; font-weight: 600; box-shadow: 0 2px 10px var(--accent-glow); }
+        .modal-btn-primary:hover { box-shadow: 0 4px 18px var(--accent-glow); }
+        .modal-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .modal-btn-danger { background: var(--danger-bg); border-color: rgba(248,113,113,0.25); color: var(--danger); font-weight: 600; }
+        .modal-btn-danger:hover { background: rgba(248,113,113,0.18); }
+        .modal-btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Terminate confirm */
+        .terminate-info { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--danger-bg); border: 1px solid rgba(248,113,113,0.2); border-radius: 10px; margin-bottom: 18px; }
+        .terminate-info-icon { font-size: 22px; color: var(--danger); flex-shrink: 0; }
+        .terminate-info-text { font-size: 13.5px; line-height: 1.5; }
+        .terminate-info-text strong { color: var(--danger); }
+        .form-group textarea.form-input { height: auto; padding: 10px 12px; resize: vertical; min-height: 80px; }
+
+        /* ── Manager Typeahead ───────────────────────────────────── */
+        .ta-wrap { position: relative; }
+        .ta-list { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 200; background: #16161f; border: 1px solid var(--glass-border); border-radius: 10px; max-height: 200px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+        .ta-wrap.open .ta-list { display: block; }
+        .ta-item { padding: 9px 14px; font-size: 13px; cursor: pointer; color: var(--text); transition: background 0.12s; }
+        .ta-item:hover { background: rgba(119,202,0,0.1); color: var(--accent-light); }
+        .ta-no-result { padding: 10px 14px; font-size: 12.5px; color: var(--text-faint); font-style: italic; }
+        [data-theme="light"] .ta-list { background: #ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.15); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .ta-item:hover { background: rgba(90,153,0,0.08); color: var(--accent); }
+
+        /* ── Notification Dropdown ────────────────────────────── */
+        .notif-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 340px; max-height: 440px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 18px; box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset; z-index: 200; display: flex; flex-direction: column; opacity: 0; transform: translateY(-6px) scale(0.97); pointer-events: none; transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22,1,0.36,1); }
+        .notif-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        .notif-dropdown-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; }
+        .notif-dropdown-title { font-size: 14px; font-weight: 600; }
+        .mark-read-link { font-size: 12px; color: rgba(119,202,0,0.8); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+        .mark-read-link:hover { color: var(--accent-light); }
+        .notif-dropdown-body { overflow-y: auto; padding: 10px; flex: 1; scrollbar-width: none; -ms-overflow-style: none; }
+        .notif-dropdown-body::-webkit-scrollbar { display: none; }
+        .notif-empty { text-align: center; padding: 28px; font-size: 13px; color: var(--text-faint); }
+        .notif-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: rgba(255,255,255,0.028); border: 1px solid var(--glass-border); border-radius: 10px; margin-bottom: 6px; }
+        .notif-item.unread { background: rgba(119,202,0,0.06); border-color: rgba(119,202,0,0.16); border-left: 2px solid var(--accent); }
+        .notif-title { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+        .notif-msg   { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .notif-time  { font-size: 11px; color: var(--text-faint); margin-top: 4px; }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; margin-left: 10px; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+        .notif-dismiss { border: none; background: none; color: var(--text-faint); cursor: pointer; font-size: 12px; padding: 2px; border-radius: 4px; transition: background 0.15s; line-height: 1; }
+        .notif-dismiss:hover { background: var(--danger-bg); color: var(--danger); }
+
+        /* ── Toast ────────────────────────────────────────────── */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .toast { padding: 14px 16px; background: #16161f; border: 1px solid var(--glass-border); border-radius: 12px; font-size: 13px; color: #f1f1f5; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s cubic-bezier(0.22,1,0.36,1); pointer-events: auto; }
+        .toast.success { border-color: rgba(74,222,128,0.3); }
+        .toast.error   { border-color: rgba(248,113,113,0.3); }
+        .toast.info    { border-color: rgba(96,165,250,0.3); }
+        [data-theme="light"] .toast         { background: #ffffff; color: #1a2010; box-shadow: 0 8px 24px rgba(0,0,0,0.12); border-color: rgba(0,0,0,0.1); }
+        [data-theme="light"] .toast.success { border-color: rgba(50,140,70,0.35); }
+        [data-theme="light"] .toast.error   { border-color: rgba(200,50,50,0.3); }
+        [data-theme="light"] .toast.info    { border-color: rgba(37,99,235,0.3); }
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Export button (row action) ───────────────────────── */
+        .export-row-btn { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; background: rgba(96,165,250,0.07); border: 1px solid rgba(96,165,250,0.22); border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--blue); cursor: pointer; transition: background 0.15s, border-color 0.15s, opacity 0.15s; font-family: 'Inter', sans-serif; white-space: nowrap; }
+        .export-row-btn:hover  { background: rgba(96,165,250,0.14); border-color: rgba(96,165,250,0.4); }
+        .export-row-btn:active { opacity: 0.75; }
+        .export-row-btn.loading { opacity: 0.6; pointer-events: none; }
+        .row-actions { display: flex; align-items: center; gap: 6px; }
+
+        /* ── Responsive ───────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .emp-table th:nth-child(3), .emp-table td:nth-child(3) { display: none; }
+            .emp-table th:nth-child(4), .emp-table td:nth-child(4) { display: none; }
+        }
+        @media (max-width: 640px) {
+            .sidebar { width: 64px; }
+            .topbar  { padding: 0 16px; }
+            .page-content { padding: 16px; }
+            .drawer { width: 100%; }
+            .emp-table th:nth-child(2), .emp-table td:nth-child(2) { display: none; }
+            .mini-stats { gap: 8px; }
+            .mini-stat { padding: 8px 12px; }
+        }
+    </style>
+
+    <!-- Custom Logo Background -->
+    <style>
+        .brand-logo, .brand-mark, .brand-toggle { 
+            background: #ffffff !important; 
+            box-shadow: 0 4px 15px rgba(255,255,255,0.12) !important; 
+        }
+        [data-theme="light"] .brand-logo, [data-theme="light"] .brand-mark, [data-theme="light"] .brand-toggle { 
+            background: #111827 !important; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important; 
+        }
+        
+        /* Prevent the logo from having double-backgrounds in the sidebar */
+        .brand-toggle .brand-logo {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 5px !important;
+        }
+    </style>
+
+    <!-- Firebase Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script>
+        firebase.initializeApp({
+            apiKey:            "AIzaSyDdZHyY9_NDueeMRZE2K2XxOIM8gh2YcQk",
+            authDomain:        "beanhr-portal.firebaseapp.com",
+            projectId:         "beanhr-portal",
+            storageBucket:     "beanhr-portal.firebasestorage.app",
+            messagingSenderId: "1056336656581",
+            appId:             "1:1056336656581:web:0887e592e541670163d8ac"
+        });
+    </script>
+</head>
+<body>
+    <div class="bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="app-shell">
+
+        <!-- ── SIDEBAR ─────────────────────────────────────────── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <button class="brand-toggle" onclick="toggleSidebar()">
+                    <div class="brand-logo" style="padding: 8px; box-sizing: border-box; "><img src="../../assets/logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;" /></div>
+                    <div class="brand-hamburger">
+                        <span></span><span></span><span></span>
+                    </div>
+                </button>
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-name">BeanHR</div>
+                    <div class="sidebar-brand-tag">Super Admin</div>
+                </div>
+            </div>
+
+            <span class="sidebar-section-label">ADMIN</span>
+
+            <a href="dashboard.html" class="nav-item" data-tip="Dashboard">
+                <span class="nav-icon"><i class="ph-fill ph-house ph-icon-fill"></i><i class="ph ph-house ph-icon-outline"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="employees.html" class="nav-item active" data-tip="Employees">
+                <span class="nav-icon"><i class="ph-fill ph-users ph-icon-fill"></i><i class="ph ph-users ph-icon-outline"></i></span>
+                <span class="nav-label">Employees</span>
+            </a>
+            <a href="approvals.html" class="nav-item" data-tip="Approvals">
+                <span class="nav-icon"><i class="ph-fill ph-check-circle ph-icon-fill"></i><i class="ph ph-check-circle ph-icon-outline"></i></span>
+                <span class="nav-label">Approvals</span>
+                <span class="nav-badge" id="sidebarApprovalBadge" style="display:none"></span>
+            </a>
+            <a href="leave-quotas.html" class="nav-item" data-tip="Leave Quotas">
+                <span class="nav-icon"><i class="ph-fill ph-calendar-blank ph-icon-fill"></i><i class="ph ph-calendar-blank ph-icon-outline"></i></span>
+                <span class="nav-label">Leave Quotas</span>
+            </a>
+            <a href="hiring.html" class="nav-item" data-tip="Hiring">
+                <span class="nav-icon"><i class="ph-fill ph-user-plus ph-icon-fill"></i><i class="ph ph-user-plus ph-icon-outline"></i></span>
+                <span class="nav-label">Hiring</span>
+            </a>
+            <a href="payroll.html" class="nav-item" data-tip="Payroll">
+                <span class="nav-icon"><i class="ph-fill ph-money ph-icon-fill"></i><i class="ph ph-money ph-icon-outline"></i></span>
+                <span class="nav-label">Payroll</span>
+            </a>
+            <a href="attendance.html" class="nav-item" data-tip="Attendance">
+                <span class="nav-icon"><i class="ph-fill ph-calendar-check ph-icon-fill"></i><i class="ph ph-calendar-check ph-icon-outline"></i></span>
+                <span class="nav-label">Attendance</span>
+            </a>
+            <a href="audit-logs.html" class="nav-item" data-tip="Audit Logs">
+                <span class="nav-icon"><i class="ph-fill ph-scroll ph-icon-fill"></i><i class="ph ph-scroll ph-icon-outline"></i></span>
+                <span class="nav-label">Audit Logs</span>
+            </a>
+            <a href="ai-search.html" class="nav-item" data-tip="AI Search">
+                <span class="nav-icon"><i class="ph-fill ph-magnifying-glass ph-icon-fill"></i><i class="ph ph-magnifying-glass ph-icon-outline"></i></span>
+                <span class="nav-label">AI Search</span>
+            </a>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <span class="nav-icon"><i class="ph-fill ph-sign-out ph-icon-fill"></i><i class="ph ph-sign-out ph-icon-outline"></i></span>
+                    <span class="logout-label">Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── MAIN AREA ────────────────────────────────────────── -->
+        <div class="main-area">
+
+            <!-- ── TOPBAR ──────────────────────────────────────── -->
+            <div class="topbar">
+                <div class="topbar-left">
+                    <div>
+                        <div class="topbar-greeting">People Management</div>
+                        <div class="topbar-sub" id="todayDate"></div>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <button class="theme-btn" onclick="toggleTheme()">
+                        <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
+                        <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
+                    </button>
+                    <div style="position: relative;">
+                        <button class="notif-btn" onclick="toggleNotifDropdown(event)">
+                            <i class="ph-fill ph-bell ph-icon-fill" style="font-size:18px"></i>
+                            <i class="ph ph-bell ph-icon-outline" style="font-size:18px"></i>
+                            <span class="notif-badge" id="notifBadge" style="display: none;"></span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-dropdown-head">
+                                <div class="notif-dropdown-title">Notifications</div>
+                                <a class="mark-read-link" onclick="markAllRead(event)">Mark all read</a>
+                            </div>
+                            <div class="notif-dropdown-body" id="notifDropdownBody">
+                                <div class="notif-empty">No notifications</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="avatar" id="adminAvatar">A</div>
+                    <script>
+                        (function(){
+                            const email = sessionStorage.getItem('bhr_email') || 'A';
+                            const av = document.getElementById('adminAvatar');
+                            if(av) av.textContent = email.charAt(0).toUpperCase();
+                        })();
+                    </script>
+                </div>
+            </div>
+
+            <!-- ── PAGE CONTENT ────────────────────────────────── -->
+            <div class="page-content">
+
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div>
+                        <div class="page-title">All Employees</div>
+                        <div class="page-sub">Manage employees, managers, and access</div>
+                    </div>
+                    <div class="page-actions">
+                        <button class="btn btn-secondary" onclick="openAddManagerModal()">
+                            <i class="ph ph-user-gear" style="font-size:15px"></i>
+                            Add Manager
+                        </button>
+                        <button class="btn btn-primary" onclick="openAddEmployeeModal()">
+                            <i class="ph ph-user-plus" style="font-size:15px"></i>
+                            Add Employee
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mini Stats -->
+                <div class="mini-stats">
+                    <div class="mini-stat">
+                        <div class="mini-stat-icon blue"><i class="ph-fill ph-users" style="font-size:15px"></i></div>
+                        <div class="mini-stat-info">
+                            <div class="mini-stat-val blue" id="statActiveEmp">—</div>
+                            <div class="mini-stat-lbl">Active Employees</div>
+                        </div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-icon green"><i class="ph-fill ph-user-gear" style="font-size:15px"></i></div>
+                        <div class="mini-stat-info">
+                            <div class="mini-stat-val green" id="statManagers">—</div>
+                            <div class="mini-stat-lbl">Active Managers</div>
+                        </div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-icon muted"><i class="ph ph-archive" style="font-size:15px"></i></div>
+                        <div class="mini-stat-info">
+                            <div class="mini-stat-val muted" id="statFormer">—</div>
+                            <div class="mini-stat-lbl">Former Staff</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="search-wrap">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Search name, email or code…" oninput="handleSearch()" />
+                    </div>
+                    <select class="role-select" id="roleFilter" onchange="handleRoleFilter(this.value)">
+                        <option value="all">All Roles</option>
+                        <option value="employees">Employees only</option>
+                        <option value="managers">Managers only</option>
+                    </select>
+                    <div class="status-toggle">
+                        <button class="toggle-chip active" id="chipActive" onclick="handleStatusFilter('active', this)">Active</button>
+                        <button class="toggle-chip" id="chipAll"    onclick="handleStatusFilter('all', this)">All including past</button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="card table-wrap">
+                    <table class="emp-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Code</th>
+                                <th>Role</th>
+                                <th>Department</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                        </tbody>
+                    </table>
+                    <div class="empty-state" id="emptyState" style="display:none">
+                        <div class="empty-state-icon"><i class="ph ph-users"></i></div>
+                        <div class="empty-state-text">No employees found</div>
+                        <div class="empty-state-sub">Try adjusting your search or filters</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── BACKDROP (drawer + modals) ──────────────────────────── -->
+    <div class="backdrop" id="backdrop" onclick="handleBackdropClick()"></div>
+
+    <!-- ── EMPLOYEE DRAWER ─────────────────────────────────────── -->
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            <span class="drawer-header-title">Employee Details</span>
+            <button class="drawer-close" onclick="closeDrawer()"><i class="ph ph-x"></i></button>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="drawer-profile-hd" id="drawerProfileHd">
+            <div class="drawer-av" id="drawerAvatar">A</div>
+            <div style="flex:1;min-width:0">
+                <div class="drawer-emp-name" id="drawerName">—</div>
+                <div class="drawer-emp-desg" id="drawerDesg">—</div>
+                <div id="drawerStatusBadge"></div>
+            </div>
+            <button class="btn-promote-chip" id="btnPromoteChip" style="display:none" onclick="openPromoteModal()">
+                <i class="ph ph-arrow-circle-up" style="font-size:14px"></i> Promote to Manager
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="drawer-tabs">
+            <button class="drawer-tab active" onclick="switchDrawerTab('profile', this)">Profile</button>
+            <button class="drawer-tab"        onclick="switchDrawerTab('documents', this)">Documents</button>
+            <button class="drawer-tab"        onclick="switchDrawerTab('notice', this)" id="noticeTab" style="display:none;color:var(--warning);">Notice Period</button>
+        </div>
+
+        <!-- Scrollable body -->
+        <div class="drawer-body">
+
+            <!-- Profile Tab -->
+            <div class="tab-panel" id="tabProfile">
+                <!-- Read-only view -->
+                <div id="profileView">
+                    <div class="field-grid">
+                        <div class="field-item">
+                            <div class="field-label">Employee Code</div>
+                            <div class="field-value" id="pvCode">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Role</div>
+                            <div class="field-value" id="pvRole">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Department</div>
+                            <div class="field-value" id="pvDept">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Designation</div>
+                            <div class="field-value" id="pvDesg">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Company Tag</div>
+                            <div class="field-value muted" id="pvTag">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Reports To</div>
+                            <div class="field-value muted" id="pvManager">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Phone</div>
+                            <div class="field-value" id="pvPhone">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Email</div>
+                            <div class="field-value" id="pvEmail">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Joining Date</div>
+                            <div class="field-value" id="pvJoining">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Employment Status</div>
+                            <div id="pvStatus">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Employment Type</div>
+                            <div id="pvEmploymentType">—</div>
+                        </div>
+                        <div class="field-item full">
+                            <div class="field-label">Address</div>
+                            <div class="field-value" id="pvAddress">—</div>
+                        </div>
+                        <div class="field-item full">
+                            <div class="field-label">Emergency Contact</div>
+                            <div id="pvEmergencyContact"><span style="color:var(--text-faint);font-style:italic;font-size:13px;">Not provided</span></div>
+                        </div>
+                    </div>
+                    <button class="btn-edit-profile" id="btnEditProfile" onclick="enterEditMode()">
+                        <i class="ph ph-pencil" style="font-size:14px"></i>
+                        Edit Profile
+                    </button>
+                </div>
+
+                <!-- Edit form -->
+                <div id="profileEdit" style="display:none">
+                    <div class="edit-form-section-title">Edit Profile Details</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="editName">Full Name <span class="req">*</span></label>
+                            <input class="form-input" type="text" id="editName" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editPhone">Phone</label>
+                            <input class="form-input" type="text" id="editPhone" placeholder="+91 XXXXX XXXXX" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editDesignation">Designation <span class="req">*</span></label>
+                            <input class="form-input" type="text" id="editDesignation" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editDepartment">Department <span class="req">*</span></label>
+                            <input class="form-input" type="text" id="editDepartment" required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editCompanyTag">Company Tag</label>
+                            <input class="form-input" type="text" id="editCompanyTag" placeholder="Optional" />
+                        </div>
+                        <div class="form-group" id="editManagerGroup">
+                            <label class="form-label" for="editManager">Reports To</label>
+                            <select class="form-select" id="editManager">
+                                <option value="">— No manager —</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="edit-actions">
+                        <button class="btn-cancel" type="button" onclick="cancelEdit()">Cancel</button>
+                        <button class="btn-save" id="btnSaveProfile" type="button" onclick="saveProfile()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div class="tab-panel hidden" id="tabDocuments">
+                <div class="docs-header">
+                    <div class="docs-title">Documents</div>
+                    <button class="btn-req-doc" onclick="openRequestDocModal()">
+                        <i class="ph ph-plus" style="font-size:12px"></i>
+                        Request Document
+                    </button>
+                </div>
+                <div id="docsList"></div>
+            </div>
+
+            <!-- Notice Period Tab -->
+            <div class="tab-panel hidden" id="tabNotice">
+                <!-- Status banner -->
+                <div class="notice-banner" id="noticeBanner">
+                    <div class="notice-banner-icon"><i class="ph ph-hourglass-medium"></i></div>
+                    <div>
+                        <div class="notice-day-count" id="npDaysLeft">—</div>
+                        <div class="notice-day-label" id="npDaysLabel">remaining in notice period</div>
+                        <div class="notice-end-date" id="npEndDate"></div>
+                    </div>
+                </div>
+
+                <!-- Resignation Details -->
+                <div class="np-section" style="margin-top:0;padding-top:0;border-top:none;">
+                    <div class="np-section-title">Resignation Details</div>
+                    <div class="field-grid">
+                        <div class="field-item">
+                            <div class="field-label">Submitted On</div>
+                            <div class="field-value" id="npResignDate">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Notice Period</div>
+                            <div class="field-value" id="npNoticeDays">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Last Working Day</div>
+                            <div class="field-value" id="npLastDay">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Approved By</div>
+                            <div class="field-value muted" id="npApprovedBy">—</div>
+                        </div>
+                        <div class="field-item full">
+                            <div class="field-label">Reason</div>
+                            <div class="field-value muted" id="npReason" style="white-space:pre-wrap;line-height:1.5;">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Attendance -->
+                <div class="np-section">
+                    <div class="np-section-title">Last Attendance Record</div>
+                    <div class="field-grid">
+                        <div class="field-item">
+                            <div class="field-label">Date</div>
+                            <div class="field-value" id="npAttDate">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Status</div>
+                            <div id="npAttStatus">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Login Time</div>
+                            <div class="field-value" id="npLastLogin">—</div>
+                        </div>
+                        <div class="field-item">
+                            <div class="field-label">Logout Time</div>
+                            <div class="field-value" id="npLastLogout">—</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div><!-- /drawer-body -->
+
+        <!-- Drawer Footer -->
+        <div class="drawer-footer">
+            <button class="btn-reset-pwd" id="btnResetPwd" onclick="handleResetPassword()">
+                <i class="ph ph-lock-key" style="font-size:15px"></i>
+                Force Reset Password
+            </button>
+            <button class="btn-terminate" id="btnTerminate" onclick="openTerminateModal()">
+                <i class="ph ph-x-circle" style="font-size:15px"></i>
+                Terminate
+            </button>
+        </div>
+    </div>
+
+    <!-- ── ADD EMPLOYEE MODAL ───────────────────────────────────── -->
+    <div class="modal-overlay" id="addEmployeeModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Add Employee</div>
+                    <div class="modal-sub">A portal account is created and credentials are emailed to them</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('addEmployeeModal')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="empName">Full Name <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="empName" placeholder="e.g. Arjun Sharma" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empCode">Employee ID</label>
+                        <input class="form-input" type="text" id="empCode" placeholder="e.g. EMP005 (or leave blank to auto-generate)" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empEmail">Work Email <span class="req">*</span></label>
+                        <input class="form-input" type="email" id="empEmail" placeholder="name@company.com" required />
+                        <span style="font-size:11px;color:var(--text-faint);margin-top:3px">Used as portal login identifier</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empInviteEmail">Send Invite To</label>
+                        <input class="form-input" type="email" id="empInviteEmail" placeholder="personal@email.com (optional)" />
+                        <span style="font-size:11px;color:var(--text-faint);margin-top:3px">Temp password sent here. Leave blank to send to work email above.</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empPhone">Phone</label>
+                        <input class="form-input" type="text" id="empPhone" placeholder="+91 XXXXX XXXXX" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empDesignation">Designation <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="empDesignation" placeholder="e.g. Software Engineer" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empDepartment">Department <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="empDepartment" placeholder="e.g. Engineering" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empCompanyTag">Company Tag</label>
+                        <input class="form-input" type="text" id="empCompanyTag" placeholder="Optional" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assigns to Manager</label>
+                        <div class="ta-wrap" id="empManagerWrap">
+                            <input class="form-input" type="text" id="empManagerInput" placeholder="Search manager…" autocomplete="off" />
+                            <input type="hidden" id="empMgrId" />
+                            <div class="ta-list" id="empManagerList"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empJoining">Joining Date <span class="req">*</span></label>
+                        <input class="form-input" type="date" id="empJoining" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="empBaseSalary">Base Monthly Salary (₹) <span class="req">*</span></label>
+                        <input class="form-input" type="number" id="empBaseSalary" placeholder="e.g. 50000" min="0" required />
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label" for="empEmploymentType">Employment Type <span class="req">*</span></label>
+                        <select class="form-input" id="empEmploymentType">
+                            <option value="regular">Regular (permanent salaried)</option>
+                            <option value="contractual">Contractual</option>
+                        </select>
+                        <span style="font-size:11px;color:var(--text-faint);margin-top:3px">Determines daily rate basis: regular = calendar days, contractual = working days</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('addEmployeeModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="btnSubmitEmployee" onclick="submitAddEmployee()">
+                    <i class="ph ph-user-plus" style="font-size:14px; margin-right:4px"></i>
+                    Add Employee
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ADD MANAGER MODAL ────────────────────────────────────── -->
+    <div class="modal-overlay" id="addManagerModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Add Manager</div>
+                    <div class="modal-sub">Managers report directly to Super Admin</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('addManagerModal')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="mgrName">Full Name <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="mgrName" placeholder="e.g. Priya Sharma" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrCode">Employee ID</label>
+                        <input class="form-input" type="text" id="mgrCode" placeholder="e.g. MGR005 (or leave blank to auto-generate)" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrEmail">Work Email <span class="req">*</span></label>
+                        <input class="form-input" type="email" id="mgrEmail" placeholder="name@company.com" required />
+                        <span style="font-size:11px;color:var(--text-faint);margin-top:3px">Used as portal login identifier</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrInviteEmail">Send Invite To</label>
+                        <input class="form-input" type="email" id="mgrInviteEmail" placeholder="personal@email.com (optional)" />
+                        <span style="font-size:11px;color:var(--text-faint);margin-top:3px">Temp password sent here. Leave blank to send to work email above.</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrPhone">Phone</label>
+                        <input class="form-input" type="text" id="mgrPhone" placeholder="+91 XXXXX XXXXX" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrDesignation">Designation <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="mgrDesignation" placeholder="e.g. Engineering Manager" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrDepartment">Department <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="mgrDepartment" placeholder="e.g. Engineering" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrCompanyTag">Company Tag</label>
+                        <input class="form-input" type="text" id="mgrCompanyTag" placeholder="Optional" />
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label" for="mgrJoining">Joining Date <span class="req">*</span></label>
+                        <input class="form-input" type="date" id="mgrJoining" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="mgrBaseSalary">Base Monthly Salary (₹) <span class="req">*</span></label>
+                        <input class="form-input" type="number" id="mgrBaseSalary" placeholder="e.g. 80000" min="0" required />
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label" for="mgrEmploymentType">Employment Type <span class="req">*</span></label>
+                        <select class="form-input" id="mgrEmploymentType">
+                            <option value="regular">Regular (permanent salaried)</option>
+                            <option value="contractual">Contractual</option>
+                        </select>
+                        <span style="font-size:11px;color:var(--text-faint);margin-top:3px">Determines daily rate basis: regular = calendar days, contractual = working days</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('addManagerModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="btnSubmitManager" onclick="submitAddManager()">
+                    <i class="ph ph-user-gear" style="font-size:14px; margin-right:4px"></i>
+                    Add Manager
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PROMOTE TO MANAGER MODAL ──────────────────────────── -->
+    <div class="modal-overlay" id="promoModal">
+        <div class="modal-box" style="max-width:480px">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Promote to Manager</div>
+                    <div class="modal-sub" id="promoModalSub">Step 1 of 2 — Confirm Details</div>
+                </div>
+                <button class="modal-close" onclick="closePromoModal()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <!-- Step indicator -->
+                <div class="promo-steps">
+                    <div class="promo-step active" id="promoStepInd1">
+                        <div class="promo-step-num">1</div>
+                        <span>Confirm Details</span>
+                    </div>
+                    <div class="promo-step-line"></div>
+                    <div class="promo-step" id="promoStepInd2">
+                        <div class="promo-step-num">2</div>
+                        <span>Assign Team</span>
+                    </div>
+                </div>
+
+                <!-- Step 1 -->
+                <div id="promoStep1Panel">
+                    <div class="promo-emp-card">
+                        <div class="promo-emp-av" id="promoEmpAv"></div>
+                        <div>
+                            <div class="promo-emp-name" id="promoEmpName"></div>
+                            <div class="promo-emp-desg" id="promoEmpDesg"></div>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="promoSalary">New Base Salary (₹) <span class="req">*</span></label>
+                            <input class="form-input" type="number" id="promoSalary" min="1" placeholder="e.g. 85000" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="promoEffDate">Salary Effective Month <span class="req">*</span></label>
+                            <input class="form-input" type="month" id="promoEffDate" />
+                            <div style="font-size: 11px; color: var(--text-faint); margin-top: 4px;">Role changes instantly. Salary updates exactly on the 1st of the selected month.</div>
+                        </div>
+                        <div class="form-group full">
+                            <label class="form-label">Employment Type</label>
+                            <div id="promoEmpType" style="font-size:13.5px;color:var(--text-muted);padding:9px 12px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:9px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div id="promoStep2Panel" style="display:none">
+                    <div class="promo-team-header">
+                        <strong>Assign Initial Team (Optional)</strong><br>
+                        Select employees to assign under this new manager. You can skip this and assign team members later.
+                    </div>
+                    <div class="promo-team-list" id="promoTeamList"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- Step 1 footer -->
+                <div id="promoFooter1" style="display:flex;width:100%;gap:10px;align-items:center;justify-content:flex-end">
+                    <button class="modal-btn modal-btn-secondary" onclick="closePromoModal()">Cancel</button>
+                    <button class="modal-btn modal-btn-primary" onclick="promoGoNext()">
+                        Next <i class="ph ph-arrow-right" style="font-size:13px;margin-left:4px"></i>
+                    </button>
+                </div>
+                <!-- Step 2 footer -->
+                <div id="promoFooter2" style="display:none;width:100%;gap:10px;align-items:center;justify-content:space-between">
+                    <button class="modal-btn modal-btn-secondary" onclick="promoGoBack()">
+                        <i class="ph ph-arrow-left" style="font-size:13px;margin-right:4px"></i> Back
+                    </button>
+                    <div style="display:flex;gap:8px">
+                        <button class="modal-btn modal-btn-secondary" id="btnPromoSkip" onclick="submitPromotion(false)">Skip &amp; Promote</button>
+                        <button class="modal-btn modal-btn-primary"   id="btnPromoConfirm" onclick="submitPromotion(true)">
+                            <i class="ph ph-user-switch" style="font-size:13px;margin-right:4px"></i> Promote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── TERMINATE MODAL ──────────────────────────────────────── -->
+    <div class="modal-overlay" id="terminateModal">
+        <div class="modal-box" style="max-width:440px">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Terminate Employee</div>
+                    <div class="modal-sub">This action is irreversible</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('terminateModal')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="terminate-info">
+                    <i class="ph ph-warning terminate-info-icon"></i>
+                    <div class="terminate-info-text">
+                        You are about to terminate <strong id="terminateName">this employee</strong>. Their status will be changed to <strong>Terminated</strong> and they will lose portal access. Their records will be retained permanently.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="terminateReason">Reason <span class="req">*</span></label>
+                    <textarea class="form-input" id="terminateReason" placeholder="Enter reason for termination…" rows="3" style="height:auto;padding:10px 12px;resize:vertical;min-height:80px;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('terminateModal')">Cancel</button>
+                <button class="modal-btn modal-btn-danger" id="btnConfirmTerminate" onclick="confirmTerminate()">
+                    <i class="ph ph-x-circle" style="font-size:14px; margin-right:4px"></i>
+                    Confirm Terminate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── REQUEST DOCUMENT MODAL ──────────────────────────────── -->
+    <div class="modal-overlay" id="requestDocModal">
+        <div class="modal-box" style="max-width:400px">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Request Document</div>
+                    <div class="modal-sub" id="reqDocSubtitle">Employee will be notified</div>
+                </div>
+                <button class="modal-close" onclick="closeModal('requestDocModal')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="reqDocLabel">Document Name <span class="req">*</span></label>
+                    <input class="form-input" type="text" id="reqDocLabel" placeholder="e.g. Aadhaar Card, Degree Certificate" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('requestDocModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="btnSubmitReqDoc" onclick="submitRequestDoc()">
+                    <i class="ph ph-paper-plane-tilt" style="font-size:14px; margin-right:4px"></i>
+                    Send Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doc Verify / Reject Modal -->
+    <div class="modal-overlay" id="docActionModal">
+        <div class="modal-box" style="max-width:420px">
+            <div class="modal-header">
+                <div class="modal-title" id="docActionTitle">Verify Document</div>
+                <button class="modal-close" onclick="closeModal('docActionModal')"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="docActionMsg" style="font-size:13.5px;color:var(--text-muted);margin:0 0 16px;line-height:1.55;"></p>
+                <div id="docRejectWrap" style="display:none">
+                    <label class="form-label">Reason for rejection <span style="color:var(--text-faint);font-weight:400">(optional)</span></label>
+                    <textarea id="docRejectReason" class="form-input" rows="3" placeholder="e.g. Document is blurry, wrong document uploaded..." style="resize:vertical;min-height:72px;margin-top:6px"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('docActionModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="docActionBtn" onclick="confirmDocAction()">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="../../js/db.js"></script>
+    <script src="../../js/notifications.js"></script>
+    <script>
+        // ─────────────────────────────────────────────────────────
+        // AUTH GUARD
+        // ─────────────────────────────────────────────────────────
+        (function() {
+            const role = sessionStorage.getItem('bhr_role');
+            if (!role || role !== 'super_admin') window.location.replace('../login.html');
+        })();
+
+        // ─────────────────────────────────────────────────────────
+        // STATE
+        // ─────────────────────────────────────────────────────────
+        let _employees   = [];
+        let _filter      = { search: '', role: 'all', status: 'active' };
+        let _selectedEmp = null;   // currently open in drawer
+        let _drawerTab   = 'profile';
+        let _drawerDocs  = [];
+        let _editMode    = false;
+        let _drawerBackdropTarget = 'drawer';  // 'drawer' or 'modal'
+
+        // ─────────────────────────────────────────────────────────
+        // THEME
+        // ─────────────────────────────────────────────────────────
+        function _applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
+        function toggleTheme() {
+            const next = (localStorage.getItem('bhr_theme') || 'dark') === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('bhr_theme', next);
+            _applyTheme(next);
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // SIDEBAR
+        // ─────────────────────────────────────────────────────────
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+        // ─────────────────────────────────────────────────────────
+        // LOGOUT
+        // ─────────────────────────────────────────────────────────
+        function logout() {
+            db.endSession('manual');
+            sessionStorage.removeItem('bhr_role');
+            sessionStorage.removeItem('bhr_email');
+            window.location.replace('../login.html');
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // TOPBAR DATE
+        // ─────────────────────────────────────────────────────────
+        function updateTopbarDate() {
+            const now    = new Date();
+            const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            document.getElementById('todayDate').textContent =
+                `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        }
+
+        // ─────────────────────────────────────────────────────────
+
+        async function renderNotifications() {
+            await renderAdminNotifications();
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // TOAST
+        // ─────────────────────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // UTILITIES
+        // ─────────────────────────────────────────────────────────
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+        function formatDate(d) {
+            if (!d) return '—';
+            const dt = new Date(d);
+            return dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+        function formatRelTime(ts) {
+            if (!ts) return '';
+            const diff = Date.now() - new Date(ts).getTime();
+            const m = Math.floor(diff / 60000), h = Math.floor(diff / 3600000), d = Math.floor(diff / 86400000);
+            if (m < 1)  return 'Just now';
+            if (m < 60) return `${m}m ago`;
+            if (h < 24) return `${h}h ago`;
+            if (d <  7) return `${d}d ago`;
+            return new Date(ts).toLocaleDateString();
+        }
+        // Deterministic avatar color from employeeId
+        const _AV_COLORS = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#f97316','#6366f1'];
+        function avatarColor(id) {
+            let h = 0;
+            for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+            return _AV_COLORS[Math.abs(h) % _AV_COLORS.length];
+        }
+        function getRolePill(role) {
+            return `<span class="role-pill ${escapeHtml(role)}">${role === 'manager' ? 'Manager' : 'Employee'}</span>`;
+        }
+        function getStatusPill(st) {
+            const labels = { active: 'Active', on_notice: 'On Notice', resigned: 'Resigned', terminated: 'Terminated' };
+            return `<span class="status-pill ${escapeHtml(st)}">${labels[st] || st}</span>`;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // LOAD + STATS
+        // ─────────────────────────────────────────────────────────
+        async function loadEmployees() {
+            _employees = await db.getAllEmployees(true);
+        }
+        function renderStats() {
+            const activeEmp = _employees.filter(e => e.role === 'employee' && (e.employmentStatus === 'active' || e.employmentStatus === 'on_notice')).length;
+            const activeMgr = _employees.filter(e => e.role === 'manager' && e.employmentStatus === 'active').length;
+            const former    = _employees.filter(e => e.employmentStatus === 'resigned' || e.employmentStatus === 'terminated').length;
+            document.getElementById('statActiveEmp').textContent = activeEmp;
+            document.getElementById('statManagers').textContent  = activeMgr;
+            document.getElementById('statFormer').textContent    = former;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // FILTER + TABLE
+        // ─────────────────────────────────────────────────────────
+        function getFiltered() {
+            let list = [..._employees];
+            if (_filter.status === 'active') {
+                list = list.filter(e => e.employmentStatus === 'active' || e.employmentStatus === 'on_notice');
+            }
+            if (_filter.role === 'employees') list = list.filter(e => e.role === 'employee');
+            if (_filter.role === 'managers')  list = list.filter(e => e.role === 'manager');
+            const q = _filter.search.trim().toLowerCase();
+            if (q) {
+                list = list.filter(e =>
+                    e.fullName.toLowerCase().includes(q)       ||
+                    e.email.toLowerCase().includes(q)          ||
+                    e.employeeCode.toLowerCase().includes(q)   ||
+                    e.department.toLowerCase().includes(q)
+                );
+            }
+            return list;
+        }
+        function renderTable() {
+            const list    = getFiltered();
+            const tbody   = document.getElementById('employeeTableBody');
+            const empty   = document.getElementById('emptyState');
+            if (!list.length) { tbody.innerHTML = ''; empty.style.display = 'flex'; return; }
+            empty.style.display = 'none';
+            tbody.innerHTML = list.map(emp => {
+                const color = avatarColor(emp.employeeId);
+                const init  = escapeHtml(emp.fullName.charAt(0).toUpperCase());
+                return `
+                <tr onclick="openDrawer('${escapeHtml(emp.employeeId)}')">
+                    <td>
+                        <div class="emp-cell">
+                            <div class="emp-av" style="background:${color}">${init}</div>
+                            <div class="emp-meta">
+                                <div class="emp-name">${escapeHtml(emp.fullName)} <span class="emp-type-badge ${emp.employmentType === 'contractual' ? 'contractual' : 'regular'}">${emp.employmentType === 'contractual' ? 'Contractual' : 'Regular'}</span></div>
+                                <div class="emp-email">${escapeHtml(emp.email)}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="code-text">${escapeHtml(emp.employeeCode)}</span>${emp.role === 'manager' && emp.promotedAt ? '<span class="promoted-chip">Promoted</span>' : ''}</td>
+                    <td>${getRolePill(emp.role)}</td>
+                    <td>${escapeHtml(emp.department)}</td>
+                    <td>${getStatusPill(emp.employmentStatus)}</td>
+                    <td>${formatDate(emp.joiningDate)}</td>
+                    <td>
+                        <div class="row-actions">
+                            <button class="action-btn" onclick="event.stopPropagation(); openDrawer('${escapeHtml(emp.employeeId)}')">
+                                <i class="ph ph-arrow-right" style="font-size:13px"></i> View
+                            </button>
+                            <button class="export-row-btn" id="expbtn-${escapeHtml(emp.employeeId)}" onclick="event.stopPropagation(); exportEmployeeXLSX('${escapeHtml(emp.employeeId)}', '${escapeHtml(emp.fullName)}')">
+                                <i class="ph ph-download-simple" style="font-size:13px"></i> Export
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        function handleSearch() {
+            _filter.search = document.getElementById('searchInput').value;
+            renderTable();
+        }
+        function handleRoleFilter(val) {
+            _filter.role = val;
+            renderTable();
+        }
+        function handleStatusFilter(val, btn) {
+            _filter.status = val;
+            document.querySelectorAll('.toggle-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            renderTable();
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // DRAWER
+        // ─────────────────────────────────────────────────────────
+        function showBackdrop() {
+            document.getElementById('backdrop').classList.add('show');
+        }
+        function hideBackdrop() {
+            document.getElementById('backdrop').classList.remove('show');
+        }
+        function handleBackdropClick() {
+            // Close only if no modal is open
+            const hasModal = document.querySelector('.modal-overlay.show');
+            if (!hasModal) closeDrawer();
+        }
+
+        async function openDrawer(employeeId) {
+            const emp = _employees.find(e => e.employeeId === employeeId);
+            if (!emp) return;
+            _selectedEmp = emp;
+            _editMode    = false;
+
+            // Populate header
+            const color = avatarColor(emp.employeeId);
+            const av    = document.getElementById('drawerAvatar');
+            av.textContent = emp.fullName.charAt(0).toUpperCase();
+            av.style.background = color;
+            document.getElementById('drawerName').textContent = emp.fullName;
+            document.getElementById('drawerDesg').textContent = emp.designation;
+            document.getElementById('drawerStatusBadge').innerHTML = getStatusPill(emp.employmentStatus);
+
+            // Populate profile view
+            document.getElementById('pvCode').textContent    = emp.employeeCode;
+            document.getElementById('pvRole').innerHTML      = getRolePill(emp.role);
+            document.getElementById('pvDept').textContent    = emp.department;
+            document.getElementById('pvDesg').textContent    = emp.designation;
+            document.getElementById('pvTag').textContent     = emp.companyTag || '—';
+            document.getElementById('pvManager').textContent = emp.managerName || (emp.role === 'manager' ? 'Directly reports to Admin' : '—');
+            document.getElementById('pvPhone').textContent   = emp.phone || '—';
+            document.getElementById('pvEmail').textContent   = emp.email;
+            document.getElementById('pvJoining').textContent = formatDate(emp.joiningDate);
+            document.getElementById('pvStatus').innerHTML    = getStatusPill(emp.employmentStatus);
+            document.getElementById('pvEmploymentType').innerHTML = emp.employmentType === 'contractual'
+                ? '<span class="emp-type-badge contractual">Contractual</span>'
+                : '<span class="emp-type-badge regular">Regular</span>';
+            // Clear async fields while loading
+            document.getElementById('pvAddress').textContent  = '—';
+            document.getElementById('pvEmergencyContact').innerHTML = '<span style="color:var(--text-faint);font-style:italic;font-size:13px;">Loading…</span>';
+
+            // Show/hide edit + terminate/reset based on status
+            const isFormer = emp.employmentStatus === 'resigned' || emp.employmentStatus === 'terminated';
+            document.getElementById('btnEditProfile').style.display  = isFormer ? 'none' : 'inline-flex';
+            document.getElementById('btnTerminate').disabled         = isFormer;
+            document.getElementById('btnResetPwd').disabled          = isFormer;
+            // Show promote chip only for active employees (not managers, not former)
+            const canPromote = emp.role === 'employee' && emp.employmentStatus === 'active';
+            document.getElementById('btnPromoteChip').style.display = canPromote ? 'inline-flex' : 'none';
+
+            // Reset tabs
+            switchDrawerTab('profile', document.querySelector('.drawer-tab'));
+            document.getElementById('profileView').style.display = 'block';
+            document.getElementById('profileEdit').style.display = 'none';
+
+            // Show drawer
+            document.getElementById('drawer').classList.add('open');
+            showBackdrop();
+
+            // Show/hide Notice Period tab
+            const isOnNotice = emp.employmentStatus === 'on_notice';
+            document.getElementById('noticeTab').style.display = isOnNotice ? '' : 'none';
+
+            // Show loading state in docs tab while fetching
+            _drawerDocs = null;
+            renderDrawerDocs();
+
+            // Load docs + notice detail in background
+            const detail = await db.getEmployeeDetail(employeeId);
+            _drawerDocs  = detail ? [
+                ...(detail.documents  || []),
+                ...(detail.noticeDocs || []).map(d => ({ ...d, _isNoticeDoc: true })),
+            ] : [];
+            renderDrawerDocs();
+            if (isOnNotice) renderNoticeTab(detail || {});
+
+            // Populate address & emergency contact
+            document.getElementById('pvAddress').textContent = detail?.address || '—';
+            const emc = detail?.emergencyContact;
+            const pvEmc = document.getElementById('pvEmergencyContact');
+            if (emc && emc.name) {
+                pvEmc.innerHTML =
+                    `<div style="font-size:13.5px;font-weight:500;margin-bottom:4px;">${escapeHtml(emc.name)}</div>` +
+                    `<div style="font-size:12.5px;color:var(--text-muted);margin-bottom:6px;">${escapeHtml(emc.phone) || '\u2014'}</div>` +
+                    `<span style="display:inline-flex;align-items:center;padding:3px 10px;background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.25);border-radius:20px;font-size:11.5px;font-weight:600;color:var(--warning);">${escapeHtml(emc.relation) || '\u2014'}</span>`;
+            } else {
+                pvEmc.innerHTML = '<span style="color:var(--text-faint);font-style:italic;font-size:13px;">Not provided</span>';
+            }
+        }
+
+        function closeDrawer() {
+            document.getElementById('drawer').classList.remove('open');
+            hideBackdrop();
+            _selectedEmp = null;
+            _editMode    = false;
+        }
+
+        function switchDrawerTab(tab, btn) {
+            _drawerTab = tab;
+            document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            document.getElementById('tabProfile').classList.toggle('hidden',   tab !== 'profile');
+            document.getElementById('tabDocuments').classList.toggle('hidden', tab !== 'documents');
+            document.getElementById('tabNotice').classList.toggle('hidden',    tab !== 'notice');
+        }
+
+        // ── Notice Period Tab ─────────────────────────────────────
+        function renderNoticeTab(detail) {
+            const emp = _selectedEmp || {};
+            const res = (detail && detail.resignation) ? detail.resignation : {};
+            const att = (detail && detail.lastAttendance) ? detail.lastAttendance : null;
+
+            function _fmtT(isoStr) {
+                if (!isoStr) return '—';
+                try {
+                    return new Date(isoStr).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                } catch(e) { return isoStr; }
+            }
+
+            // Countdown banner
+            const endDateStr = emp.noticePeriodEndDate || res.expectedRelievingDate || res.lastWorkingDay || res.effectiveDate || '';
+            const banner = document.getElementById('noticeBanner');
+            if (endDateStr && banner) {
+                const today   = new Date(); today.setHours(0, 0, 0, 0);
+                const endDate = new Date(endDateStr);
+                const daysLeft = Math.ceil((endDate - today) / 86400000);
+                const expired  = daysLeft <= 0;
+                banner.className = 'notice-banner' + (expired ? ' expired' : '');
+                const iconEl = banner.querySelector('.notice-banner-icon i');
+                if (iconEl) iconEl.className = expired ? 'ph ph-check-circle' : 'ph ph-hourglass-medium';
+                document.getElementById('npDaysLeft').textContent  = expired ? 'Completed' : daysLeft + ' day' + (daysLeft !== 1 ? 's' : '');
+                document.getElementById('npDaysLabel').textContent = expired ? 'Notice period has ended' : 'remaining in notice period';
+                document.getElementById('npEndDate').innerHTML     = 'Last working day: <strong>' + formatDate(endDateStr) + '</strong>';
+            }
+
+            // Resignation fields
+            const resignDate = res.resignationDate || res.createdAt;
+            document.getElementById('npResignDate').textContent  = resignDate ? formatDate(resignDate) : '—';
+            document.getElementById('npNoticeDays').textContent  = (res.noticePeriodDays || res.noticeDays || 30) + ' days';
+            document.getElementById('npLastDay').textContent     = formatDate(emp.noticePeriodEndDate || res.expectedRelievingDate || res.lastWorkingDay || res.effectiveDate) || '—';
+            document.getElementById('npApprovedBy').textContent  = res.approvedByManagerName || res.approvedBy || res.approvedByName || 'Admin';
+            document.getElementById('npReason').textContent      = res.reason || res.resignationReason || '—';
+
+            // Last attendance
+            if (att) {
+                document.getElementById('npAttDate').textContent = formatDate(att.date || att.checkInAt);
+                const attStatusClass = att.status === 'present' ? 'present' : att.status === 'late' ? 'late' : 'absent';
+                const attLabel = att.status === 'present' ? 'Present' : att.status === 'late' ? 'Late' : 'Absent';
+                document.getElementById('npAttStatus').innerHTML = `<span class="att-status-pill ${attStatusClass}">${attLabel}</span>`;
+                document.getElementById('npLastLogin').textContent  = _fmtT(att.checkInAt);
+                document.getElementById('npLastLogout').textContent = att.checkOutAt ? _fmtT(att.checkOutAt) : 'Not checked out';
+            } else {
+                document.getElementById('npAttDate').textContent    = 'No record found';
+                document.getElementById('npAttStatus').innerHTML    = '';
+                document.getElementById('npLastLogin').textContent  = '—';
+                document.getElementById('npLastLogout').textContent = '—';
+            }
+        }
+
+        function openDocumentUrl(url, label) {
+            let targetUrl = url;
+            if (!targetUrl || targetUrl.startsWith('mock://') || targetUrl === 'null' || targetUrl === '') {
+                targetUrl = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+            }
+            if (window.showDocumentPreview) {
+                window.showDocumentPreview(targetUrl, label);
+            } else {
+                window.open(targetUrl, '_blank', 'noopener,noreferrer');
+            }
+        }
+
+        // ── Document Verification ─────────────────────────────────
+        let _docActionType  = null; // 'verify' | 'reject'
+        let _docActionDocId = null;
+
+        function openDocVerify(docId, docLabel) {
+            _docActionType  = 'verify';
+            _docActionDocId = docId;
+            document.getElementById('docActionTitle').textContent  = 'Verify Document';
+            document.getElementById('docActionMsg').textContent    = `Mark "${docLabel}" as fully verified?`;
+            document.getElementById('docRejectWrap').style.display = 'none';
+            const btn = document.getElementById('docActionBtn');
+            btn.textContent = 'Verify';
+            btn.className   = 'modal-btn modal-btn-primary';
+            openModal('docActionModal');
+        }
+
+        function openDocReject(docId, docLabel) {
+            _docActionType  = 'reject';
+            _docActionDocId = docId;
+            document.getElementById('docActionTitle').textContent  = 'Reject Document';
+            document.getElementById('docActionMsg').textContent    = `Reject "${docLabel}"?`;
+            document.getElementById('docRejectWrap').style.display = '';
+            document.getElementById('docRejectReason').value       = '';
+            const btn = document.getElementById('docActionBtn');
+            btn.textContent = 'Reject';
+            btn.className   = 'modal-btn modal-btn-danger';
+            openModal('docActionModal');
+        }
+
+        async function confirmDocAction() {
+            if (!_docActionDocId || !_selectedEmp) return;
+            const btn = document.getElementById('docActionBtn');
+            btn.disabled = true;
+            try {
+                if (_docActionType === 'verify') {
+                    await db.adminVerifyEmployeeDocument(_docActionDocId);
+                } else {
+                    const reason = document.getElementById('docRejectReason').value.trim();
+                    await db.adminRejectEmployeeDocument(_docActionDocId, reason);
+                }
+                const doc = _drawerDocs.find(d => d.docId === _docActionDocId);
+                if (doc) doc.status = _docActionType === 'verify' ? 'fully_verified' : 'rejected';
+                closeModal('docActionModal');
+                renderDrawerDocs();
+                showToast(_docActionType === 'verify' ? 'Document verified successfully.' : 'Document rejected.', _docActionType === 'verify' ? 'success' : 'info');
+            } catch (e) {
+                console.error('[EmployeeDocs] Action failed:', e);
+                showToast('Something went wrong. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // ── Profile Edit ──────────────────────────────────────────
+        function enterEditMode() {
+            if (!_selectedEmp) return;
+            _editMode = true;
+            // Pre-fill form
+            document.getElementById('editName').value        = _selectedEmp.fullName;
+            document.getElementById('editPhone').value       = _selectedEmp.phone || '';
+            document.getElementById('editDesignation').value = _selectedEmp.designation;
+            document.getElementById('editDepartment').value  = _selectedEmp.department;
+            document.getElementById('editCompanyTag').value  = _selectedEmp.companyTag || '';
+            // Populate manager dropdown (only for employees)
+            const mgrs = _employees.filter(e => e.role === 'manager' && e.employmentStatus === 'active');
+            const sel  = document.getElementById('editManager');
+            sel.innerHTML = '<option value="">— No manager —</option>' +
+                mgrs.map(m => `<option value="${escapeHtml(m.employeeId)}"${_selectedEmp.managerId === m.employeeId ? ' selected' : ''}>${escapeHtml(m.fullName)}</option>`).join('');
+            // Show manager group only for employees
+            document.getElementById('editManagerGroup').style.display = _selectedEmp.role === 'employee' ? '' : 'none';
+            document.getElementById('profileView').style.display = 'none';
+            document.getElementById('profileEdit').style.display = 'block';
+        }
+        function cancelEdit() {
+            _editMode = false;
+            document.getElementById('profileEdit').style.display = 'none';
+            document.getElementById('profileView').style.display = 'block';
+        }
+        async function saveProfile() {
+            if (!_selectedEmp) return;
+            const name  = document.getElementById('editName').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
+            const desg  = document.getElementById('editDesignation').value.trim();
+            const dept  = document.getElementById('editDepartment').value.trim();
+            const tag   = document.getElementById('editCompanyTag').value.trim();
+            const mgrId = document.getElementById('editManager').value;
+            if (!name || !desg || !dept) { showToast('Full Name, Designation and Department are required', 'error'); return; }
+            const btn = document.getElementById('btnSaveProfile');
+            btn.disabled = true; btn.textContent = 'Saving…';
+            try {
+                const fields = { fullName: name, phone: phone || null, designation: desg, department: dept, companyTag: tag || null };
+                if (_selectedEmp.role === 'employee') {
+                    const mgr = _employees.find(e => e.employeeId === mgrId);
+                    fields.managerId   = mgrId || null;
+                    fields.managerName = mgr ? mgr.fullName : null;
+                }
+                await db.updateEmployeeProfile(_selectedEmp.employeeId, fields);
+                // Update local state
+                const idx = _employees.findIndex(e => e.employeeId === _selectedEmp.employeeId);
+                if (idx !== -1) { _employees[idx] = { ..._employees[idx], ...fields }; _selectedEmp = _employees[idx]; }
+                renderTable();
+                // Re-populate view
+                document.getElementById('pvDept').textContent    = dept;
+                document.getElementById('pvDesg').textContent    = desg;
+                document.getElementById('pvTag').textContent     = tag || '—';
+                document.getElementById('pvManager').textContent = (fields.managerName) || (_selectedEmp.role === 'manager' ? 'Directly reports to Admin' : '—');
+                document.getElementById('pvPhone').textContent   = phone || '—';
+                document.getElementById('drawerName').textContent = name;
+                document.getElementById('drawerDesg').textContent = desg;
+                cancelEdit();
+                showToast('Profile updated successfully', 'success');
+            } catch (err) {
+                showToast('Failed to update profile', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Save Changes';
+            }
+        }
+
+        // ── Promote to Manager ────────────────────────────────────
+        let _promoStep = 1;
+        let _promoTeamSelected = new Set();
+
+        function openPromoteModal() {
+            if (!_selectedEmp || _selectedEmp.role !== 'employee') return;
+            _promoStep = 1;
+            _promoTeamSelected = new Set();
+
+            // Populate employee card
+            const color = avatarColor(_selectedEmp.employeeId);
+            const av = document.getElementById('promoEmpAv');
+            av.textContent       = _selectedEmp.fullName.charAt(0).toUpperCase();
+            av.style.background  = color;
+            document.getElementById('promoEmpName').textContent = _selectedEmp.fullName;
+            document.getElementById('promoEmpDesg').textContent = _selectedEmp.designation + ' · ' + _selectedEmp.department;
+            document.getElementById('promoEmpType').textContent = _selectedEmp.employmentType === 'contractual' ? 'Contractual' : 'Regular';
+
+            // Defaults
+            document.getElementById('promoSalary').value  = '';
+            document.getElementById('promoEffDate').value = new Date().toISOString().slice(0, 7); // Default to current YYYY-MM
+
+            // Reset to step 1
+            _promoSetStep(1);
+            openModal('promoModal');
+        }
+
+        function closePromoModal() {
+            closeModal('promoModal');
+        }
+
+        function _promoSetStep(step) {
+            _promoStep = step;
+
+            // Step indicators
+            const ind1 = document.getElementById('promoStepInd1');
+            const ind2 = document.getElementById('promoStepInd2');
+            if (step === 1) {
+                ind1.className = 'promo-step active';
+                ind2.className = 'promo-step';
+            } else {
+                ind1.className = 'promo-step done';
+                ind2.className = 'promo-step active';
+            }
+
+            // Panels
+            document.getElementById('promoStep1Panel').style.display = step === 1 ? '' : 'none';
+            document.getElementById('promoStep2Panel').style.display = step === 2 ? '' : 'none';
+
+            // Footers
+            document.getElementById('promoFooter1').style.display = step === 1 ? 'flex' : 'none';
+            document.getElementById('promoFooter2').style.display = step === 2 ? 'flex' : 'none';
+
+            // Sub-label
+            document.getElementById('promoModalSub').textContent =
+                step === 1 ? 'Step 1 of 2 — Confirm Details' : 'Step 2 of 2 — Assign Team (Optional)';
+        }
+
+        function promoGoNext() {
+            const salary  = parseFloat(document.getElementById('promoSalary').value);
+            const effDate = document.getElementById('promoEffDate').value;
+            if (!salary || salary <= 0) { showToast('Please enter a valid new base salary', 'error'); return; }
+            if (!effDate)               { showToast('Please select a salary effective month', 'error'); return; }
+
+            // Populate team list (step 2)
+            const assignable = _employees.filter(e =>
+                e.role === 'employee' &&
+                (e.employmentStatus === 'active' || e.employmentStatus === 'on_notice') &&
+                e.employeeId !== _selectedEmp.employeeId
+            ).sort((a, b) => {
+                // Orphaned first (no managerId)
+                const aOrph = !a.managerId ? 0 : 1;
+                const bOrph = !b.managerId ? 0 : 1;
+                return aOrph - bOrph || a.fullName.localeCompare(b.fullName);
+            });
+
+            const list = document.getElementById('promoTeamList');
+            if (!assignable.length) {
+                list.innerHTML = '<div class="promo-team-empty">No assignable employees found.</div>';
+            } else {
+                list.innerHTML = assignable.map(e => {
+                    const c  = avatarColor(e.employeeId);
+                    const ch = _promoTeamSelected.has(e.employeeId) ? ' checked' : '';
+                    return `<div class="promo-team-item" onclick="promoToggleTeam('${escapeHtml(e.employeeId)}', this)">
+                        <input type="checkbox" id="ptm_${escapeHtml(e.employeeId)}"${ch}>
+                        <div class="promo-team-av" style="background:${c}">${escapeHtml(e.fullName.charAt(0).toUpperCase())}</div>
+                        <div style="flex:1;min-width:0">
+                            <div class="promo-team-name">${escapeHtml(e.fullName)}</div>
+                            <div class="promo-team-dept">${escapeHtml(e.department)}${!e.managerId ? ' · <span style="color:#fbbf24;font-weight:600">No manager</span>' : ''}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            _promoSetStep(2);
+        }
+
+        function promoGoBack() {
+            _promoSetStep(1);
+        }
+
+        function promoToggleTeam(empId, row) {
+            const cb = row.querySelector('input[type="checkbox"]');
+            if (_promoTeamSelected.has(empId)) {
+                _promoTeamSelected.delete(empId);
+                cb.checked = false;
+            } else {
+                _promoTeamSelected.add(empId);
+                cb.checked = true;
+            }
+        }
+
+        async function submitPromotion(withTeam) {
+            if (!_selectedEmp) return;
+            const salary  = parseFloat(document.getElementById('promoSalary').value);
+            const effDate = document.getElementById('promoEffDate').value;
+            const teamIds = withTeam ? [..._promoTeamSelected] : [];
+
+            const btnSkip    = document.getElementById('btnPromoSkip');
+            const btnConfirm = document.getElementById('btnPromoConfirm');
+            btnSkip.disabled = btnConfirm.disabled = true;
+            btnConfirm.innerHTML = '<i class="ph ph-spinner" style="font-size:13px;margin-right:4px;animation:spin 1s linear infinite;display:inline-block"></i> Promoting…';
+
+            try {
+                await db.promoteEmployeeToManager(_selectedEmp.employeeId, {
+                    newSalary:     salary,
+                    effectiveDate: effDate,
+                    teamMemberIds: teamIds,
+                });
+
+                // Update local state
+                const idx = _employees.findIndex(e => e.employeeId === _selectedEmp.employeeId);
+                if (idx !== -1) {
+                    _employees[idx] = {
+                        ..._employees[idx],
+                        role:        'manager',
+                        managerId:   null,
+                        managerName: null,
+                        promotedAt:  new Date().toISOString(),
+                        pendingSalaryHike: { amount: salary, effectiveMonth: effDate }
+                    };
+                    // Update team members' managerName in local state
+                    teamIds.forEach(tid => {
+                        const ti = _employees.findIndex(e => e.employeeId === tid);
+                        if (ti !== -1) {
+                            _employees[ti].managerId   = _selectedEmp.employeeId;
+                            _employees[ti].managerName = _employees[idx].fullName;
+                        }
+                    });
+                    _selectedEmp = _employees[idx];
+                }
+
+                renderStats();
+                renderTable();
+                closeModal('promoModal');
+
+                // Update drawer to reflect new role
+                document.getElementById('pvRole').innerHTML            = getRolePill('manager');
+                document.getElementById('pvManager').textContent       = 'Directly reports to Admin';
+                document.getElementById('drawerStatusBadge').innerHTML = getStatusPill(_selectedEmp.employmentStatus);
+                document.getElementById('btnPromoteChip').style.display    = 'none';
+
+                const assigned = teamIds.length;
+                showToast(`${_selectedEmp.fullName} promoted to Manager${assigned ? ` · ${assigned} team member${assigned > 1 ? 's' : ''} assigned` : ''}`, 'success');
+                // Notify employee (mock: logged to console; real: written to notifications collection in batch)
+                setTimeout(() => showToast(`${_selectedEmp.fullName} has been notified to log out and re-login`, 'info'), 800);
+            } catch (err) {
+                showToast('Failed to promote employee. Please try again.', 'error');
+            } finally {
+                btnSkip.disabled = btnConfirm.disabled = false;
+                btnConfirm.innerHTML = '<i class="ph ph-user-switch" style="font-size:13px;margin-right:4px"></i> Promote';
+            }
+        }
+
+        // ── Force Reset Password ──────────────────────────────────
+        async function handleResetPassword() {
+            if (!_selectedEmp) return;
+            const btn = document.getElementById('btnResetPwd');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ph ph-spinner" style="font-size:15px;animation:spin 1s linear infinite"></i> Resetting\u2026';
+            try {
+                await db.forceResetPassword(_selectedEmp.accountId);
+                showToast(`Password reset flag set for ${_selectedEmp.fullName}. They will be prompted to set a new password on next login.`, 'success');
+            } catch (err) {
+                showToast('Failed to initiate password reset', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-lock-key" style="font-size:15px"></i> Force Reset Password';
+            }
+        }
+
+        // ── Documents tab ─────────────────────────────────────────
+        function renderDrawerDocs() {
+            const container = document.getElementById('docsList');
+            if (_drawerDocs === null) {
+                container.innerHTML = '<div class="docs-empty"><i class="ph ph-spinner" style="font-size:18px;animation:spin 1s linear infinite;display:inline-block"></i></div>';
+                return;
+            }
+            if (!_drawerDocs.length) {
+                container.innerHTML = '<div class="docs-empty">No documents requested or uploaded yet.</div>';
+                return;
+            }
+            const statusLabels = { fully_verified: 'Fully Verified', manager_verified: 'Manager Verified', pending: 'Pending Review', requested: 'Requested', rejected: 'Rejected' };
+            let html = '';
+            let noticeGroupAdded = false;
+            _drawerDocs.forEach(d => {
+                const hasFile = !!(d.uploadedAt && d.fileUrl);
+                const canAct  = (d.status === 'pending' || d.status === 'manager_verified') && d.uploadedAt;
+                if (d._isNoticeDoc && !noticeGroupAdded) {
+                    html += `<div class="docs-group-sep">Notice Period Documents</div>`;
+                    noticeGroupAdded = true;
+                }
+                const fileAttr = hasFile ? `onclick="openDocumentUrl('${escapeHtml(d.fileUrl)}','${escapeHtml(d.documentLabel)}')"` : '';
+                html += `<div class="doc-item${hasFile ? ' has-file' : ''}" ${fileAttr}>
+                    <div class="doc-icon"><i class="ph ph-file-text"></i></div>
+                    <div class="doc-meta">
+                        <div class="doc-label">${escapeHtml(d.documentLabel)}</div>
+                        <div class="doc-status">${d.uploadedAt ? 'Uploaded ' + formatDate(d.uploadedAt) : 'Not yet uploaded'}</div>
+                    </div>
+                    <div class="doc-actions">
+                        <span class="doc-status-badge ${escapeHtml(d.status)}">${statusLabels[d.status] || d.status}</span>
+                        ${canAct ? `<button class="doc-verify-btn" onclick="event.stopPropagation();openDocVerify('${escapeHtml(d.docId)}','${escapeHtml(d.documentLabel)}')" >Verify</button><button class="doc-reject-btn" onclick="event.stopPropagation();openDocReject('${escapeHtml(d.docId)}','${escapeHtml(d.documentLabel)}')" >Reject</button>` : ''}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // TERMINATE
+        // ─────────────────────────────────────────────────────────
+        function openTerminateModal() {
+            if (!_selectedEmp) return;
+            document.getElementById('terminateName').textContent = _selectedEmp.fullName;
+            document.getElementById('terminateReason').value    = '';
+            openModal('terminateModal');
+        }
+        async function confirmTerminate() {
+            if (!_selectedEmp) return;
+            const reason = document.getElementById('terminateReason').value.trim();
+            if (!reason) { showToast('Please enter a reason for termination', 'error'); return; }
+            const btn = document.getElementById('btnConfirmTerminate');
+            btn.disabled = true; btn.textContent = 'Processing…';
+            try {
+                await db.terminateEmployee(_selectedEmp.employeeId, reason);
+                // Update local state
+                const idx = _employees.findIndex(e => e.employeeId === _selectedEmp.employeeId);
+                if (idx !== -1) {
+                    _employees[idx].employmentStatus = 'terminated';
+                    _selectedEmp = _employees[idx];
+                }
+                renderStats();
+                renderTable();
+                closeModal('terminateModal');
+                // Update drawer
+                document.getElementById('drawerStatusBadge').innerHTML = getStatusPill('terminated');
+                document.getElementById('pvStatus').innerHTML           = getStatusPill('terminated');
+                document.getElementById('btnTerminate').disabled        = true;
+                document.getElementById('btnResetPwd').disabled         = true;
+                document.getElementById('btnEditProfile').style.display = 'none';
+                showToast(`${_selectedEmp.fullName} has been terminated`, 'success');
+            } catch (err) {
+                showToast('Failed to terminate employee', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Confirm Terminate';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // ─────────────────────────────────────────────────────────
+        // ADD EMPLOYEE
+        // ─────────────────────────────────────────────────────────
+        let _empMgrData = [];
+        function _empMgrRender(matches) {
+            const list = document.getElementById('empManagerList');
+            list.innerHTML = matches.length
+                ? matches.map(m => `<div class="ta-item" data-id="${escapeHtml(m.id)}" data-name="${escapeHtml(m.name)}">${escapeHtml(m.name)}</div>`).join('')
+                : '<div class="ta-no-result">No managers found</div>';
+            list.querySelectorAll('.ta-item').forEach(item => {
+                item.addEventListener('mousedown', ev => {
+                    ev.preventDefault();
+                    document.getElementById('empManagerInput').value = item.dataset.name;
+                    document.getElementById('empMgrId').value = item.dataset.id;
+                    document.getElementById('empManagerWrap').classList.remove('open');
+                });
+            });
+            document.getElementById('empManagerWrap').classList.add('open');
+        }
+        function _empMgrInitListeners() {
+            const inp = document.getElementById('empManagerInput');
+            if (!inp || inp._taInit) return;
+            inp._taInit = true;
+            inp.addEventListener('input', function() {
+                document.getElementById('empMgrId').value = '';
+                const q = this.value.toLowerCase();
+                const matches = q ? _empMgrData.filter(m => m.name.toLowerCase().includes(q)) : _empMgrData;
+                _empMgrRender(matches);
+            });
+            inp.addEventListener('focus', function() {
+                const q = this.value.toLowerCase();
+                const matches = q ? _empMgrData.filter(m => m.name.toLowerCase().includes(q)) : _empMgrData;
+                _empMgrRender(matches);
+            });
+            inp.addEventListener('blur', () => setTimeout(() => document.getElementById('empManagerWrap').classList.remove('open'), 150));
+            inp.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') document.getElementById('empManagerWrap').classList.remove('open');
+            });
+        }
+        function openAddEmployeeModal() {
+            const mgrs = _employees.filter(e => e.role === 'manager' && e.employmentStatus === 'active');
+            _empMgrData = mgrs.map(m => ({ id: m.employeeId, name: m.fullName }));
+            // Reset form
+            ['empName','empEmail','empInviteEmail','empPhone','empDesignation','empDepartment','empCompanyTag','empCode'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('empManagerInput').value = '';
+            document.getElementById('empMgrId').value = '';
+            document.getElementById('empJoining').value  = new Date().toISOString().slice(0,10);
+            document.getElementById('empEmploymentType').value = 'regular';
+            _empMgrInitListeners();
+            openModal('addEmployeeModal');
+        }
+        async function submitAddEmployee() {
+            const name  = document.getElementById('empName').value.trim();
+            const email = document.getElementById('empEmail').value.trim();
+            const desg  = document.getElementById('empDesignation').value.trim();
+            const dept  = document.getElementById('empDepartment').value.trim();
+            const join  = document.getElementById('empJoining').value;
+            const empType = document.getElementById('empEmploymentType').value;
+            const baseSalary = parseFloat(document.getElementById('empBaseSalary').value.trim());
+            const empCode = document.getElementById('empCode').value.trim();
+            if (!name || !email || !desg || !dept || !join || isNaN(baseSalary) || baseSalary <= 0) { 
+                showToast('Please fill in all required fields (including base salary)', 'error'); return; 
+            }
+            const mgrId = document.getElementById('empMgrId').value;
+            const mgr   = _employees.find(e => e.employeeId === mgrId);
+            const btn   = document.getElementById('btnSubmitEmployee');
+            btn.disabled = true; btn.textContent = 'Adding…';
+            try {
+                const inviteEmail = document.getElementById('empInviteEmail').value.trim();
+                const result = await db.addEmployee({
+                    fullName:    name,
+                    email:       email,
+                    inviteEmail: inviteEmail || email,
+                    phone:       document.getElementById('empPhone').value.trim() || null,
+                    designation: desg,
+                    department:  dept,
+                    companyTag:  document.getElementById('empCompanyTag').value.trim() || null,
+                    managerId:      mgrId || null,
+                    managerName:    mgr ? mgr.fullName : null,
+                    joiningDate:    join,
+                    employmentType: empType,
+                    baseSalary:     baseSalary,
+                    employeeCode:   empCode || null
+                });
+                _employees.unshift(result);
+                renderStats();
+                renderTable();
+                closeModal('addEmployeeModal');
+                showToast(`${name} added as an employee`, 'success');
+            } catch (err) {
+                showToast('Failed to add employee', 'error');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Add Employee';
+                // Restore icon
+                btn.innerHTML = '<i class="ph ph-user-plus" style="font-size:14px; margin-right:4px"></i>Add Employee';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // ADD MANAGER
+        // ─────────────────────────────────────────────────────────
+        function openAddManagerModal() {
+            ['mgrName','mgrEmail','mgrInviteEmail','mgrPhone','mgrDesignation','mgrDepartment','mgrCompanyTag','mgrCode'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('mgrJoining').value = new Date().toISOString().slice(0,10);
+            document.getElementById('mgrEmploymentType').value = 'regular';
+            openModal('addManagerModal');
+        }
+        async function submitAddManager() {
+            const name  = document.getElementById('mgrName').value.trim();
+            const email = document.getElementById('mgrEmail').value.trim();
+            const desg  = document.getElementById('mgrDesignation').value.trim();
+            const dept  = document.getElementById('mgrDepartment').value.trim();
+            const join  = document.getElementById('mgrJoining').value;
+            const mgrType = document.getElementById('mgrEmploymentType').value;
+            const baseSalary = parseFloat(document.getElementById('mgrBaseSalary').value.trim());
+            const mgrCode = document.getElementById('mgrCode').value.trim();
+            if (!name || !email || !desg || !dept || !join || isNaN(baseSalary) || baseSalary <= 0) { 
+                showToast('Please fill in all required fields (including base salary)', 'error'); return; 
+            }
+            const btn = document.getElementById('btnSubmitManager');
+            btn.disabled = true; btn.textContent = 'Adding…';
+            try {
+                const inviteEmail = document.getElementById('mgrInviteEmail').value.trim();
+                const result = await db.addManager({
+                    fullName:    name,
+                    email:       email,
+                    inviteEmail: inviteEmail || email,
+                    phone:       document.getElementById('mgrPhone').value.trim() || null,
+                    designation: desg,
+                    department:  dept,
+                    companyTag:     document.getElementById('mgrCompanyTag').value.trim() || null,
+                    joiningDate:    join,
+                    employmentType: mgrType,
+                    baseSalary:     baseSalary,
+                    employeeCode:   mgrCode || null
+                });
+                _employees.unshift(result);
+                renderStats();
+                renderTable();
+                closeModal('addManagerModal');
+                showToast(`${name} added as a manager`, 'success');
+            } catch (err) {
+                showToast('Failed to add manager', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-user-gear" style="font-size:14px; margin-right:4px"></i>Add Manager';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // REQUEST DOCUMENT
+        // ─────────────────────────────────────────────────────────
+        function openRequestDocModal() {
+            if (!_selectedEmp) return;
+            document.getElementById('reqDocSubtitle').textContent = `${_selectedEmp.fullName} will be notified`;
+            document.getElementById('reqDocLabel').value = '';
+            openModal('requestDocModal');
+        }
+        async function submitRequestDoc() {
+            if (!_selectedEmp) return;
+            const label = document.getElementById('reqDocLabel').value.trim();
+            if (!label) { showToast('Please enter a document name', 'error'); return; }
+            const btn = document.getElementById('btnSubmitReqDoc');
+            btn.disabled = true; btn.textContent = 'Sending…';
+            try {
+                const result = await db.requestDocumentFromEmployee(_selectedEmp.employeeId, label);
+                _drawerDocs.unshift({ docId: result.newDocId, documentLabel: label, status: 'requested', uploadedAt: null });
+                renderDrawerDocs();
+                closeModal('requestDocModal');
+                showToast(`Document request sent to ${_selectedEmp.fullName}`, 'success');
+            } catch (err) {
+                showToast('Failed to send document request', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt" style="font-size:14px; margin-right:4px"></i>Send Request';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // MODAL HELPERS
+        // ─────────────────────────────────────────────────────────
+        function openModal(id) {
+            document.getElementById(id).classList.add('show');
+            showBackdrop();
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+            // Only hide backdrop if no drawer is open either
+            if (!document.getElementById('drawer').classList.contains('open')) hideBackdrop();
+        }
+
+        // Escape key closes drawer or topmost modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            const openModal = document.querySelector('.modal-overlay.show');
+            if (openModal) { closeModal(openModal.id); return; }
+            if (document.getElementById('drawer').classList.contains('open')) closeDrawer();
+        });
+
+        // ─────────────────────────────────────────────────────────
+        // EXPORT EMPLOYEE XLSX  (6 sheets)
+        // ─────────────────────────────────────────────────────────
+        async function exportEmployeeXLSX(employeeId, employeeName) {
+            if (typeof XLSX === 'undefined') { showToast('Export library not loaded — please refresh', 'error'); return; }
+            const btn = document.getElementById('expbtn-' + employeeId);
+            if (btn) { btn.classList.add('loading'); btn.innerHTML = '<i class="ph ph-spinner" style="font-size:13px;animation:spin 1s linear infinite"></i> Exporting…'; }
+
+            try {
+                // ── Fetch all data in parallel ───────────────────
+                const [detail, payslips, leaves, sessResult, allBonuses] = await Promise.all([
+                    db.getEmployeeDetail(employeeId),
+                    db.getAdminEmployeePayslips(employeeId),
+                    db.getAdminEmployeeLeaves(employeeId),
+                    db.getAdminSessionLogs({ search: employeeId, limit: 9999, page: 1 }),
+                    db.getBonuses(''),
+                ]);
+
+                const sessions  = sessResult.logs;
+                const incentives = allBonuses.filter(function(b) { return b.employeeId === employeeId; });
+                const wb = XLSX.utils.book_new();
+
+                // ── Sheet 1: Profile ─────────────────────────────
+                if (detail) {
+                    const profileRows = [
+                        ['Field', 'Value'],
+                        ['Employee ID',        detail.employeeId        || ''],
+                        ['Employee Code',      detail.employeeCode      || ''],
+                        ['Full Name',          detail.fullName          || ''],
+                        ['Email',              detail.email             || ''],
+                        ['Phone',              detail.phone             || ''],
+                        ['Designation',        detail.designation       || ''],
+                        ['Department',         detail.department        || ''],
+                        ['Company Tag',        detail.companyTag        || ''],
+                        ['Role',               detail.role              || ''],
+                        ['Manager',            detail.managerName       || ''],
+                        ['Employment Status',  detail.employmentStatus  || ''],
+                        ['Joining Date',       detail.joiningDate       || ''],
+                    ];
+                    const wsProfile = XLSX.utils.aoa_to_sheet(profileRows);
+                    wsProfile['!cols'] = [{ wch: 22 }, { wch: 40 }];
+                    XLSX.utils.book_append_sheet(wb, wsProfile, 'Profile');
+                }
+
+                // ── Sheet 2: Paychecks ───────────────────────────
+                const payHeaders = ['Month', 'Payslip ID', 'Base Salary', 'Bonus', 'Deductions', 'Net Salary', 'Status'];
+                const payData    = payslips.map(function(p) {
+                    return [p.month, p.payslipId, p.baseSalary, p.bonus, p.deductions, p.netSalary, p.paymentStatus];
+                });
+                const wsPaychecks = XLSX.utils.aoa_to_sheet([payHeaders, ...payData]);
+                wsPaychecks['!cols'] = [{ wch: 10 }, { wch: 18 }, { wch: 13 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 10 }];
+                XLSX.utils.book_append_sheet(wb, wsPaychecks, 'Paychecks');
+
+                // ── Sheet 3: Leaves ──────────────────────────────
+                const leaveHeaders = ['Leave ID', 'Type', 'From', 'To', 'Days', 'Status', 'Reason', 'Applied On'];
+                const leaveData    = leaves.map(function(l) {
+                    return [l.leaveRequestId, l.leaveType, l.startDate, l.endDate, l.days, l.status, l.reason || '', l.createdAt ? l.createdAt.slice(0, 10) : ''];
+                });
+                const wsLeaves = XLSX.utils.aoa_to_sheet([leaveHeaders, ...leaveData]);
+                wsLeaves['!cols'] = [{ wch: 12 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 6 }, { wch: 18 }, { wch: 30 }, { wch: 12 }];
+                XLSX.utils.book_append_sheet(wb, wsLeaves, 'Leaves');
+
+                // ── Sheet 4: Documents ───────────────────────────
+                const docs = (detail && detail.documents) ? detail.documents : [];
+                const docHeaders = ['Document ID', 'Document Label', 'Status', 'Uploaded On'];
+                const docData    = docs.map(function(d) {
+                    return [d.docId, d.documentLabel, d.status, d.uploadedAt || ''];
+                });
+                const wsDocs = XLSX.utils.aoa_to_sheet([docHeaders, ...docData]);
+                wsDocs['!cols'] = [{ wch: 10 }, { wch: 28 }, { wch: 18 }, { wch: 14 }];
+                XLSX.utils.book_append_sheet(wb, wsDocs, 'Documents');
+
+                // ── Sheet 5: Session Logs ────────────────────────
+                const sessHeaders = ['Session ID', 'Login Time', 'Logout Time', 'Duration', 'Logout Reason', 'User Agent'];
+                const sessData    = sessions.map(function(s) {
+                    var diffMs   = s.loginAt && s.logoutAt ? new Date(s.logoutAt) - new Date(s.loginAt) : 0;
+                    var mins     = diffMs > 0 ? Math.floor(diffMs / 60000) : 0;
+                    var duration = mins > 0 ? (Math.floor(mins / 60) > 0 ? Math.floor(mins / 60) + 'h ' : '') + (mins % 60) + 'm' : (s.logoutAt ? '0m' : 'Active');
+                    return [
+                        s.sessionId,
+                        s.loginAt  ? s.loginAt.replace('T', ' ').slice(0, 19)  : '',
+                        s.logoutAt ? s.logoutAt.replace('T', ' ').slice(0, 19) : 'Active',
+                        duration,
+                        s.logoutReason || (s.logoutAt ? 'unknown' : 'active'),
+                        s.userAgent || '',
+                    ];
+                });
+                const wsSessions = XLSX.utils.aoa_to_sheet([sessHeaders, ...sessData]);
+                wsSessions['!cols'] = [{ wch: 22 }, { wch: 20 }, { wch: 20 }, { wch: 10 }, { wch: 15 }, { wch: 50 }];
+                XLSX.utils.book_append_sheet(wb, wsSessions, 'Session Logs');
+
+                // ── Sheet 6: Incentives ──────────────────────────
+                const incHeaders = ['Bonus ID', 'Month', 'Amount (₹)', 'Type', 'Reason', 'Status', 'Approved By'];
+                const incData    = incentives.length > 0
+                    ? incentives.map(function(b) {
+                        return [b.bonusId || '', b.month || '', b.amount || 0, b.bonusType || '', b.reason || '', b.approvalStatus || '', b.adminId || ''];
+                    })
+                    : [['—', '—', '—', '—', 'No incentives recorded', '—', '—']];
+                const wsIncentives = XLSX.utils.aoa_to_sheet([incHeaders, ...incData]);
+                wsIncentives['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 13 }, { wch: 14 }, { wch: 32 }, { wch: 16 }, { wch: 14 }];
+                XLSX.utils.book_append_sheet(wb, wsIncentives, 'Incentives');
+
+                // ── Download ─────────────────────────────────────
+                const safeName = (employeeName || employeeId).replace(/[^a-z0-9_\-]/gi, '_');
+                const date     = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, safeName + '_' + employeeId + '_' + date + '.xlsx');
+                showToast('Exported ' + (employeeName || employeeId) + ' — 6 sheets', 'success');
+
+            } catch (err) {
+                console.error('[Export]', err);
+                showToast('Export failed — ' + (err.message || 'unknown error'), 'error');
+            } finally {
+                if (btn) { btn.classList.remove('loading'); btn.innerHTML = '<i class="ph ph-download-simple" style="font-size:13px"></i> Export'; }
+            }
+        }
+
+        async function loadApprovalBadge() {
+            try {
+                const counts = await db.getPendingApprovalCounts();
+                const total  = Object.values(counts).reduce((a, b) => a + b, 0);
+                const badge  = document.getElementById('sidebarApprovalBadge');
+                if (badge) {
+                    if (total > 0) {
+                        badge.textContent   = total > 99 ? '99+' : total;
+                        badge.style.display = 'flex';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (err) { /* silent */ }
+        }
+
+        // ─────────────────────────────────────────────────────────
+        // INIT
+        // ─────────────────────────────────────────────────────────
+        window.addEventListener('DOMContentLoaded', async () => {
+            _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
+            updateTopbarDate();
+            loadApprovalBadge();
+            await loadEmployees();
+            renderStats();
+            renderTable();
+            await renderNotifications();
+        });
+    </script>
+</body>
+</html>
+
