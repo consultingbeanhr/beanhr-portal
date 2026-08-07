@@ -1,4 +1,5 @@
 import os
+os.environ['C_FORCE_ROOT'] = 'true'
 from celery import Celery
 from dotenv import load_dotenv
 
