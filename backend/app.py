@@ -66,12 +66,18 @@ def create_app():
 
     @app.route('/<path:filename>')
     def serve_frontend_files(filename):
-        # 1. Check inside frontend/pages/ (e.g. admin/dashboard.html, manager/team.html, set-password.html)
+        # 1. Check exact file inside frontend/pages/ (e.g. admin/dashboard.html, manager/team.html)
         pages_file = os.path.join(frontend_dir, 'pages', filename)
         if os.path.isfile(pages_file):
             return send_from_directory(os.path.join(frontend_dir, 'pages'), filename)
 
-        # 2. Check directly inside frontend/ (e.g. js/db.js, css/style.css, assets/logo.svg)
+        # 2. Check if appending '.html' matches a page in frontend/pages/ (Clean URL support)
+        if not filename.endswith('.html'):
+            clean_html_file = os.path.join(frontend_dir, 'pages', filename + '.html')
+            if os.path.isfile(clean_html_file):
+                return send_from_directory(os.path.join(frontend_dir, 'pages'), filename + '.html')
+
+        # 3. Check directly inside frontend/ (e.g. js/db.js, css/style.css, assets/logo.svg)
         direct_file = os.path.join(frontend_dir, filename)
         if os.path.isfile(direct_file):
             return send_from_directory(frontend_dir, filename)
