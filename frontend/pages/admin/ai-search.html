@@ -1181,7 +1181,8 @@
         });
         if (!_currentUser) throw new Error('Session expired. Please log in again.');
         const token = await _currentUser.getIdToken();
-        const res = await fetch('http://localhost:5000/api/ai/search', {
+        const apiBase = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://127.0.0.1:5000' : window.location.origin;
+        const res = await fetch(`${apiBase}/api/ai/search`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

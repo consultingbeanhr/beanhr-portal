@@ -11,7 +11,11 @@
 //   Zero page rewiring needed — all pages keep calling the same function names.
 // ─────────────────────────────────────────────────────────────
 
-// Centralized safe fallback for showDocumentPreview
+// Centralized safe fallback for API_BASE and showDocumentPreview
+const API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://127.0.0.1:5000'
+    : window.location.origin;
+
 window.showDocumentPreview = function(url, name) {
     if (url && url.startsWith('mock://')) {
         url = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
@@ -2690,7 +2694,7 @@ const db = (() => {
     // ── Admin: Add Employee ──────────────────────────────────────
     async function addEmployee(data) {
         await _getUid();
-        const res = await fetch('http://127.0.0.1:5000/api/auth/provision-user', {
+        const res = await fetch(`${API_BASE}/api/auth/provision-user`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...data, role: 'employee' })
@@ -2703,7 +2707,7 @@ const db = (() => {
     // ── Admin: Add Manager ───────────────────────────────────────
     async function addManager(data) {
         await _getUid();
-        const res = await fetch('http://127.0.0.1:5000/api/auth/provision-user', {
+        const res = await fetch(`${API_BASE}/api/auth/provision-user`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...data, role: 'manager' })
@@ -3188,7 +3192,7 @@ const db = (() => {
     // ── Admin: Add Candidate ─────────────────────────────────────
     async function addCandidate(data) {
         await _getUid();
-        const res = await fetch('http://127.0.0.1:5000/api/auth/provision-user', {
+        const res = await fetch(`${API_BASE}/api/auth/provision-user`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...data, role: 'candidate' })
@@ -3371,7 +3375,7 @@ const db = (() => {
     async function adminTriggerEmployeeCredentials(candidateId, payload = {}) {
         await _getUid();
         const bodyData = { candidateId, ...payload };
-        const res = await fetch('http://127.0.0.1:5000/api/auth/hire-candidate', {
+        const res = await fetch(`${API_BASE}/api/auth/hire-candidate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)
@@ -3655,7 +3659,7 @@ const db = (() => {
     // Returns { records: [...], summary: { totalBurn, totalCount, draftCount, issuedCount, paidCount, failedCount } }
     async function getAdminPayrollMonth(month) {
         await _getUid();
-        const res = await fetch('http://127.0.0.1:5000/api/payroll/records?month=' + month);
+        const res = await fetch(`${API_BASE}/api/payroll/records?month=` + month);
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Failed to fetch payroll records');
         
@@ -3702,7 +3706,7 @@ const db = (() => {
     // ── Admin: Generate Month Payroll ─────────────────────────────
     async function adminGeneratePayroll(month) {
         await _getUid();
-        const res = await fetch('http://127.0.0.1:5000/api/payroll/generate', {
+        const res = await fetch(`${API_BASE}/api/payroll/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ month })
