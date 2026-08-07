@@ -57,31 +57,26 @@ def create_app():
     app.register_blueprint(payroll_bp, url_prefix='/api/payroll')
 
     # ── Serve Frontend Static Files ──────────────────────────────────
+    # ── Serve Frontend Static Files & Page Routing ────────────────────
     frontend_dir = os.path.join(ROOT_DIR, 'frontend')
 
     @app.route('/')
     def index():
         return send_from_directory(os.path.join(frontend_dir, 'pages'), 'login.html')
 
-    @app.route('/assets/<path:filename>')
-    def serve_assets(filename):
-        return send_from_directory(os.path.join(frontend_dir, 'assets'), filename)
+    @app.route('/<path:filename>')
+    def serve_frontend_files(filename):
+        # 1. Check inside frontend/pages/ (e.g. admin/dashboard.html, manager/team.html, set-password.html)
+        pages_file = os.path.join(frontend_dir, 'pages', filename)
+        if os.path.isfile(pages_file):
+            return send_from_directory(os.path.join(frontend_dir, 'pages'), filename)
 
-    @app.route('/css/<path:filename>')
-    def serve_css(filename):
-        return send_from_directory(os.path.join(frontend_dir, 'css'), filename)
+        # 2. Check directly inside frontend/ (e.g. js/db.js, css/style.css, assets/logo.svg)
+        direct_file = os.path.join(frontend_dir, filename)
+        if os.path.isfile(direct_file):
+            return send_from_directory(frontend_dir, filename)
 
-    @app.route('/js/<path:filename>')
-    def serve_js(filename):
-        return send_from_directory(os.path.join(frontend_dir, 'js'), filename)
-
-    @app.route('/pages/<path:filename>')
-    def serve_pages(filename):
-        return send_from_directory(os.path.join(frontend_dir, 'pages'), filename)
-
-    @app.route('/frontend/<path:filename>')
-    def serve_frontend(filename):
-        return send_from_directory(frontend_dir, filename)
+        return jsonify({'error': 'Endpoint not found'}), 404
 
     # ── Global error handlers ────────────────────────────────────────
     @app.errorhandler(404)
