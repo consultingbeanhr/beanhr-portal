@@ -137,7 +137,7 @@
         @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
 
         /* ── App Shell ────────────────────────────────────── */
-        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+        .app-shell { position: relative; display: flex; height: 100vh; overflow: hidden; }
 
         /* ── Sidebar ──────────────────────────────────────── */
         .sidebar {
@@ -428,7 +428,11 @@
 
         /* ── Responsive ───────────────────────────────────── */
         @media (max-width: 768px) {
-            .sidebar { display: none; }
+            .topbar { height: auto; min-height: var(--topbar-h); padding-top: 12px; padding-bottom: 12px; }
+            .tab-bar { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; scrollbar-width: none; }
+            .tab-bar::-webkit-scrollbar { display: none; }
+
+            
             .topbar { padding: 0 16px; }
             .chat-messages { padding: 16px 16px 8px; }
             .chat-input-area { padding: 10px 14px 16px; }
@@ -436,6 +440,29 @@
             .emp-grid { grid-template-columns: 1fr 1fr; }
             .clear-chat-btn .clear-label { display: none; }
             .clear-chat-btn { padding: 7px 10px; }
+        }
+        /* ── Mobile Sidebar & Overlay ─────────────────────────── */
+        .sidebar-overlay { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .sidebar-toggle  { display: none; width: 36px; height: 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; transition: background 0.15s; padding: 0; }
+        .sidebar-toggle:hover { background: rgba(119,202,0,0.08); }
+        @media (max-width: 768px) {
+            .topbar { height: auto; min-height: var(--topbar-h); padding-top: 12px; padding-bottom: 12px; }
+            .tab-bar { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; scrollbar-width: none; }
+            .tab-bar::-webkit-scrollbar { display: none; }
+
+            html, body { overflow: auto; }
+            .sidebar { position: fixed; left: 0; top: 0; z-index: 50; width: var(--sidebar-w) !important; transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.22,1,0.36,1); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-toggle { display: flex; }
+            .sidebar.mobile-open .nav-label, .sidebar.mobile-open .logout-label { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-brand-text { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-section-label { opacity: 1; max-height: 30px; margin: 8px 0 6px; }
+            .sidebar.mobile-open .nav-item  { justify-content: flex-start; padding: 10px 9px; gap: 10px; }
+            .sidebar.mobile-open .logout-btn { justify-content: flex-start; padding: 10px 9px; gap: 10px; }
+            .sidebar-overlay.open { display: block; }
+            .topbar { padding: 0 14px; }
+            .page-content { padding: 16px; }
+            .notif-dropdown { width: min(340px, calc(100vw - 24px)); right: 0; }
         }
     </style>
 
@@ -466,6 +493,7 @@
     <div class="orb orb-3"></div>
 </div>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 <div class="app-shell">
 
     <!-- ── SIDEBAR ──────────────────────────────────────────── -->
@@ -535,7 +563,10 @@
         <!-- ── TOPBAR ────────────────────────────────────────── -->
         <div class="topbar">
             <div class="topbar-left">
-                <div class="topbar-title">AI Search</div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open navigation menu">
+                        <i class="ph ph-list" style="font-size:20px"></i>
+                    </button>
+                    <div class="topbar-title">AI Search</div>
             </div>
             <div class="topbar-right">
                 <button class="clear-chat-btn" id="clearBtn" onclick="clearChat()" style="display:none">
@@ -639,19 +670,8 @@
     document.getElementById('adminAvatar').textContent = (_email || 'A').charAt(0).toUpperCase();
 
     // ── Sidebar ──────────────────────────────────────────────────
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('collapsed');
-    }
-
-    // ── Theme ─────────────────────────────────────────────────────
-    function _applyTheme(t) { document.documentElement.setAttribute('data-theme', t); }
-    _applyTheme(localStorage.getItem('bhr_theme') || 'dark');
-    function toggleTheme() {
-        const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
-        const next = cur === 'dark' ? 'light' : 'dark';
-        localStorage.setItem('bhr_theme', next);
-        _applyTheme(next);
-    }
+    
+        
 
 
 
@@ -1197,5 +1217,34 @@
         return await res.json();
     }
 </script>
+
+<script>
+    // Force global sidebar toggle functions
+    window.toggleSidebar = function() {
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!sidebar) sidebar = document.querySelector('.sidebar');
+        if (!overlay) overlay = document.querySelector('.sidebar-overlay');
+        
+        if (sidebar) {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+                if (overlay) overlay.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+            }
+        }
+    };
+    window.closeSidebar = function() {
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!sidebar) sidebar = document.querySelector('.sidebar');
+        if (!overlay) overlay = document.querySelector('.sidebar-overlay');
+        
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('open');
+    };
+</script>
+
 </body>
 </html>

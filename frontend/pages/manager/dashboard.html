@@ -110,7 +110,7 @@
         @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
 
         /* ── App Shell ─────────────────────────────────────────────── */
-        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+        .app-shell { position: relative; display: flex; height: 100vh; overflow: hidden; }
 
         /* ── Sidebar ───────────────────────────────────────────────── */
         .sidebar {
@@ -362,14 +362,30 @@
         @media (max-width: 1024px) {
             .stats-grid { grid-template-columns: repeat(2, 1fr); }
         }
-        @media (max-width: 640px) {
-            .sidebar { width: 64px; }
-            .topbar { padding: 0 16px; }
+                /* ── Mobile Sidebar & Overlay ─────────────────────────── */
+        .sidebar-overlay { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .sidebar-toggle  { display: none; width: 36px; height: 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; transition: background 0.15s; padding: 0; }
+        .sidebar-toggle:hover { background: rgba(119,202,0,0.08); }
+        @media (max-width: 768px) {
+            .sr-text { display: none; }
+            .send-reminder-btn { padding: 8px 10px; }
+            .topbar { height: auto; min-height: var(--topbar-h); padding-top: 12px; padding-bottom: 12px; }
+            .tab-bar { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; scrollbar-width: none; }
+            .tab-bar::-webkit-scrollbar { display: none; }
+
+            html, body { overflow: auto; }
+            .sidebar { position: fixed; left: 0; top: 0; z-index: 50; width: var(--sidebar-w) !important; transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.22,1,0.36,1); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-toggle { display: flex; }
+            .sidebar.mobile-open .nav-label, .sidebar.mobile-open .logout-label { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-brand-text { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-section-label { opacity: 1; max-height: 30px; margin: 8px 0 6px; }
+            .sidebar.mobile-open .nav-item  { justify-content: flex-start; padding: 10px 9px; gap: 10px; }
+            .sidebar.mobile-open .logout-btn { justify-content: flex-start; padding: 10px 9px; gap: 10px; }
+            .sidebar-overlay.open { display: block; }
+            .topbar { padding: 0 14px; }
             .page-content { padding: 16px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .leave-cards { grid-template-columns: 1fr; }
-            .qa-list { flex-direction: column; }
-            .qa-btn { min-width: unset; }
+            .notif-dropdown { width: min(340px, calc(100vw - 24px)); right: 0; }
         }
     </style>
 
@@ -505,6 +521,8 @@
         <div class="orb orb-2"></div>
     </div>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
     <div class="app-shell">
         <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
         <aside class="sidebar">
@@ -577,6 +595,9 @@
             <!-- ── TOPBAR ──────────────────────────────────────────── -->
             <div class="topbar">
                 <div class="topbar-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open navigation menu">
+                        <i class="ph ph-list" style="font-size:20px"></i>
+                    </button>
                     <div>
                         <div class="topbar-greeting">Welcome back, <span id="managerName">Manager</span></div>
                         <div class="topbar-date" id="todayDate"></div>
@@ -587,8 +608,8 @@
                         <i class="ph-fill ph-sun ph-icon-fill" style="font-size:18px"></i>
                         <i class="ph ph-moon ph-icon-outline" style="font-size:18px"></i>
                     </button>
-                    <button class="send-reminder-btn" onclick="openSendReminderModal()">
-                        <i class="ph-fill ph-bell-ringing" style="font-size:15px"></i> Send Reminder
+                    <button class="send-reminder-btn" onclick="openSendReminderModal()" aria-label="Send Reminder">
+                        <i class="ph-fill ph-bell-ringing" style="font-size:15px"></i> <span class="sr-text">Send Reminder</span>
                     </button>
                     <div style="position: relative;">
                         <button class="notif-btn" onclick="toggleNotifDropdown(event)">
@@ -822,7 +843,20 @@
         // SIDEBAR TOGGLE
         // ───────────────────────────────────────────────────────────────
         function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('collapsed');
+            const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+                if (overlay) overlay.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+            }
+        }
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('open');
         }
 
         // ───────────────────────────────────────────────────────────────

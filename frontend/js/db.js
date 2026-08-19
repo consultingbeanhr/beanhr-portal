@@ -4522,8 +4522,8 @@ const db = (() => {
     // ── Admin: Get Pending Salary Hike Requests ───────────────────
     async function getSalaryHikeRequests() {
         await _getUid();
-        const snap = await firebase.firestore().collection('salaryHikeRequests').where('status', '==', 'pending_admin').orderBy('createdAt', 'desc').get();
-        return snap.docs.map(d => ({ requestId: d.id, ...d.data() }));
+        const snap = await firebase.firestore().collection('salaryHikeRequests').where('status', '==', 'pending_admin').get();
+        return snap.docs.map(d => ({ requestId: d.id, ...d.data() })).sort((a,b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
     }
 
     // ── Admin: Approve or Reject a Salary Hike Request ───────────

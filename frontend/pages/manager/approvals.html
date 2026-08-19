@@ -149,7 +149,7 @@
         @keyframes drift { 0%{transform:translate(0,0) scale(1)} 33%{transform:translate(28px,-28px) scale(1.06)} 66%{transform:translate(-18px,18px) scale(0.95)} 100%{transform:translate(0,0) scale(1)} }
 
         /* ── App Shell ─────────────────────────────────────────────── */
-        .app-shell { position: relative; z-index: 1; display: flex; height: 100vh; overflow: hidden; }
+        .app-shell { position: relative; display: flex; height: 100vh; overflow: hidden; }
 
         /* ── Sidebar ───────────────────────────────────────────────── */
         .sidebar {
@@ -331,7 +331,7 @@
         }
         .req-reason.no-reason { color: var(--text-faint); font-style: italic; }
 
-        .req-actions { display: flex; align-items: center; gap: 8px; }
+        .req-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .req-btn {
             display: flex; align-items: center; gap: 6px;
             padding: 8px 16px; border-radius: 10px;
@@ -530,6 +530,29 @@
             .req-top { flex-direction: column; }
             .req-actions { flex-wrap: wrap; }
         }
+        /* ── Mobile Sidebar & Overlay ─────────────────────────── */
+        .sidebar-overlay { display: none; position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        .sidebar-toggle  { display: none; width: 36px; height: 36px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; align-items: center; justify-content: center; cursor: pointer; color: var(--text); flex-shrink: 0; transition: background 0.15s; padding: 0; }
+        .sidebar-toggle:hover { background: rgba(119,202,0,0.08); }
+        @media (max-width: 768px) {
+            .topbar { height: auto; min-height: var(--topbar-h); padding-top: 12px; padding-bottom: 12px; }
+            .tab-bar { max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; scrollbar-width: none; }
+            .tab-bar::-webkit-scrollbar { display: none; }
+
+            html, body { overflow: auto; }
+            .sidebar { position: fixed; left: 0; top: 0; z-index: 50; width: var(--sidebar-w) !important; transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.22,1,0.36,1); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-toggle { display: flex; }
+            .sidebar.mobile-open .nav-label, .sidebar.mobile-open .logout-label { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-brand-text { opacity: 1; max-width: 160px; }
+            .sidebar.mobile-open .sidebar-section-label { opacity: 1; max-height: 30px; margin: 8px 0 6px; }
+            .sidebar.mobile-open .nav-item  { justify-content: flex-start; padding: 10px 9px; gap: 10px; }
+            .sidebar.mobile-open .logout-btn { justify-content: flex-start; padding: 10px 9px; gap: 10px; }
+            .sidebar-overlay.open { display: block; }
+            .topbar { padding: 0 14px; }
+            .page-content { padding: 16px; }
+            .notif-dropdown { width: min(340px, calc(100vw - 24px)); right: 0; }
+        }
     </style>
 
         <!-- Custom Logo Background -->
@@ -572,6 +595,8 @@
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
     </div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <div class="app-shell">
         <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
@@ -671,6 +696,9 @@
             <!-- TOPBAR -->
             <header class="topbar">
                 <div class="topbar-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Open navigation menu">
+                        <i class="ph ph-list" style="font-size:20px"></i>
+                    </button>
                     <div>
                         <div class="topbar-title">Approval Pipeline</div>
                         <div class="topbar-sub" id="todayDate"></div>
@@ -845,7 +873,22 @@
         // ───────────────────────────────────────────────────────────────
         // SIDEBAR
         // ───────────────────────────────────────────────────────────────
-        function toggleSidebar() { document.querySelector('.sidebar').classList.toggle('collapsed'); }
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+                if (overlay) overlay.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+            }
+        }
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('open');
+        }
 
         // ───────────────────────────────────────────────────────────────
         // LOGOUT
