@@ -469,6 +469,7 @@
                     db.getFinanceReport(start, end),
                     db.getHeadcountSummary()
                 ]);
+                window._lastReportData = { report, headcount, start, end };
                 renderReport(report, headcount);
             } catch (err) {
                 container.innerHTML = `<div class="empty-state">Failed to generate report. ${escapeHtml(err.message || '')}</div>`;
@@ -578,7 +579,74 @@
         }
 
         function exportCSV() {
-            showToast('Export coming soon', 'success');
+            if (!window._lastReportData) {
+                showToast('Please generate a report first', 'error');
+                return;
+            }
+            
+            const { report, headcount, start, end } = window._lastReportData;
+            let csvRows = [];
+            
+            const escapeCsv = (val) => '"' + String(val || '').replace(/"/g, '""') + '"';
+
+            // 1. Department-wise Cost Breakdown
+            csvRows.push('--- Department-wise Cost Breakdown ---');
+            csvRows.push('Department,Headcount,Total Burn,Avg Salary,Cost Share %');
+            if (report.byDept && report.byDept.length > 0) {
+                report.byDept.forEach(d => {
+                    csvRows.push([d.department, d.headcount, d.totalBurn, d.avgSalary, d.costShare].map(escapeCsv).join(','));
+                });
+            } else {
+                csvRows.push('No data available,,,,');
+            }
+            csvRows.push(''); // Blank line
+            
+            // 2. Monthly Payroll Burn
+            csvRows.push('--- Monthly Payroll Burn ---');
+            csvRows.push('Month,Total Burn');
+            if (report.monthlyBurn && report.monthlyBurn.length > 0) {
+                report.monthlyBurn.forEach(b => {
+                    const mLabelStr = b.year ? (b.month + ' ' + b.year) : monthLabel(b.month);
+                    csvRows.push([mLabelStr, b.amount].map(escapeCsv).join(','));
+                });
+            } else {
+                csvRows.push('No data available,');
+            }
+            csvRows.push('');
+            
+            // 3. Headcount by Role
+            csvRows.push('--- Headcount by Role ---');
+            csvRows.push('Role,Headcount');
+            if (headcount.byRole && headcount.byRole.length > 0) {
+                headcount.byRole.forEach(r => {
+                    csvRows.push([r.role, r.count].map(escapeCsv).join(','));
+                });
+            } else {
+                csvRows.push('No data available,');
+            }
+            csvRows.push('');
+            
+            // 4. Headcount by Department
+            csvRows.push('--- Headcount by Department ---');
+            csvRows.push('Department,Headcount');
+            if (headcount.byDept && headcount.byDept.length > 0) {
+                headcount.byDept.forEach(d => {
+                    csvRows.push([d.department, d.count].map(escapeCsv).join(','));
+                });
+            } else {
+                csvRows.push('No data available,');
+            }
+            
+            const csv = csvRows.join('\r\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BeanHR_Finance_Report_${start}_to_${end}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         // ── NOTIFICATIONS ──
